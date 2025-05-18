@@ -1,0 +1,112 @@
+
+
+                   EXPLANATION FILE OF PROGRAM REGITER
+                   ===================================
+
+
+    Iterated Regression
+    -------------------
+
+    The design of numerical algorithms is both a mathematical science and an
+  art. The mathematics forms the background for the methodology, but as in most
+  endeavours, it is the execution that decides the quality of the final product. 
+
+    In the file Lstsqr.txt, we considered an elegant and very general matrix
+  approach to least-squares fitting of polynomials. Upon execution, however, we
+  found that round-off error could significantly influence the accuracy of the
+  computed results. This difficulty was largely overcome for one-dimensional re-
+  gression by the Forsythe orthogonal polynomial formulation presented in file
+  Lsqrply.txt. The trick was to choose a mathematical structure that resulted in
+  matrix operations much less susceptible to round-off error. 
+
+    The matrix approach was extended to multidimensional applications in file 
+  Lstsqr.txt. Again we encountered round-off error. The objective of this sec-
+  tion is to develop a corresponding algorithm that treats this very important
+  case. As you will see, the concept behind this algorithm is fundamental to
+  the use of computers for numerical ca1culations. This concept is called
+  iteration. 
+
+    We first note that the observed round-off error is mainly associated with
+  the process of subtraction. When two numbers, say A and B, are subtracted, the
+  relative error in their difference is E / (A - Bl, where E is a measure of the
+  combined numerical truncation plus round-off) error in A and B. If A and B are
+  comparable in size, relative error can be quite large. Unfortunately, the ma-
+  trix operations involved in the LEASTSQR subroutine involve many subtractions
+  of comparable numbers. This is particularly true of the matrix inversion step.
+  Knowing the root of the problem, we can devise a strategy to overcome the dif-
+  ficulty. 
+
+    The matrix equation given for the coefficient vector was equation 1.4.4: 
+
+                              t  -1 t
+                        D = (X X)  X Y
+
+  This has the same form as the classic matrix equation 
+
+                        D = AY 
+
+  Given Y and A, the result D is mathematically determined. However, what we
+  calculate is D. The residual is 
+
+                        r1 = D - D1 = D - AY
+
+  How can we obtain D wh en we have D1 ? If we knew r1, even approximately, we
+  could improve upon the estimate D1, using D = D1 + r1. Therefore, the problem
+  is reduced to estimating r1. Recall the original purpose for obtaining D. We
+  want to employ it to approximate (in the least-squares sense) Y: 
+
+                        Y = XD
+
+  However, applying D1, we get Y1 = XO1. Therefore, a reasonable estimate for r,
+  is
+
+                        r1 = A(Y - Y1) 
+
+  Round-off error will probably also affect the estimate for r1, so the correc-
+  tion process must be repeated until some error criterion is met: 
+ 
+                        Step 1 	 D1 = AY 	   
+                        Step 2 	 r1 = A(Y - XO1) 	   
+                        Step 3 	 D2 = D1 + r1 	   
+                        Step 4 	 r2 = A(Y - XD2) 	   
+                        Step 5 	 D3 = D2 + r2 	 
+
+  and so on. We will use the variance as the criterion for deciding when to stop
+  the iteration sequence. If the variance increases upon the next step in the
+  sequence, the round-off error limit has probably been reached. Thus, if
+
+                     t                       t
+            (Y - XDn) (Y - XOn) < (Y - XOn+1) (y - XOn+1),
+
+  then Dn is the chosen coefficient vector.
+   
+    This procedure has been implemented in program REGITER. The operation of the
+  regression-iteration subroutine is very simple. The calling program supplies
+  the number of data points (M), the number of dimensions (L), the degree of fit
+  for each dimension [M(I)), and the data pairs [X(1,J),Y(1)]. The program then
+  proceeds to iteratively calcula te the coefficient vector D(I). The returned
+  results are the coefficients [D(I)), the standard deviation (D), and the num-
+  ber of iterations performed (LI).
+   
+    In the example given, the coefficients were found with six-digit or better
+  accuracy: the results are very accurate. The corresponding standard deviation
+  of the fit was thousands of times better than the fit found without iteration.
+  Clearly, the method is effective. REGlTER is a fairly reliable program. The
+  input variable precautions are simple and are the same as discussed in Lstsqr.
+  There is a possibility (although the author has never encountered such a case)
+  that the iteration may not converge. In that case, the iteration is terminated
+  at the point of divergence. ln the worst case, the returned coefficient vector
+  would simply be that calculated on the first pass. 
+
+    REGlTER is a very effective subroutine and should be employed whenever high-
+  accuracy multidimensionalleast-squares curve fitting is desired. The main dis- 
+  advantage to using REGlTER is that it is slow.
+   
+    In the next section, we will examine another iterative approach to the least- 
+  squares problem. lt does not involve matrix operations and it can be used for
+  problems in which the coefficients appear in nonlinear forms. See file
+  Parafit.txt.
+
+  From [BIBLI 01].
+-------------------------------------------
+End of file Regiter.txt

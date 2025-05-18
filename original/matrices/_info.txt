@@ -1,0 +1,55 @@
+Program Description
+
+    Utility routines used by some programs concerning matrices
+    Solving a linear matrix system AX=B by Gauss-Jordan Method
+    Explanation File of program above (Sysmat) NEW
+    Solve a Linear System By Direct Factorization
+    Solve a Linear System By Triangularization Method
+    Explanation File of Program above (Tlinear)
+    LU decomposition unit called by program below
+    Program to solve a linear system AX=B by LU decomposition
+    Solving a banded linear system AX=B By LU decomposition
+    Inversion of a real square matrix by LU decomposition
+    Inversion of a real square matrix by Householder's method NEW
+    Explanation File of LU Method NEW
+    Linear banded system using pivots
+    Linear banded system without using pivots
+    Solving a linear matrix system AX=B for a band matrix
+    Solving a symmetric linear system by Conjugate Gradient method
+    Conjugate Gradient method for a sparse symmetric linear system
+    Solving a symmetric linear system by Gauss method
+    Solving a symmetric linear system by SYMSOL
+    Cholesky method unit used by program below
+    Solving a symmetric linear system by Cholesky method
+    Inversion of a symmetric positive definite matrix by Cholesky method
+    Unit used by profram below
+    Explanation File for iterative Gauss Seidel method NEW
+    Solve a linear system by iterative Gauss Seidel method
+    Solve AX = B using a partial pivoting algorithm and reduced storage
+    Determinant of a real square matix by Gauss method
+    Determinant of a real square matrix by LU decomposition method
+    Determinant of a real square matrix by a recursive method based on Kramer's rule
+    Calculate the determinant of a real square matrix using Function FindDet NEW
+    Characteristic polynomial of a real square tridiagonal matrix
+    Unit concerning complex numbers used by program below
+    Characteristic polynomial of a complex square matrix
+    Characteristic polynomial of a real square matrix
+    Characteristic polynomial of a real symmetric square matrix
+    Solving a tridiagonal linear system
+    Solving a linear system AX=B by the Singular Value Decomposition Method
+    Greatest eigenvalue of a real square matrix by the power method
+    Smallest eigenvalue of a real square matrix by the Gauss and power methods
+    Eigenvalues and eigenvectors of a real symmetric square matrix by Jacobi's method (unit ujacobi.pas)
+    Program to demonstrate the use of unit ujacobi.pas
+    Explanation file of program below(ELPROTD) NEW
+    Eigenvalues and eigenvectors of a real tridiagonal square matrix
+    Find Eigenvalues and Eigenvectors of a symmetric tridiagonal matrix using QL method
+    Find Eigenvalues and Eigenvectors of a symmetric real matrix using Householder reduction and QL method
+    Eigenvalues and eigenvectors of a real square matrix by Rutishauser's method and inverse iteration method
+    Collection of procedures used by program below
+    Eigenvalues of a non symmetric real matrix by QR algorithm
+    Unit used by program below
+    Eigenvalues and eigenvectors of a non symmetric real matrix by QR algorithm
+    Calculate eigenvalues and eigenvectors of a Square Hermitian Matrix By Jacobi's Method
+    Solve a Vandermonde linear system NEW
+    Solve a Toeplitz linear system NEW 

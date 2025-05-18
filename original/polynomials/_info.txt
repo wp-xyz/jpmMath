@@ -1,0 +1,25 @@
+Program Description
+
+    Unit of elementary operations on Polynomials P(x)
+    Program to demonstrate the Evaluation of a polynomial
+    Evaluate a Polynomial and its Derivatives By Horner's Method
+    Division of two polynomials by increasing powers
+    Euclidian division of two polynomials P(x)/Q(x)
+    GCD and SCM of two polynomials
+    Linear combination of two polynomials a.P(x) + b.Q(x)
+    Multiplication of two polynomials P(x) x Q(x)
+    Nth derivative of a polynomial P(x)
+    Substitution of two polynomials P(Q(x))
+
+
+    Unit of elementary operations on polynomial fractions F(x)=P(x)/Q(x)
+    Program to demonstrate the Evaluation of a polynomial fraction P(x)/Q(x)
+    Inversion of a polynomial fraction P(x)/Q(x)
+    Linear combination of two polynomial fractions a.F1(x) + b.F2(x)
+    Multiplication of two polynomial fractions F1(x) x F2(x)
+    Nth derivative of a polynomial fraction F(x)=P(x)/Q(x)
+    Simple elements of a polynomial fraction
+    Substitution of two polynomial fractions F1(F2(x))
+
+
+    Symbolic Parser with Polynomials. Example: '(A+B)^2' ==> A^2+2AB+B^2 (NEW) 

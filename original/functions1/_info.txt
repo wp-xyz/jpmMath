@@ -1,0 +1,67 @@
+Program Description
+
+    Program to demonstrate the Akima spline fitting
+    Explanation File of Program above (Akima)
+    Collection of routines for Chebyshev polynomial approximation
+    Explanation File of Chebyshev Approximation
+    Program to demonstrate the Chebyshev polynomial approximation
+    Program to demonstrate the Chebyshev polynomial approximation (integral)
+    Program to demonstrate the Chebyshev polynomial approximation (derivative)
+    Best approximation of a discrete real function F(X) by Stiefel-Remès's polynomial method
+    Polynomial Interpolation or Extrapolation of a discrete Function F(x) using Polynomials.
+    Polynomial Interpolation or Extrapolation of a discrete Function F(x) using a Quotient of Polynomials.
+    Interpolate a function F(x) by continuous fractions
+    Explanation File of Program above (Confract)
+    Interpolate a function by trigonometric polynoms
+    Program to demonstrate Lagrange derivative interpolation
+    Estimate the Nth derivative of a real function f(x), N=1 to 5
+    Unit used by program below (difrom.pas)
+    Computes an approximation for the first derivative of a function F(x) using the ROMBERG method
+    Calculate a limited development of a real function f(x) at point xo with step h (up to order 5)
+    Explanation File of Programs Ltddev
+    Calculate a limited development of a real function f(x)*g(x) at x=0 up to order 25, knowing the limited developments of f(x) and g(x)
+    Calculate a limited development of a real function f(x)/g(x) at x=0 up to order 25, knowing the limited developments of f(x) and g(x)
+    Calculate a limited development of a real function f(x) o g(x) at x=0 up to order 25, knowing the limited developments of f(x) and g(x)
+    Program to demonstrate the general integration subroutine
+    Integration of a real function F(X),F(X,Y) or F(X,Y,Z) by Gauss method
+    Program to demonstrate the Simpson integration subroutine
+    Program to demonstrate the discrete Simpson integration
+    Integration of a discrete function by the weighting coefficients Method
+    Explanation File of Program above (Dinteg)
+    Program to integrate a user-defined function f(x) from x1 to x2 by the QANC8 subroutine with control of absolute and relative precisions
+    Program to demonstrate the Romberg integration subroutine
+    Integrate F(x) by using the summed Clenshaw-Curtis formula
+    Unit to calculate sinintegral(x) or cosintegral(x)
+    Demonstration Program of Unit Sinint
+    Program to demonstrate the discrete Primitive subroutine
+    Program to demonstrate the discrete Primitive subroutine with graph
+    Unit used by two programs below (kubnec.pas)
+    Test program for cubature over rectangles using Newton-Cotes
+    Test program for cubature over triangles using 3-point Newton-Cotes and Romberg-Richardson extrapolation
+    Module used by two programs below (kubgauss.pas)
+    Test program for cubature over rectangles using Gauss
+    Test programm for cubature over triangles via summed Gaussian n-point formula
+    Program to demonstrate Lagrange interpolation
+    Explanation File of Program above (Lagrange)
+    Program to demonstrate Laguerre coefficients
+    Program to demonstrate Newton interpolation
+    Explanation File of Program above (Newton)
+    Cubic spline interpolation of a discrete function F(X), given by N points X(I),Y(I)
+    Bracketing a minimum of a real function F(X)
+    Explanation file of program below(GOLDEN)
+    Seek Minimum of a real function F(X) by Golden Section Search
+    Explanation file of program below(BRENT)
+    Seek Minimum of a real function F(X) by Brent's Method
+    Explanation file of program below(TAMOEBA)
+    Multidimensional minimization of a function FUNC(X) where X is an NDIM-dimensional vector, by the downhill simplex method of Nelder and Mead
+    Explanation file of program below(TPOWELL)
+    Minimization of a Function FUNC of N Variables By Powell's Method Discarding the Direction of Largest Decrease
+    Program to demonstrate multi-dimensional Steepest Descent Optimization (Partial derivatives not required)
+    Explanation File of Program above (Steepda)
+    Program to demonstrate multi-dimensional Steepest Descent Optimization (Partial derivatives required)
+    Explanation File of Program above (Steepds)
+    Unit to compile and evaluate a user defined function
+    Program to draw a real function F(x) or F(t) defined by its equation
+    Program to draw a 2D function (cartesian, polar or parametric)
+    Unit to Simplify a user-defined function F(x) used by program below
+    Program to calculate the formal derivative of a user-defined function F(x) 

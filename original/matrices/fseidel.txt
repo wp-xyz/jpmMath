@@ -1,0 +1,204 @@
+
+                       EXPLANATION FILE OF MODULE FSEIDEL
+                       ==================================
+
+
+    Iterative Methods for Linear Systems A.x = B
+    --------------------------------------------
+
+
+    A Relaxation Method using the Gauss-Seidel Method
+    -------------------------------------------------
+
+    1. Introduction
+       ------------
+
+    The Gauss-Seidel iteration differs from the Jacobi iterations only slightly,
+                                st
+  for in it the calculated (v+1)   approximations of the leading coefficients
+                        v                                    st
+  x1, x2, ..., x    of x  are used when calculating the (v+1)   approximation of
+                i-1
+  x . For this method, the iteration rule becomes:
+   i
+       (v+1)      (v)     (v+1)
+      x      = Brx   + Blx     + c
+
+  with        | 0  b12 b13 ... b1n     |
+              | 0  0 ...               |
+         Br = | ---------------------- |
+              | 0  0 ...       b n-1,n |
+              | 0  0 ...       0       |
+
+                                                        (5.11)
+  and         | 0    0 ...     0       |
+              | b21  ...               |
+         Bl = | ---------------------- |
+              | bn1  bn2 ...   b n,n-1 |
+
+  and                          | -a  /a   for i<>k
+         c  = a / a  ,  b   =  |   ik  ii
+          i    i   ii    ik    |
+                               |  0  for i=k
+
+  Written out componentwise for i = 1, ... , n and v = 0, 1,2, ... we have:
+
+          (v+1)          n       (v)   i-1     (v+1)
+         x      = c  +  Sum  b  x    + Sum b  x          (5.12)
+          i        i   k=i+1  ik k     k=1  ik k
+
+                  bi      n   aik  (v)   i-1 aik  (v+1)
+                = --- -  Sum  --- x    - Sum --- x
+                  aii   k=i+1 aii  k     k=1 aii  k
+
+
+    The following convergence criteria insure convergence for the Gauss-Seidel
+  method:
+
+    1) the row sum criterion: 
+
+                    n                       n   |aik|
+       max         Sum |b  | = max         Sum  |---| <= L    < 1  or
+          1<=i<=n  k=1   ik       1<=i<=n  k=1  |aii|     inf
+                                           k<>i
+
+    2) the column sum criterion:
+
+                    n                       n   |aik|
+       max         Sum |b  | = max         Sum  |---| <= L    < 1  or
+          1<=k<=n  i=1   ik       1<=k<=n  i=1  |aii|     1
+                                           i<>k
+                                   T
+    3) if A is positive definite (x  Ax > 0 for all x <> 0), then the Gauss-
+       Seidel method converges. 
+
+  It is helpful to visualize the calculations in a scheme of the following form:
+
+
+       COMPUTATIONAL SCHEME (Gauss-Seidel iteration for n=3)
+       ----------------------------------------------------- 
+                                                          (0)    (1)
+        ci | Br or bik for k>= i | Bl or bik for k< i  | xi   | xi   | ... |
+       ---------------------------------------------------------------------
+       b1  |                     |                     |      |      |     |       
+       --- | 0 -a12/a11 -a13/a11 |    0     0      0   |  0   |      |     |
+       a11 |                     |                     |      |      |     |
+           |                     |                     |      |      |     |
+       b2  |                     |                     |      |      |     |
+       --- | 0     0    -a23/a22 | -a21/a22 0      0   |  0   |      |     |
+       a22 |                     |                     |      |      |     |
+           |                     |                     |      |      |     |
+       b3  |                     |                     |      |      |     |
+       --- | 0     0        0    | -a31/a33 -a32/a33 0 |  0   |      |     |
+       a33 |                     |                     |      |      |     |
+       ---------------------------------------------------------------------
+
+
+    2. Iteration Rule
+       --------------
+
+    Given the linear system A.x = B, so the iteration rule for the Gauss-Seidel
+  method is
+
+       (v+1)      (v)     (v+1)
+      x      = Brx   + Blx     + c       for v = 0,1,2...
+
+    We can rewrite this as
+
+          (v+1)    (v)    (v)
+      |  x      = x    + z     for
+      |   (v)             (v+1)            (v)              (5.17)
+      |  z      = c + Bl x     - (I - Br) x   ,
+
+  where Br and Bl denote the triangular matrices in (5.11).
+
+                                           (v)      (v) 
+    If one replaces the correction vector z    by wz    in (5.17) for a relaxa-
+  tion coefficient w, then one obtains the iteration rule for the method of
+  "successive relaxation":
+
+       (v+1)    (v)            (v+1)            (v)
+      x      = x    + w [c + Blx      - (I - Br)x  ]        (5.18)
+
+    The calculation of an optimum value for w is difficult. It is possible to
+  prove that the relaxation method (5.18) can only converge if 0 < w < 2.
+
+    The optimum correlation factor for the "successive overrelaxation method",
+  abbreviated customarily as "SOR method" is
+
+                                          2
+                          w    = -------------------2
+                           opt   1 + sqrt(1 - lambda )
+                                                    1
+
+  for a linear system with a positive definite, tridiagonal or block tridiagonal
+  matrix, A. Here lambda  is the largest eigenvalue of the matrix B  + B .
+                        1                                          l    r
+
+  Matrices of this kind appear naturally in discretizations of elliptic boundary
+  value problems. ln this case the SOR method converges much faster with Wopt
+  than a relaxation method with Jacobi's method. 
+
+  3. Estimate for the Optimal Relaxation Coefficient, an Adaptive SOR Method
+     -----------------------------------------------------------------------
+   
+    In order to speed up the method, at first a certain number l of steps
+  ( l >= 1) is performed using the GauJ3-Seidel method for a fixed relaxation
+  coefficient w. Then the near optimal relaxation coefficient is obtained from: 
+
+
+  -----------------------------------------------------------------------------
+
+                                SOR ALGORITHM
+                                -------------
+     
+    Given: Ax = b, where A satisfies the hypothesis for the GauJ3-Seidel method
+    and we assume that all eigenvalues of the iteration matrix B are real. 
+
+    Find: approximate solution x. 
+
+    Set: w := 1, q := 1, v := O. 
+
+    Choose: accuracy bound eps real, eps > 0, 
+            number of steps l between adjustments for the relaxation parameter;
+            integer l >= 1. 
+            starting vector x(O).
+ 
+  For each v = 0,1,2,... perform the following steps:
+
+              (v+1) 
+  1. Compute x     according to (5.18). If v is an integer multiple of l, conti-
+     nue with step 2, otherwise go to step 3.
+      
+  2. To adjust the relaxation coefficient compute
+
+                       (v+1)    (v)
+                    |xk     - xk   |
+            q = max ---------------- 
+                 k     (v)    (v-1)
+                    |xk   - xk     |
+
+     if q > 1, raise v by 1 and go to step 1; otherwise set
+
+            q = max (q, w-1)
+
+     and compute the new approximate relaxation coefficient as:
+
+                           2
+            w = --------------------------
+                             1 ( q+w-1 ) 2
+                1 + sqrt(1 - - (-------) 
+                             q (   w   )
+
+  3. If        (v+1)   (v)                     (v+1)
+            ||x     - x   ||    <= eps(1-q) ||x     ||    ,
+                            inf                       inf
+                                   (v+1
+     stop the iteration with x == x    ; otherwise set v=v+1 and continue with
+     step 1.
+  -----------------------------------------------------------------------------
+
+
+  From [BIBLI 11].
+------------------------------------------
+End of file fseidel .txt

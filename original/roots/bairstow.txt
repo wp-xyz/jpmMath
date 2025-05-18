@@ -1,0 +1,171 @@
+                  EXPLANATION FILE OF BAIRSTOW'S METHOD
+                   =====================================
+
+
+  This program calculates the real or complex roots of a polynomial f(x).
+
+  The Bairstow's Method
+
+     A. Principles
+        ----------
+                    i=n     n-i
+     Let be f(x) =  Sum a  x    the given polynomial and (p,q) two numbers,
+                    i=0  i
+
+     the division of f(x) by x^2 + p x + q gives:
+
+                    i=n     n-i     i=n     n-i
+                    Sum  a x    = ( Sum b  x   ) (x^2 + px + q) +rx + s
+                    i=0   i         i=2  i
+
+     The coefficients, b , r and s are obtained from p, q by:
+                        i
+
+       b  = b  = 0  and  b = a   - p b   - q b     for 2 <= i <= n + 2  (1)
+        0    1            i   i-2     i-1     i-2
+
+     Then  r = b     and  s = b    + p b        (2)
+                n+1            n+2      n+1
+
+     Coefficients b , r and s are functions of (p,q), we seek (p,q) such as
+                   i
+
+                   r(p,q) = s(p,q) = 0          (2 bis)
+
+     The Newton's method allows determining one root of system (2 bis).
+
+     By differential calculus, it can be linearized as follows:
+
+                   | r + delta p dr/dp + delta q dr/dq = 0
+                   |                                          (3)
+                   | s + delta p ds/dp + delta q ds/dq = 0
+
+     Here d sign means partial derivative sign.
+
+     So after testing (p,q), we'll test (p + delta p, q + delta q) where
+
+     (delta p, delta q) is a solution of linear system (3).
+
+
+     To calculate dr/dp, you just have to to calculate the db /dp terms by
+
+     recursion, derivating the formula  (1):
+  
+                                 db        db
+                                   i-1       i-2
+              db / dp = b    - p ----- - q -----
+                i        i-1      dp        dp
+
+     So if we put c  = db /dp  for 0 <= i <= n+2, the series c  is defined
+                   i     i                                    i
+
+     by the formulas:
+
+                     c  = c  = 0,  c  = -b    - p c    - q c
+                      0    1        i     i-1      i-1      i-2
+
+     According to formulas (2):   dr/dp = c    and ds/dp = -q c
+                                           n+1                n
+
+    Beside, by derivating formulas (1), we can notice that db /dq = c
+                                                             i       i-1
+    for each i, so:
+
+             dr/dq = c    and    ds/dq = c    + p c
+                      n                   n+1      n
+
+    The linear system (3) can be easily solved by using Cramer's formulas:
+
+                   2
+              d = c    - c (c    + b   )
+                   n+1    n  n+2    n+1
+
+              c b    - b    c               -b   (q c  + p c - b    c
+               n n+2    n+1  n+1              n+1    n          n+2  n+1
+         dp = ------------------  and  dq = ----------------------------     
+                     d                                  d
+
+   So we define a series of points (p, q), converging towards a point (p,q),
+
+   such as x^2 + p x + q is a divisor of f(x). Practically, we stop the
+
+   iterations when K=100 and we use the stopping criterion:
+
+                   |delta p| + |delta q|
+                   --------------------  <  eps
+                         |p| + |q|
+
+   with eps = 1E-3, for instance.
+
+   The equation x^2 + p x + q is then solved in the complex domain by usual
+
+   formulas. A first error approximation is given by |f(x0)/f'(x0)| according
+   to Newton's formula.
+                                                  n     n-i
+   The program continues with the new polynomial Sum b x   , if the degree is
+                                                 i=2  i
+   greater then 3.
+
+
+   B. Programming Technique
+      ---------------------
+
+   The Bairstow program consists of several modules:
+
+   1) seek p and q as described above.
+
+   2) solve a 2nd degree equation (real and complex roots).
+
+   3) calculate |f/f'| by using a modified Hörner's method to deal with
+      complex numbers. 
+
+
+   C. Example
+      -------
+
+   Let us seek all the real or complex roots of polynomial:
+
+        6       5       4      3      2
+       x - 127 x + 215 x + 28 x - 39 x + 20 x - 15 = 0
+
+   The program gives the following results:
+
+                    roots                  error approximation
+        --------------------------------------------------------
+        0.03989619444 + i 0.44667717900         1E-11
+        0.03989619444 - i 0.44667717900         1E-11
+          0.5238337918                          1E-6
+         -0.6457525530                          1E-5
+        125,2821089                             1E-8     
+          1,760014124                           1E-6
+
+   It is not likely that all decimals are correct.
+
+   Let us verify the first real root by applying the Hörner's rule and checking
+   the result error (not explained here):
+
+              x          f(x)       error
+         -------------------------------------
+          0.523833     -1.6E-4      5E-9
+          0.523834     -8.5E-5      5E-9
+          0.523835     -7.0E-6      5E-9
+          0.523836      7.1E-5      5E-9
+
+   So the first real root is r3 = 0.523835 +/- 1E-6.
+
+   Accuracy may be increased by using Newton's methode or this program with
+   eps = 1E-9 (instead of 1E-3).
+
+   For the other three real roots, we found:
+
+   -0.64575 +/- 1E-5,  125.2821089 +/- 1E-7 and 1.760013 +/- 1E-6.
+
+   It is more difficult to approximate the error for the complex roots.
+
+   Our estimation is:   0.0398962 +/- i 0.4466718  +/- 1E-7 .
+
+
+   From [BIBLI 06].
+ -----------------------------------------------
+ End of file bairstow.txt
+    

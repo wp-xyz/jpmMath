@@ -1,0 +1,235 @@
+
+                 EXPLANATION FILE FOR PROGRAM STEEPDS
+                 ====================================
+
+
+  Optimization by Steepest Descent
+  --------------------------------
+
+    1. Introduction
+       ------------ 
+
+    ln this chapter, we will briefly examine how the maxima and minima of many 
+  functions can be found by using the method of sieepest descent. The ability
+  to determine the extremes of functions is essential to the process of optimi-
+  zation. For example, given a mathematical model for production costs and
+  sales, the analyst can, in principle, maximize the return on investment by
+  establishing the trade-off between advertising expenses, production run
+  length, and so on. Under this criterion (ROI), the operation would be conside-
+  red optimized. 
+
+    Another example is related to the adjustment of the properties of materials.
+  By establishing how the individual chemical and mechanical properties depend
+  on a particular additive, and by placing relative values on those properties
+  (i.e., weighting), an optimum composition for a particular task can be disco-
+  vered. 
+
+    There are several key elements in the optimization procedure. First, an ob-
+  jective function must be established. This is the mathematical construction to
+  be maximized or minimized. ln many cases, the most difficult part of the enti-
+  re problem is the formulation of this expression. How does one include subjec-
+  tive criteria such as color and safety in an equation that is also meant to
+  involve strength and cost? ln any case, after assuming that su ch a function
+  exists, the next step is to choose a method for solution.
+   
+    If there is only one parameter to be manipulated, th en the problem is rea-
+  sonably simple. The derivative of the function can be calculated (or numeri-
+  cally estimated), and one of the root-seeking algorithms applied. If the 
+  function contains several parameters to be optimized across, however, the pro-
+  blem becomes much more difficult, and is the subject of many texts. ln this
+  chapter, only one of the most elementary algorithms will be presented. 
+
+    The object function is z(x,y). The goal is to find xm and ym. so that z is a
+  maximum.
+
+  The issue involves two simple questions:
+
+    1) Given that we are at position (x,y), which way to the maximum? 
+    2) Given that we know which way, how Far should we go? 
+
+  The first question is usually relatively easy to answer. The answer to the se-
+  cond question is actually what determines the success of the algorithm. We
+  will start with the first question--the direction. 
+
+    Clearly it wouId not be productive to change positions in such a manner that 
+  the movement was only along a z = constant contour. Rather, the best direction
+  of travel is that in which the contour values change most quickly. If we defi-
+  ne the unit vectors in the x and y directions as i and j, respectively, it can
+  be shown in vector notation that the desired direction is 
+
+                                                ^           ^
+                     g = GRAD[z(x,y)] = (dz/dx) i + (dz/dy) j     (8.1.1)
+
+                                                  ^    ^
+  If we further define the (x,y) position as r = xi + yj, then the suggested
+  iteration equation is 
+
+                       r   = r  + c g                             (8.1.2)
+                        i+1   i      i
+
+  This vector equation simply states that the new position (ri+l) is obtained by
+  starting at the most recent location (ri), and moving sorne distance in the
+  direction of the gradient. The question now is the distance, or the value, of
+  c. That will be considered in the next section. 
+
+    It is beyond the scope of this chapter to present subroutines for advanced
+  optimization techniques. However, two of the classic approaches should at
+  least be mentioned: the generalized Newton-Raphson method, and the Marquart
+  composite algorithm. As you will see, they are direct extensions of the
+  steepest-descent concept. 
+
+    The generalized Newton-Raphson iteration scheme can be written in vector no- 
+  tation as 
+
+                        r   = r  + H GRAD(z) == ri + Hg           (8.1.3)
+                         i+1   i
+                                              
+                                             d²z -1
+  In this notation, H is the Hessian matrix [---]  . For two dimensions, this
+  matrix is                                  dx²
+
+                             | d²z    d²z |-1
+                             | ---   ---- |
+                        -1   | dx²   dxdy |
+                       H   = |            |
+                             | d²z   d²z  |
+                             | ----  ---  |
+                             | dydx  dy²  |
+   
+  Observe that the Hessian matrix automatically answers the question of dis-
+  tance. 
+
+    The method of steepest descent can be combined with the generalized Newton- 
+  Raphson form to give Marquart's algorithm:
+
+                       r    = r  + [cI + H] g              (8.1.5)
+                        i+1    i             i
+
+  In this equation, I is the identity matrix, which in two dimensions is
+
+                                | 1 0 |
+                            I = |     |
+                                | 0 1 | 
+   
+  The Marquart procedure combines the directional properties of the steepest-
+  descent procedure (which are useful far from the optimum) with the rapid con-
+  vergence of Newton-Raphson iteration near the peak. However, the Hessian
+  matrix calculation requires you to provide either analytical forms for the
+  second-order partial derivatives, or finite difference approximations. ln ei-
+  ther case, the procedure can be both slow and subject to considerable round-
+  off error. We will therefore limit our attention to the more elementary form
+  of steepest descent. 
+
+
+    2. Steepest Descent with Functional Derivatives
+       --------------------------------------------
+
+    Although the gradient supplies information on the preferred direction of
+  travel, its magnitude is of no help in determining the length of the step.
+  Therefore, it is appropriate to normalize the gradient vector and restate the
+  iteration equation as
+                                  kg
+                     r    == r  + ---                        (8.2.1)
+                      i+1     i   |g|
+   
+  In two dimensions, the vector equation is equivalent to
+
+                                           dz/dx
+                     x    == x  + k ---------------------1/2
+                      i+1     i     [(dz/dx)² + (dz/dy)²]
+
+                                           dz/dy
+                     y    == y  + k ---------------------1/2
+                      i+1     i     [(dz/dx)² + (dz/dy)²]
+
+
+  We will now concentra te on a means for choosing a value for k at each step in
+  the iteration. 
+
+    Consider the one-dimensional situation: three sequential evaluations using
+  the same k value were made, and the sequence yI < y2 < y3 is observed. The
+  iteration is clearly heading in the right direction. However, the maximum may
+  be far off, and sorne form of acceleration should be used in the next step 
+  (e.g., a larger value for k). We will choose the following adjustment: 
+
+                 If (Y3 - Y2 )/(y2 - y1) > 0 then k --> 1.2 k
+
+  However, if y3 < y2, then the maximum has been passed; k is too large.The rea-
+  sonable thing to do is to halve k (k --> k/2), not update the positions, and
+  try again.
+
+    The choice of the acceleration (1.2) and deceleration (0.5) parameters is
+  not completely arbitrary. The 0.5 deceleration factor is based on the inter-
+  val-halving algorithm discussed in another Chapter. It is possible for the
+  estima tes to bracket the peak, and by reducing k by 50 %, the uncertainty in
+  the location optimum is reduced just as with the bisection method. However, in
+  practical situations this will not occur exclusively, and frequent increases
+  in k (1.2x) can be expected. Therefore, convergence is usually slower than
+  with the bisection algorithm. The 1.2 factor is chosen as a compromise. If it
+  were sqrt(2) or greater, the algorithm could become unstable. If it were only
+  slightly greater than unity, then the acceleration process would be inhibited.
+  You may wish to experiment with this choice in the program Steepds.
+   
+    The remaining uncertainty is the initial value for k. This is very much de- 
+  pendent on the specific problem being treated. ln general, k should be roughly
+  a fraction of the size of the error in the initial guess. 
+
+    The above ideas have been incorporated into the subroutine STEEPDS, with a
+  function evaluation routine for y = sin xl + 2 cos x2 - sin x3 and its deri-
+  vatives, and a demonstration program. 
+
+    The inputs to STEEPDS are the initial estimates for the parameters, X(Z); 
+  the initial step size, K; the error criterion, E; the number of variables, L;
+  and the maximum number of steps, M. A sample run of this program is shown. The
+  object is to optimize y. The maximum value that y can take on is 4. This
+  occurs at xl = pi/2 + 2mlpi, x2 = 2m2pi, and x3 = 3pi/2 + 2m3pi (ml, m2, m3 =
+  0, ±1, ±2, ... ). The iteration homed in on the values corresponding to ml =
+  m2 = 0 and m3 = -1. The calculated results and the "true" values are shown
+  below:
+
+        Parameter       Calculated Value        True Value      Error
+        ---------       ----------------        ----------      -----
+           xl               1.5707964            1.5707963    0.0000001
+           x2              -0.00062712           0.0         -0.00062712
+           x3              -1.5707963           -1.5707963    0.0000000
+
+  The calculated and the true values differ because of round-off error. Even
+  though the procedure is iterative, there are many ways to numerically achieve
+  the maximum value for y, which is four. This is the same problem as the one we
+  observed earlier in finding the roots of y = x5 + 5X4 + 10x3 + 10x2 + 5x + 1.
+  There were many values of x near -1 that gave y == O. ln this case, the values
+  found give 3.9999996 as the maximum, which is very close to the true value of
+  4. 
+    There are two ways in which to view this problem. First, if the goal is to
+  maximize profits, then the result that a small range of xi values lead to the
+  same optimum is not significant; the maximum value is the goal. Second, if the
+  objective is to accurately locate the position of the optimum, then a funda-
+  mental difficulty exists. Because the partial derivatives must necessarily be
+  zero at the optimum, small changes in the parameters have an even smaller in-
+  fluence on the maximum value calculated for the objective function. But we are
+  using su ch changes to locate the optimum! In effect, the procedure is poorly
+  conditioned near the maximum.
+
+    The low accuracy of the calculated parameters is characteristic of many op- 
+  timization procedures (e.g., least-squares fitting of experimental data), and
+  is usualIy not a problem in practical situations.
+   
+    The main precautions with respect ta using STEEPDS involve the choices for 
+  the input parameters. Because many functions have severallocal maxima, star-
+  ting the iteration far from the largest maximum can result in convergence of
+  one of the local extremes. AIso, if the initial value for K is too large, the
+  iteration may show some erratic behavior before closing in on a local maximum.
+  There is often much trial and error associated with optimization. ln any case,
+  you should be cognizant of the extraneous optima introduced by round-off er-
+  ror, and of the possibility of local maxima. 
+
+    STEEPDS naturally seeks the location of the maximum of a function. If the 
+  position of the minimum is desired instead, then a small modification is re-
+  quired. If the minimum is negative, then STEEPDS should be used with - y
+  instead of y as the objective function. If the minimum is positive, then the
+  function to optimize is 1/ y. We will examine the latter alteration in
+  another section.
+
+  From [BIBLI 01].
+--------------------------------------------
+End of file steepds.txt

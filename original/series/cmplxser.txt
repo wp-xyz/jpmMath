@@ -1,0 +1,43 @@
+                EXPLANATION FILE OF PROGRAM CMPLXSER
+                 ====================================
+
+
+  Complex Series
+  --------------
+
+    Once the coefficients of the approximating polynomial of a function f(x)
+
+  have been found, the results can easily be extended into the complex plane 
+
+
+       P(Z) = a  + a Z + a Z^2 + ...    where Z = x + iy    (2.9.1) 
+               0    1     2
+
+  This can be accomplished by employing a few of the complex algebra subroutines 
+
+  in the first volume of BASIC Scientific Subroutines. The result is the complex 
+
+  evaluation program CMPLXSER. This program uses three other routines concerning
+
+  complex numbers.
+   
+    The inputs to CMPLXSER are the degree of the polynomial (M), the corres-
+
+  ponding coefficients [A(i); real), and the real and imaginary parts of the
+
+  argument (X and Y respectively). The result of the summation is returned in
+
+  two parts, a real (Z1) and an irnaginary (Z2) component.
+   
+    As you can see from the examples given, program CMPLXSER is easy to use and
+
+  has good round-off error properties.
+   
+    CMPLXSER can be employed to very effectively extend the application of the 
+
+  computer to the evaluation of functions having cornplex arguments.
+
+
+  From [BIBLI 01].
+------------------------------------------------
+End of file Cmplxser.txt

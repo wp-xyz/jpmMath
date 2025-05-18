@@ -1,0 +1,185 @@
+
+	                  EXPLANATION  FILE FOR PROGRAM SYSMAT
+			  ====================================
+
+	
+	Program Sysmat solves a linear system AX = B or can only calculate the inverse
+	of the square matrix A(N,N) or its determinant. This program (from BIBLI [13])
+	is organized to minimize the used memory space.
+
+	1. Numerical Method
+           ----------------
+
+	Let be A, square matrix of size N x N, and B, another matrix of size N x M.
+	We want to solve equation A X = B, where X is a matrix of unknowns of size N x M
+	(this allows simultaneously solving several right side data).
+	
+	To minimize the used memory space, when calculations terminate, the inverse of A
+	will be stored in place of A, and the solution matrix X = A^-1 B in place of B.
+	
+	We use here the pivotal Gauss-Jordan method with choice of greatest available
+	pivot at each step.
+	
+	The principle of that method is to make a series of transformations on A matrix,
+	lambda1, lambda2,...,lambdan, so that A becomes the unity matrix.
+	
+	So after k-1 transformations, the A matrix becomes:
+	
+		| 1 0 ... 0 | a'1k ... a'1n   |
+		| 0 1 ... 0 | a'2k ... a'2n   |
+		| --------- | --------------- |
+		| 0 0 ... 1 | a'k-1k.. a'k-1n |
+		| --------------------------- | = lambda    lambda    ... lambda  A
+		| 0 0 ... 0 | a'kk ... a'kn   |         k-1       k-2           1
+		| 0 0 ... 0 | --------------- |
+		| --------- | --------------- |
+		| 0 0 ... 0 | a'nk ... a'nn   |  
+
+	The inverse of A is then easily obtained by:
+
+		Inv(A) = lambda  lambda    ... lambda  I    (I = unity matrix)
+		               n       n-1           1
+
+	and the solution matrix X is obtained by:
+
+		X = lambda  lambda    ... lambda  B
+		          n       n-1           1
+
+                     (k)      (k) 
+	Let us note a    and b    the elements of matrices A and B after the k th 
+	             ij       ij
+	
+	transformation k=0 means initial A and B matrices).
+	
+	This lambda  transformation makes following operations:
+                   k
+
+                 (k)     (k-1)     (k-1)  (k-1)    (k-1)
+	1)	a    =  a      -  a      a      / a
+	         ij      ij        ik     kj       kk
+
+		for  | i=1,...,k-1, k+1,...,n
+		     | j=k,...,n
+			 
+                 (k)     (k-1)     (k-1)  (k-1)    (k-1)
+	2)	b    =  b      -  a      b      / a
+	         ij      ij        ik     kj       kk
+
+		for  | i=1,...,k-1, k+1,...,n
+		     | j=1,...,m
+
+                 (k)     (k-1)
+	3)	a    =  a
+	         ij      ij
+
+		for  | i=1,...,n
+		     | j=1,...,k-1
+
+                 (k)     (k-1)    (k-1)
+	4)	a    =  a      / a
+	         kj      kj       kk
+
+		for  j=1,...,n
+
+                 (k)     (k-1)    (k-1)
+	5)	b    =  b      / a
+	         kj      kj       kk
+
+		for  j=1,...,m
+
+        For each step we must divide by a pivot, a  ; To minimize round up errors,
+                                                  kk
+        at each step we choose as pivot the greatest element in sub-matrix:
+
+
+                | a'   ... a'   |
+                |   kk       kn |
+                | ------------- |
+                | a'   ... a'   |
+                |  nk       nn  |
+
+        and we make the necessary line and column permutations to bring this element
+        in k th position on the main diagonal. Then we must "rearrange" the obtained
+        matrix to take into account these permutations.
+
+
+        2. Programming technique
+           ---------------------
+
+        So the calculation is made of n steps (k=1,...,n).
+
+        As we want to store Inv(I) in place of A, and X in place of B, the used
+        algorithm is rather complex and we advise the reader to check it with a
+        simple example, for instance of size n=3.
+
+        Let us note li and ci the lines and columns of A and B. At step k, we do the
+        following operations:
+
+        1) - choose a pivot: we take the greatest elemnt (in absolute value) a ij,
+             where i,j = k,...,n.  Let be a      this pivot stored in variable PV.
+                                           ik jk
+
+           - update the determinant DET = DET * S * PV, where S depends on permutations
+             to make:
+                               S = Sl * Sc with  | Sl =  1 if ik = k
+                                                 | Sl = -1 if ik <> k
+                                                 |
+                                                 | Sc =  1 if jk = k
+                                                 | Sc = -1 if jk <> k
+
+           - store ik and jk in two vectors Pl and Pc:   Pl(k)=ik, Pc(k)=jk
+
+        2) Locate pivot to position (k,k) by:
+
+                  a) exchange lines in A and B:  lk <--> l ik
+
+                  b) exchange columns in A:  ck <--> c jk
+
+        3) store column k of matrix A in vector Cs:
+
+                 Cs(i) = a ik (i=1,...,k-1,k+1,...,n)
+                 Cs(k) = 0
+
+        4) replace column k of A by a ik = delta ik
+
+                 delta ik = 1 if i=k, delta ik = 0 if i <> k
+
+        5) replace lines k of A and B by l / PV
+                                          k
+
+        6) transform the other lines of A and B as follows:
+
+                 l  --> l  - Cs(j) l    (j=1,...,k-1,k+1,...,n)
+                  j      j          k
+
+        7) rearrange A and B matrices to take into account the made permutations:
+
+           - Exchange lines of A and B in order:
+
+                      l    <-->  l
+                       n          Pc(n)
+
+                      l    <-->  l
+                       n-1        Pc(n-1)
+
+                      ---         ---
+
+                      l    <-->  l
+                       1          Pc(1)
+
+           - Exchange columns of A in order:
+
+                      c    <-->  c
+                       n          Pl(n)
+
+                      c    <-->  c
+                       n-1        Pl(n-1)
+
+                      ---         ---
+
+                      c    <-->  c
+                       1          Pl(1)
+
+
+---------------------------------------------------------------------------------------
+End of file sysmat.txt

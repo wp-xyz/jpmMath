@@ -1,0 +1,199 @@
+
+                EXPLANATION FILE OF PROGRAM SIMPLEX
+                ===================================
+
+
+    LINEAR PROGRAMMING
+    ------------------
+
+
+    The Simplex Method
+    ------------------
+
+
+  1.  Kinds of problems
+      -----------------
+
+    The goal of linear programming is to optimize an economic function, linear
+  with respect to independant variables and subjected to constraints.
+
+    So we can solve all the problems that can be formulated by a function to be
+  optimized, with constraints.
+
+    For example:
+
+    - determine the best distribution of product components.
+
+    - dispatch machine working times
+
+    - dispatch investments in the best way.
+
+    - dispatch production quantities.
+
+    - Maximize benefits by optimizing saling prices.
+
+    - Minimize production costs, etc.
+
+
+  2. The Simplex Model
+     -----------------
+
+    We must maximize (or minimize) an economic function, EF:
+
+       EF = a x  + a x  + ... + a x
+             1 1    2 2          n n
+
+  where variables, x1, x2 ... xn are independant and subjected to constraints,
+  also linear with respect to these independant variables.
+
+    Here is an example of linear constraint:
+
+       a  x  + a  x  + ... + a  x  <= b
+        i1 1    i2 2          in n
+
+  where a   are real constants and b  are real right-side constants.
+         ij                         j
+
+    When we want to maximize (or minimize) an economic function for which cons-
+  traints are defined by upper limits, and when the independant variables are
+  non-negative, we choose a particular method of linear programming, called the
+  "Simplex" method.
+
+    This latter allows obtaining the best solution after some iterations, and
+  gives the optimal value of EF with the corresponding values of the independant
+  variables, fulfilling all the constraints.
+
+
+  3. Particular Cases
+     ----------------
+
+    The theory of the Simplex method is beyond the scope of this explanation
+  file, we will only give a few particular applications, noting peculiarities
+  that may crash the Simplex program:
+
+    3.1 More than one solution
+        ----------------------
+
+    It may happen that two variables interchange between them selves, causing an
+  endless loop and no optimal solution is found.
+
+    3.2 The n-uplet is not a solution
+        -----------------------------
+
+    If the solution (x1, x2 ... xn) = (0, 0 ... 0) is not an obvious solution of
+  the problem, you just have to add a supplementary x    to fulfill the null
+  condition.                                         n+1
+
+    3.3 Modify the constraints
+        ----------------------
+
+    Sometimes we want a constraint to have a strict value without being lower
+  than a given value. As before, for this kind of problem, a supplementary va-
+  riable will be necessary.
+
+    3.4 Contracditory variables
+        -----------------------
+
+    Again, a supplementary variable can often solve the problem.
+
+    3.5 Minimization
+        ------------
+
+    This is taken into account in program Simplex. You just have to take -EF
+  instead of EF and then solve normally.
+
+    3.6 Dual problems
+        -------------
+
+    Let us consider a maximization problem with three independant variables:
+
+                    | MAX EF = a1 x1 + a2 x2 + a3 x3
+                    |     a11 x1 + a12 x2 + a13 x3 <= b1
+                    |     a21 x1 + a22 x2 + a23 x3 <= b2
+                    |     a31 x1 + a32 x2 + a33 x3 <= b3
+
+    This the "primal" form; We can define the "dual" form as follows:
+
+                    | MIN EF = b1 x1 + b2 x2 + b3 x3
+                    |     a11 x1 + a12 x2 + a13 x3 >= a1
+                    |     a21 x1 + a22 x2 + a23 x3 >= a2
+                    |     a31 x1 + a32 x2 + a33 x3 >= a3
+
+    The two problems have the same solutions. This a way to transform a maximi-
+  zation problem into a minimization one and inversely.
+
+    Concerning the economic meaning of duality, this is still under discussion.
+
+
+  4. Example
+     -------
+
+    4.1 Wording
+        -------
+
+    A builder of houses can make 3 kinds of them with various profits: 15000$,
+  17000$ and 20000$.
+
+    Each kind must respect following conditions:
+
+    1) for supply reasons, the number of houses of kind 2 built each month must
+       not exceed the number of kind 3 by more than two units.
+
+    2) for staff reasons, the buider can make each month up to 5, 5 and 3, res-
+       pectively of kinds 1, 2 and 3.
+
+    3) for organization reasons, the builder can make up to 8 houses monthly of
+       kinds 1,2 and 3, respectively in the proportions of 3, 2 and 1.
+
+    The builder, having these data, wants to maximize his monthly profit by
+  knowing the number oh houses of each kind to build monthly.
+
+
+    4.2 The Simplex model
+        -----------------
+
+    Calling X1, X2, X3 the number of houses of each kind built each month, we
+  want to maximize
+
+        EF = 15000 X1 + 17000 X2 + 20000 X3
+
+  let it be
+
+        MAX [EF] = 15 X1 + 17 X2 + 20 X3
+
+
+    Concerning the constraints, we will take building amounts for one month:
+
+    So we have:
+
+    - supply conditions  ==>   0 X1 + 1 X2 - 1 X3 <= 2
+
+    - staff conditions   ==>   0.2 X1 + 0.2 X2 + 0.3333 X3 <= 1
+
+    - organization conditions  ==>   3 X1 + 2 X2 + 1 X3 <= 8
+
+
+    Finally, we have the Simplex problem:
+
+              | MAX [EF] = 15 X1 + 17 X2 + 20 X3
+              |                       X2 -    X3 <= 2
+              |             3 X1 +  3 X2 +  5 X3 <= 15
+              |             3 X1 +  2 X2 +    X3 <= 8
+
+    Program Simplex gives the results:
+
+              0.3333 first kind
+
+              3      second kind     (for one month) 
+
+              1      third kind
+
+              EF = 76
+
+    The maximum monthly profit is 76 000 $.
+
+ 
+  From [Modèles pratiques de décision Tome 2, By Jean-Pierre Blanger,
+        PSI Editions, France, 1982].
+---------------------------------------------
+End of file Simplex.txt

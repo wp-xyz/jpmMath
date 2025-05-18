@@ -1,0 +1,190 @@
+
+
+                 EXPLANATION FILE FOR PROGRAM STEEPDA
+                 ====================================
+
+
+  Steepest Descent with Approximate Derivatives
+  ---------------------------------------------
+
+    The method of steepest descent is based on the obtaining of directional
+  information from the gradient. ln the subroutine presented in file Steepds,
+  the gradient was supplied in the form of partial derivatives by the function
+  subroutine. ln many cases, however, such derivatives are not available in ana-
+  lytical form, and so numerical approximations must be used. ln this section, a
+  steepest-descent subroutine that only requires the function itself will be gi-
+  ven; the partial derivatives are estimated using finite difference approxima-
+  tions. 
+
+    We will take as an example the two-dimensional problem of finding the max- 
+  imum of z(x,y). The iteration equations are 
+
+                                           dz/dx
+                     x    == x  + k ---------------------1/2
+                      i+1     i     [(dz/dx)² + (dz/dy)²]
+
+                                           dz/dy
+                     y    == y  + k ---------------------1/2
+                      i+1     i     [(dz/dx)² + (dz/dy)²]
+
+
+  The length of the next step in the procedure is k.lf we use the partial deri-
+  vatives that took the iteration from step i - 1 to step i to project ahead by
+  another one-half step, then a new set of derivatives that are evaluated rough-
+  ly in the middle of the next step can be calculated. These derivatives can be
+  employed to move from position (xi, yi) to (xi+1, yi+l). This procedure is
+  outlined mathematically below. 
+
+    We will define the finite difference derivatives calculated at step i to be
+
+                           z(xi + k Dx(i-1)/2,yi) - z(xi,yi)
+                   D (i) = ---------------------------------      (8.3.1a)
+                    x                k Dx(i-1)/2
+
+                           z(xi,yi + k Dy(i-1)/2) - z(xi,yi)
+                   D (i) = ---------------------------------      (8.3.1b)
+                    y                k Dy(i-1)/2
+
+  The new (x,y) position is then 
+                                          Dx(i)
+                   x    = x  + k ---------------------1/2         (8.3.2a)
+                    i+1    i     {[Dx(i)]² + [Dy(i)]²}
+
+                                          Dy(i)
+                   y    = y  + k ---------------------1/2         (8.3.2b)
+                    i+1    i     {[Dx(i)]² + [Dy(i)]²}
+
+
+    A generalized form for these equations is incorporated into the steepest-
+  descent program STEEPDA. The function examined as an example is the same as
+  that in the program STEEPDS. STEEPDA operates in much the same manner as
+  STEEPDS; the input and output variable formats are identical. Because of the
+  numerical approximation to the derivatives, which is initially crude because
+  of the large step size, the iteration bounces around. However, it soon settles
+  down and homes in on a solution. A comparison of the calculated position of
+  the local maximum and the corresponding true values is given below:
+
+        Parameter       Calculated Value        True Value      Error
+        ---------       ----------------        ----------      -----
+           xl               1.5707419            1.5707963   -0.0000544
+           x2              -0.00048635           0.0          0.00048635
+           x3               4.7121862            4.7123890   -0.0002028
+
+  Note that although the maximum value (4) was closely approximated (3.9999998), 
+  the calculated location is in considerable error. This was also observed in
+  the previous section, and can be attributed to the partial derivatives being
+  small near the peak.
+   
+    This same problem occurs with the least-squares curve fitting of experimen-
+  tal data. There is a range of values for the calculated coefficients that gi-
+  ves nearly the same standard deviation, and it is difficult for any numerical
+  procedure to find the set of coefficients exactly. Therefore, you should be
+  warned against placing too much faith in the precision of the coefficients
+  calculated. You must also be aware that .the location of a local maximum and
+  not the position of the global optimum may have been found. We will discuss
+  this problem in more detail later. 
+
+    The steepest-descent algorithm is very flexible in terms of the types of
+  optimizations that can be performed. One particularly important category is
+  the minimization of a positive objective function. Two examples--the standard
+  deviation and the min-max fit--are briefly discussed below. 
+
+    The formulation for the standard deviation problem is simple. The function 
+  subroutine is used to calculate the variance between the data (or function) to
+  be fitted and the parametric equation to be used for the fitting. Let this va-
+  riance be y. Before returning to the main program from the function subrou-
+  tine, invert y; return l/y. The steepest-descent routine will then attempt to
+  maximize l/y, and thereby minimize the variance (or standard deviation). 
+
+    It is the author's experience that up to three least-squares coefficients
+  can usualIy be reliably determined in this manner. Sometimes the procedure can
+  be extended beyond that. ln particularly difficult situations, it is sometimes
+  necessary to build towards the final set of parameters one step at a time. For
+  exarnple, in polynomial least-squares fittings, the following procedure is
+  recommended: 
+
+    1) Start by fitting the most important coefficient, say x1, by itself. Use
+       an initial guess somewhere near the expected value, with a step size of 
+       k = 0.1. 
+
+    2) Proceed on to estimating x1 and x2 by starting with the value calculated 
+       above for x1, and k = 0.01. 
+
+    3) Use x1 and x2 from the previous step as initial values, k = 0.001 and
+       find (xI, x2,. x3). 
+
+    4) And so on.
+
+  This sequence may require larger or smaller values for k than indicated above.
+  It is usually better to creep up on the (local) optimum using small values for
+  k than to bounce around by starting with a large k. 
+
+    Between each addition of a new parame ter to be fitted, a check should be
+  made as to whether or not any significant progress was made in reducing the
+  variance by the last addition of a parameter (e.g., x3). If not, then either
+  the limit of the procedure was reached, or the iteration homed in on the wrong
+  point. The advantage to using STEEPDA in this mode is that the parameters in
+  the fitting function need not appear in linear combinations as they do in po-
+  lynomial expressions. Therefore, the technique is capable of dealing with com-
+  plicated functions. 
+
+    The optimization can also be with respect to the min-max criterion. ln this
+  case, instead of calculating the variance in the function subroutine, the max-
+  imum positive and negative differences are recorded. Then, y is set equal to
+  the magnitude of the largest of the se two quantities, inverted, and returned
+  to the steepest-descent subroutine. This procedure is identical to least-
+  squares optimization except for the change in the criterion. As an example,
+  consider the min-max polynomial fitting of sin(pi/2)x over the interval -1 <=
+  x <= 1. Using STEEPDA, the single-parameter min-max fit is 
+
+                sin (pi/2) x == 1.22 x  for -1 <= x <= 1
+                 
+  (Or, sin x == 0.78x. The maximum error observed in this case is 0.22 (at x = 0
+  and x = 1). Using x1 = pi/2 and x2 = 1 - pi/2 as a new starting point, a two-
+  parameter approximation is obtained: 
+                                                   3
+                sin (pi/2) x == 1.S64l x - 0.S72S x   for -1 <= x <= 1
+                 
+  The maximum error is reduced to 0.0084. Using the above values and continuing
+  on to three parameters, the fit becomes 
+                                                   3           5
+                sin (pi/2) x == 1.S732 x - 0.6003 x  + 0.0187 x
+                 
+                for -1 <= x <= 1 
+
+  The associated maximum error in the above fit was 0.009. However, this error
+  is greater than that observed for the two-parameter fit! By starting the ite-
+  ration From another position, a much lower error maximum of 0.00014 is achie-
+  ved: 
+                                                    3              5
+           sin (pi/2) x == l.S706894 x - 0.6432330 x  + 0.0725556 x
+            
+                for -1 <= x <= 1
+
+  The coefficients in this latter approximation are similar to the min-max
+  values provided by Hastings:
+                                                    3              5
+           sin (pi/2) x == l.S706268 x - 0.6432292 x  + 0.0727102 x
+            
+                for -1 <= x <= 1
+
+  The min-max error for Hastings' approximation is 0.00011; the two fits are
+  nearly equivalent. 
+
+    This example illustra tes the basic difficulty associated with using the
+  steepest-descent method for min-max curve fitting: the iteration may home in
+  on what is early the wrong position. This problem is related to the existence
+  of several soluions to the optimization goal as stated. These solutions can be
+  true analytical maxima, artifacts of the procedure, or artificially created by
+  round-off error. 
+
+    The min-max approximation example given above illustrates the main problem 
+  associated with the steepest-descent procedure: it homes in on local maxima.
+  In the case of fitting functions and data by the min-max procedure, it is easy
+  to check the results graphicaIly; we expect to see an equal ripple-error pat-
+  tern. If the objective function is instead the variance or simply the maximum,
+  then the verification of the results is much more difficult.
+
+  From [BIBLI 01].
+---------------------------------------------------
+End of file Steepda.txt

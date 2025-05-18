@@ -1,0 +1,22 @@
+Program Description
+
+    Program to demonstrate statistical distributions
+    Calculate the F distribution for f, nu1, nu2 given
+    Statistical functions for one or two variables
+    Program to demonstrate the Gamma function
+    Calculate Incomplete Beta Function Ix(a,b)
+    Computing the means and moments of a statistical variable
+    This program calculates the statistical moments of a distribution: Mean, Variance, Skewness, etc.
+    Calculate the median value of an array with the Heapsort method
+    Data text file used by program below
+    Calculate the median value of an array without sorting
+    Calculate the mean and first third moments of a set of data Y(i)
+    Program calculate the standardized normal law probabilities (mean=0, standard deviation=1) for -37.0 <= X <= 37.0
+    Student T-Probability Law
+    Simple Linear Regression Minimizing the Sum of Absolute Deviation (SAD)
+    Normal and Inverse Normal Probability Functions
+    CHI2 and Inverse CHI2 Functions
+    Unit STATS for basic statistical Functions - NEW
+    Driver Program to test Unit STATS above - NEW
+    Evaluate probabilities by parsing a string expression and performing the implied calculations - NEW 
+

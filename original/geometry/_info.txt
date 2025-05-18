@@ -1,0 +1,10 @@
+Program Description
+
+    Calculate the 4 parameters of an arc of circle knowing two of them.
+    Reduction of conicals of equation: ax^2+2bxy+cy^2+2dx+2ey+f=0
+    Seek the equation of a conical passing through five points
+    Position of planets (ascent and declination)
+    Calculate the internal surface of a polygon defined by n points
+    Given three side or angle elements of a triangle out of six, this program will determine the missing elements and calculate the surface.
+    Draw the Euler's Circle of a Triangle ABC NEW
+    Explanation file of program above. 

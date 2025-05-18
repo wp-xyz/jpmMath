@@ -1,0 +1,19 @@
+Program Description
+
+    Calculate beam deflection for four different support/loading systems
+    Use Runge-Kutta method to solve a LRC circuit or equivalent damped mass-spring problem
+    Response of a 1 dof Mass-Spring System with damping to a sinusoidal input force
+    Response of a 1dof Mass-Spring System with viscous damping to a periodic input force: M X" + C X' + K X = F(t)
+    Frequencies and Modes of Mass-spring Systems without Damping By Transfer Method
+    Response of a N d.o.f. Mass-Spring System with Damping to a sinusoidal Force By Transfer Matrices Method
+    Frequencies and eigenmodes, masses and modal stiffnesses of a Mass-Spring undamped system represented by Motion Equation: [M] . [X]" + [K] . [X] = [0].
+    Response of a N d.o.f. Mass-Spring System with Damping to a sinusoidal Force By a Direct Method
+    Step by step solution of system [M] X" + [C] X' + [K] X = F(t) By the "Wilson-Theta" Method
+    Resonance Frequencies of a bending beam, Modal Mass and Stiffness, Deformation modes and Maximum Strain
+    Differential equations with p variables of order 1 by Runge-Kutta method of order 4 (used by program pendulum)
+    Calculate angular motion of an elementary Mass Pendulum
+    The Bouncing Ball NEW
+    EF3D: small finite elements demonstration program
+    Calculate the stresses in a unidirectional layer of a composite material, knowing deformations exx, eyy, gxy, and angle theta of fibers in x direction
+    Calculate the matrix linking the stresses to deformamations in a laminated material made of n unidirectional composite layers
+    Calculate the deformations and stresses in a laminated material made of n unidirectional composite layers, knowing the resulting imposed efforts 

@@ -1,0 +1,134 @@
+
+
+                   EXPLANATION FILE OF¨PROGRAM CONFRACT
+                   ====================================
+
+
+  Interpolation By Continuous Fractions
+  -------------------------------------
+
+    Instead of using polynomials to interpolate a continuous function f(x), we
+  can also use "continuous fractions" under the form: (v (x ) <> 0).
+                                                        k  k
+                    x-x0
+    f(x) = f(x0) + ------
+                   v1(x1) +  x-x1
+                            ------
+                            v2(x2) + ... +   x-x
+                                                n-2
+                                           ----------
+                                           v   (x   ) +  x-x
+                                            n-1  n-1        n-1
+                                                         ------
+                                                         v (x )
+                                                          n  n
+
+
+    Function f(x) passes through the n+1 points, (xi,f(xi)) and yhe coefficients
+  are obtained by the inverse divided differences formula:
+
+
+                  v (x ) = Delta[x ,...,x ] f
+                   k  k           0      k
+
+                                              x  - x
+                                               k    k-1
+                         =  ---------------------------------------------------
+                            Delta[x , ..., x   , x ]f - Delta[x ,...,x   ,x   ]
+                                   0        k-2   k            0      k-2  k-1
+                                                      
+                                                      _
+    According to the general formula, we can see that f(x0) = f(x0): to have
+  _
+  f(x1) = f(x1), we need to have:
+
+                         _                x1 - x0
+                         f(x1) = f(x0) + ---------
+                                           v1(x1)
+
+                                     x  - x
+                                      1    0
+          Hence          v (x ) = -------------  and so on...
+                          1  1    f(x ) - f(x )
+                                     1       0
+
+          Function v(x) is defined by the recursive formula:
+
+
+                         v (x) = f(x)
+                          0
+                                          x - x
+                                               k
+                         v (x) = v (x ) + -------
+                          k       k  k    v   (x)
+                                           k+1
+
+    We can manually calculate these inverse divided differences acoording to the
+  following table (pay attention to indices!):
+
+
+            x0 y0
+                  ==> [x0,x1] f
+            x1 y1               ==> [x0,x1,x2] f
+                  ==> [x0,x2] f                  ==> [x0,x1,x2,x3] f
+            x2 y2               ==> [x0,x1,x3] f
+                  ==> [x0,x3] f
+            x3 y3
+                                                 ...
+            -----               ==> [x0,x1,xn] f 
+                  ==> [x0,xn] f
+            xn yn
+
+  The terms located on the upper diagonal are:
+
+            y0, Delta[x0,x1] f, Delta[x0,x1,x2] f, Delta[x0,x1,x2,x3] f, ...
+
+      or    v0(x0), v1(x1), v2(x2), v3(x3), ...
+
+  Then the fraction is evaluated by using one of two algorithms for continuous
+  fractions.
+
+    Program Confract is implemented from the inverse divided diferences formula,
+  only storing the terms located on the upper diagonal: D(0), D(1), D(2)...D(n).
+
+  For each column, c, we calculate:
+
+            Delta[x , x , x  ... x   , x   , x ] f
+                   0   1   2      c-2   c-1   c
+
+            Delta[x , x , x  ... x   , x   , x   ] f
+                   0   1   2      c-2   c-1   c+1
+
+            ----------------------------------------
+
+            Delta[x , x , x  ... x   , x   , x ] f
+                   0   1   2      c-2   c-1   n
+
+  That is to say
+
+            D(k) = Delta[x , x , x  ... x   , x   , x ] f   (k=c,...,n).
+                          0   1   2      c-2   c-1   k
+
+  Let be
+
+            Delta[x , x , x  ... x   , x   , x ] f  = 
+                          0   1   2      c-2   c-1
+
+                                           x  - x
+                                            k    c-1
+                          -------------------------------------------------
+                          Delat[x ,x ...x   ,x ]f-Delta[x ,x ...x   ,x   ]f
+                                 0  1    c-2  k          0  1    c-2  c-1
+
+  Note that:  Delat[x ,x ...x   ,x ]f is the previous value of D(k), evaluated
+                     0  1    c-2  k
+            
+  for column, c-1.   Delta[x ,x ...x   ,x   ]f is the value of the upper diago-
+                            0  1    c-2  c-1
+
+  nal for column c-1.
+
+
+  From [BIBLI 04].
+--------------------------------------------
+End of file Confract.txt

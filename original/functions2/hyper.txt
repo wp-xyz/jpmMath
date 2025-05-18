@@ -1,0 +1,185 @@
+
+                        EXPLANATION FILE OF PROGRAM HYPER
+                        =================================
+
+
+  The Hyperbolic Trigonometrie Functions
+  --------------------------------------
+
+    The three basic hyperbolic trigonometric functions are defined as follows: 
+
+                             x   -x
+                sinh x =  ( e - e  ) / 2 		   
+
+                             x   -x
+                cosh x =  ( e + e  ) / 2    	            (4.7.1) 	   
+
+                 	 	   
+                tanh x =  sinh x / cosh x
+
+
+  They are closely related to the ordinary trigonometrie functions. If x is a
+  real number and i = sqrt(-1), then 
+
+                sin ix = i sinh x 
+
+                cos ix = cosh x                             (4.7.2)  
+
+                tan ix = i tanh x 
+
+  The direct connection between the two sets suggests that the CORDlC method
+  used for the trigonometrie functions might also be applicable to their hyper-
+  bolic relatives. In fact, the analogy is so close that, as we will see, the
+  relevant equations are almost identical!
+   
+    To probe the relationship, we will first examine the hyperbolic function
+  analogy to the rotation equations:
+   
+        x' = x cosh theta ± y sinh theta = cosh theta (x ± y tanh theta)
+                                                                         (4.7.3) 
+        y' = y cosh theta ± x sinh theta = cosh theta (y ± x tanh theta) 
+ 
+  The sign ambiguity is decided by angle theta. If theta is negative, the minus
+  sign is chosen, if posithe, the plus sign is used. Also in accordance with the
+  previous discussion, the total "rotation" (A) can be broken up into steps: 
+
+        A = w theta + w theta + ... + w theta    where w = +1 or -1     (4.7.4)
+             1     1   2     2         n     n          i
+
+  The difference in this case is that A is not limited to -pi/2 to +pi/2, but
+  rather to minus infinity to plus infinity. The net effect in the approxima-
+  tion is that roughly twice as inany pseudo-rotations are required to coyer
+  the argument range for the hyperbolic functions as were required for their
+  trigonometric counterparts.
+
+    A simple choice for the thetai values is possible:
+                                 i
+                          n-i+1
+              theta  = 1/2         for i = 1, 2,...,2n                 (4.7.5) 
+                   i 
+
+  This definition is slightly different than that employed earlier. The range
+  covered is from 2^-N to 2^N. A is thereby approximated as
+
+                          2n    Wi
+                      A = Sum -------                                  (4.7.6)
+                          i=1 2^n-i+1
+   
+  Even the required half-angle formula analogies exist: 
+
+                                       cosh theta + 1  1/2
+                      cosh theta/2 = ( -------------- )
+                                             2
+                                                                       (4.7.7)
+                                         sinh theta
+                      tanh theta/2 =   --------------
+                                       cosh theta + 1
+
+  With aIl the se direct relations, it would seem that the hyperbolic trigono-
+  metrie functions could be calculated using the modified CORDIC algorithm just
+  as easily as could the ordinary trigonometric functions. But, there are some
+  differences that make the hyperbolic CORDIC method, as implemented in BASIC,
+  highly ineffident. 
+
+    First, as was discussed earlier, the huge computational advantages of the
+  binary CORDIC algorithms are largely lost when implemented in BASIC. The re-
+  deeming quality in the trigonometrie function case was that the CORDIC algo-
+  rithm for the inverse trigonometrie functions of arcsine, arccosine, and
+  arctangent drcumvented the convergence problems of the corresponding Taylor
+  series. 
+
+    Second, COROIC approximations to the normal and inverse hyperbolic functions
+  are not required because of the definitions [equations (4.7.1)] and the fact
+  that the inverse hyperbolic trigonometrie functions are very simple to calcu-
+  late:
+   
+                          -1                  2
+                      sinh  x = ln (x + sqrt(x  + 1)
+
+                          -1                  2
+                      cosh  X = ln (x + sqrt(x  - 1)                  (4.7.8)
+
+                          -1             1 + x
+                      tanh  x = (1/2) ln ----- 
+	 	                         1 - x 
+
+    The conclusion is that the hyperbolic CORDIC method is not directly suitable
+  to computing in BASIC. However, we can use the definitions [equations (4.7.1)]
+  of these functions, along with the modified COROIC approximation to exp(x) to
+  generate the desired functions. That approach will be the subject of the re-
+  mainder of this section. The corresponding inverse hyperbolic functions will
+  be considered in the following section.
+
+    There is a potential problem associated with immediately applying equation
+  (4.7.1)-round-off error. For example, if x is near 0, the hyperbolic sine and
+  tangent relations involve finding the difference between two nearly equal num-
+  bers. This is a classic source of round-off error and should therefore be
+  avoided. For values of x that cause this occurrence, an alterna te scheme such
+  as a Maclaurin series expansion couId be used. Fortunately, for x in the vici-
+  nity of zero, a rapidly convergent series exists: 
+      
+                        sinh x = x + x^3/3! + x^5/5! + ...           (4.7.9) 
+
+  We can determine the maximum number of terms required in the expansion by exa-
+  mining how close to zero x must be before enough round-off error occurs to
+  justify switching to the series approximation. To do this, we will rewrite the
+  sinh x definition: 
+
+                        sinh x = exp(x) (1 - exp(-2x)) / 2           (4.7.10) 
+
+  For exp(-2x) < 1/2, the relative round-off error effect attributable to this
+  cause would be small to insignificant. Therefore, a reasonable and conserva-
+  tive estimate of the value of x below which the Maclaurin series should be
+  used is x = 1/2 ln 2 = 0.35.
+   
+    Table 4.7.1 shows the Maclaurin series truncation error that results when
+  using x = 1/2 ln 2. The rapid convergence is apparent.
+
+   
+                Number of Terms Kept            Relative
+                Beyond the First            Truncation Error
+               ---------------------------------------------------  
+                       1                       2 X 10-2
+                       2                       1 X 10-4
+                       3                       3 X 10-7
+                       4                       6 X 10-10
+                       5                       6 X 10-13
+                       6                       5 X 10-16
+                       7                       3 X 10-19
+                       8                       1 X 10-22
+               ---------------------------------------------------
+               Table 4.7.1 Relative truncation error in the sinh x
+                           Mac1aurin series for x = 1/2 ln 2.
+
+
+    The strategy for calculating the hyperbolic sine is therefore the following.
+  For values of x below 0.35, the Maclaurin series approximation is used. Above
+  that, equation (4.7.1) is employed. 
+
+    For calculating the hyperbolic eosine, the exponential definition is applied 
+  directly and without modification since the particular round-off error problem
+  discussed above does not exist. 
+
+    The approach to handling the potential round-off error problem for the
+  hyperbolic tangent is slightly different. The Maclaurin series for the hyper-
+  bolic tangent is not nearly as quickly convergent as that for the hyperbolic
+  sine. For this case, the identity tanh x = sinh x / cosh x is implemented.
+   
+  The subroutines associated with the above discussion are shown in program
+  Hyper. 
+
+    The routines of program Hyper are simple to access and work with. lt is
+  expected that the relative accuracy of the computed results will be limited
+  by round-off error to roughly 1O^-m+1, where m = 14 in this case. Unfortuna-
+  tely, when performing such high-accuracy calculations, it is often difficult
+  to find "true" values to compare against. Such is the case here. 
+
+    lt is not necessary to use the EXPCORD subroutine for these calculations.
+  One of the exponential-series evaluation subroutines given in the earlier
+  chapters could also have been employed. The other exponential subroutines
+  connect with the same parameter structure.
+
+
+From [BIBLI 01].
+--------------------------------------------------
+End of file Hyper.txt

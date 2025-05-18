@@ -1,0 +1,67 @@
+                    EXPLANATION FILE OF PROGRAM GCEULER
+                     ===================================
+
+ The program gceuler in C++ or Pascal draws the Euler's circle of a triangle ABC.
+
+
+ Procedure Draw_Circle3P
+ -----------------------
+
+ This procedure draws a circle passing through three given points,
+ 
+   (x1,y1), (x2,y2) and (x3,y3).
+
+ First we seek the cordinates of the circle center, (a,b) in equation:
+
+   x² + y² -2ax -2by + c = 0                        (1)
+
+ So we have to solve the following linear system:
+
+   x1² + y1² -2ax1 -2by1 + c = 0
+   x2² + y2² -2ax2 -2by2 + c = 0                    (2)
+   x3² + y3² -2ax3 -2by3 + c = 0
+
+ This is equivalent to the linear system:
+
+   2(x2-x1) a + 2(y2-y1) b = x2² +y2² -x1² -y1²     (3)
+   2(x3-x1) a + 2(y3-y1) b = x3² +y3² -x1² -y1² 	   
+
+ This linear system (3) can be easily solved by procedure System2D (see below).
+
+ Having (a,b), the coefficient c is given by any equation of system (2) and the radius r
+ is given by: r² = a² + b² - c.
+
+ Having a, b, r, we use procedure Circle of unit graph_2d to draw a circle in physical
+ coordinates, knowing center (x,y) and radius, r and procedure CroixXY to draw a cross
+ at center of the circle.
+
+ Note: this procedure will fail if the 3 points are not distinct.
+
+
+ Procedure System 2D
+ ===================
+
+ We have to solve the linear system:
+
+    a  x + b  y = c
+    a1 x + b1 y = c1
+
+ The solution is:  y = (ca1-c1a)/(ba1-ab1)
+                   x = (c-by)/a (if a<>0)
+                or x = (c1-b1y)/a1 (if a=0).
+
+ Note: this procedure will fail if (ba1-ab1) = 0.
+
+ 
+ We also use procedure Line2D to determine coefficients a, b of y=ax+b straight line 
+ passing through 2 points (x1,y1) and (x2,y2) and procedure Draw_Line to Draw line 
+ y=ax+b from (x1,y1) to (x2,y2). These are used to draw the Euler's Straight Line
+ passing through points H, G, O, O1 of triangle ABC.
+
+ To draw the Euler's circle of triangle ABC, we choose the 3 middles of sides AB, BC 
+ and AC and procedure Draw_Circle3P.
+
+
+ Jean-Pierre Moreau, Paris.
+
+   

@@ -1,0 +1,85 @@
+
+                      EXPLANATION FILE OF PROGRAM ZBRENT
+                      ==================================
+
+
+  Purpose:  Find a real root of a real function Y = F(x)
+  ------- 
+
+
+  The Van Wijngaarden-Dekker-Brent Method
+  ---------------------------------------
+ 
+    While secant and false position formally converge faster than bisection, one 
+  finds in practice pathological functions for which bisection converges more 
+  rapidly. These can be choppy, discontinuous functions, or even smooth functions 
+  if the second derivative changes sharply near the root. Bisection always halves 
+  the interval, while secant and false position can sometimes spend many cycles 
+  slowly pulling distant bounds closer to a root. Is there anything we can do to 
+  get the best of both worlds?
+
+    Yes. We can keep track of whether a supposedly superlinear method is onverging 
+  the way it is supposed to, and, if it is not, we can intersperse bisection steps 
+  so as to guarantee at least linear convergence. This kind of super-strategy 
+  requires attention to bookkeeping detail, and also careful consideration of how 
+  roundoff errors can affect the guiding strategy. AIso, we must be able to 
+  determine reliably when convergence has been achieved. 
+
+    An excellent algorithm that pays close attention to these matters was developped  
+  in the 1960s by van Wijngaarden, Dekker, and others at the Mathematical Center 
+  in Amsterdam, and later improved by Brent (reference below). For brevity, we refer 
+  to the final form of the algorithm as Brent 's method. The method is guaranteed 
+  (by Brent) to converge, so long as the function can be evaluated within the initial 
+  interval known to contain a root. 
+
+    Brent's method combines root bracketing, bisection, and inverse quadratic inter- 
+  polation to converge from the neighborhood of a zero crossing. While the false 
+  position and secant methods assume approximately linear behavior between twO prior 
+  root estimates, inverse quadratic interpolation uses three prior points to fit an 
+  inverse quadratic function (x as a quadratic function of y) whose value at y = 0 
+  is taken as the next estimate of the root x. 
+
+    Of course one must have contingency plans for what to do if the root falls outside 
+  brackets. Brent's method takes care of all that. If the three point are 
+  [a, f(a)], [b, f(b)], [e, f(e)] then the interpolation formula (cf. equation 3.1.1)
+  is
+ 
+	      [y - f(a)][y - f(b)]c 	   [y - f(b)][y - f(c)]a 
+	x = -------------------------- + -------------------------- 
+            [f(c) - f(a)][f(c) - f(b)]   [f(a) - f(b)][f(a) - f(c)]
+                                                                       (9.3.1)
+              [y - f(c)][y - f(a)]b
+          + -------------------------- 
+            [f(b) - f(c)][f(b) - f(a)] 
+ 
+    Setting y to zero gives a result for the next root estimate, which written as
+ 
+		x=b+P/Q                                                (9.3.2)
+ 
+  where, in terms of
+ 
+	   R == f(b)/ f(e),   S == f(b)/ f(a),  T == f(a)/ f(e)        (9.3.3)
+
+  we have
+ 
+           P = S [T(R - T)(c - b) - (1- R)(b - a)]                     (9.3.4)
+
+	   Q = (T - l)(R - l)(S - 1)                                   (9.3.5) 
+
+    ln practice b is the current best estimate of the root and P / Q ought to be 
+  a "small" correction. Quadratic methods work well only when the function 
+  behaves smoothly; they run the serious risk of giving very bad estimates of the 
+  next root or causing machine failure by an inappropriate division by a very
+  small number (Q ~ 0). Brent's method guards against this problem by maintaining 
+  brackets on the root and checking where the interpolation would land before 
+  carrying out the division. When the correction P / Q would not land within the 
+  bounds, or when the bounds are not collapsing rapidly enough, the algorithm takes 
+  a bisection step. Thus, Brent's method combines the sureness of bisection with 
+  the speed of a higher-order method when appropriate. We recommend it as the method 
+  of choice for general one-dimensional root finding where a function's values only 
+  (and not its derivative or functional form) are available.
+
+  From [BIBLI 08].
+-------------------------------------------------------------
+End of file Zbrent.txt
+   

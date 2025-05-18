@@ -1,0 +1,40 @@
+Program Description
+
+    Elementary operations and functions on complex numbers
+    Test program of unit above (COMPLEX2)
+    Program to demonstrate the complex root counting subroutine
+    Program to demonstrate the zero searching algorithm
+    Explanation File of program Zcircle
+    Roots of 2nd degree equation with complex coefficients
+    Roots of 3rd degree equation with complex coefficients
+    Roots of 4th degree equation with complex coefficients
+    Calculate Function Gamma with a complex argument
+    Calculate the complex exponential integral E1(z) with a complex argument
+    Calculate the Psi function for a complex argument
+    Calculate the Legendre polynomials of first kind for a complex argument
+    Calculate the Legendre polynomials of second kind for a complex argument
+    Calculate the Asociated Legendre Functions and their First Derivatives for a Complex Argument
+    Calculate the associated Legendre Functions of the Second Kind and their First Derivatives for a Complex Argument
+    Evaluation of a complex polynomial by Horner's rule
+    Program to demonstrate the Newton root subroutine in the complex domain
+    Explanation File of Program above (Znewton)
+    Find all roots of a complex polynomial using Newton's iterative formulation
+    Find all roots of a complex polynomial using Laguerre formulation in complex domain
+    Module used by program below (Bauhuber's Method)
+    This program uses Bauhuber's Method to find all real or complex roots of a polynomial of degree n
+    Program to demonstrate the complex domain Mueller's subroutine
+    Explanation File of Program above (Zmueller)
+    Pascal unit used by program below (COMPLEX1)
+    Complex numbers calculator
+    Solving a complex linear system by Gauss-Jordan
+    Solving a complex linear system AX=B by GAUSS-JORDAN Method
+    Solving a complex homogeneous linear system by Gauss Method with full pivoting
+    Solve a Complex Linear System By Gauss Method with full pivoting and correction process
+    Unit CLU used by Program below
+    Solving a complex linear system by LU decomposition
+    Inversion of a complex square matrix by LU decomposition
+    Determinant of a complex square matrix By Gauss Method with full pivoting
+    Determinant of a complex square matrix using function CFindDet NEW
+    Calculate inverse of a complex square matrix by Gauss Method with full pivoting
+    Eigenvalues and eigenvectors of a general complex square matrix using QR algorithm
+    Eigenvalues and eigenvectors of a general complex square matrix using Jacobi method 

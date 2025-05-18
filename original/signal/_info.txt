@@ -1,0 +1,27 @@
+Program Description
+
+    Input data file (test signal F(t))
+    Program to demonstrate Fast Fourier Transform
+    Program to demonstrate Fast Fourier Transform with graphic options
+    Fourier coefficients procedures used by programs below
+    Calculate the Fourier coefficients of a periodic discrete function
+    Calculate the Fourier coefficients of a periodic discrete function and draw the reconstructed signal from Fourier coefficients
+    Calculate the Fourier coefficients of a periodic analytic function
+    Program to demonstrate Butterworth highpass numeric filter
+    Program to demonstrate Butterworth highpass numeric filter with graphic options
+    All-purpose Butterworth numeric Filter
+    Input text file for program below (test signal with 200 pts)
+    Program to demonstrate lowpass and highpass Butterworth numeric filter
+    Acceleration Shock Spectrum (acc. at basis)
+    Acceleration Shock Spectrum with graphic options
+    Acceleration Shock Spectrum (speed at basis) NEW
+    Program to demonstrate the response of a 1 dof oscillator (acc) NEW
+    Program to demonstrate the response of a 1 dof oscillator (speed) NEW
+    Data input file for programs below
+    Program to demonstrate deconvolution
+    Program to demonstrate deconvolution with graphic options
+    Explanation file of program below (SMOOTH)
+    Smoothing an array of N oordinates Y's (ascending order abscissas) (with graphic option)
+    Data file for programs smooth or tsavgol
+    Smoothing an array of N ordinates Y's (ascending order abscissas) using Savitzky-Golay filter coefficients 
+

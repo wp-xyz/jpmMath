@@ -1,0 +1,133 @@
+
+                        EXPLANATION FILE OF PROGRAM APPOINT
+                        ===================================
+
+
+  APPOINTMENT METHOD
+  ------------------
+
+  1. Kinds of problems
+     -----------------
+
+    The appointment method allows calculating the best appointment configura-
+  tion among a certain amount of possible assignments. The seeked solution gene-
+  rally minimizes a cost or maximizes earnings. So the method will indicate the
+  appointmentt having the maximum efficiency for a given problem.
+
+  2. The Model
+     ---------
+
+    To determine the best appointment, the method uses a matrix of appointment
+  costs or quantities. Then by using successive iterations based on Hungarian
+  algorithm, the best appointment configuration is found.
+
+    The model is conceived to minimize a total cost; or sometimes to maximize a
+  satisfaction. In the latter case, the cost matrix must be transformed into a
+  "regret" matrix. For that purpose, we have to either to make a complement by
+  a value greater than all of the matrix elements, or to take the maximum ele-
+  ment of the matrix and to replace each elemnt by the substration, max. value
+  minus element value.
+
+    Sometimes, the number of locations to be appointed and the number of candi-
+  dates are different. Two cases may happen:
+
+    - number of locations < number of candidates
+
+    We must create fictitious locations with a zero value as in table below:
+
+                             Locations
+                            A    B    C
+                                  
+                   | 1     80   20    0     Here C values are null.
+       candidates  |
+                   | 2     75    5    0
+                   |
+                   | 3     10    0    0
+
+    - number of locations > number of candidates
+
+    In this case, we must create fictitious candidates as in table below:
+
+                             Locations
+                            A    B    C
+                                  
+                   | 1     80   20    50     Here line 3 values are null.
+       candidates  |
+                   | 2     75   10    70
+                   |
+                   | 3      0    0     0
+
+
+  3. Examples
+     --------
+
+     3.1 Wording
+
+    An employer has received four trainees to whom he asked to give a grade,
+  from 1 to 100, for their preference concerning four jobs to be appointed.
+
+    The grades are shown in the table below:
+
+                               Jobs
+                           J1   J2    J3    J4
+                                  
+                   | T1    90   80    20    40
+                   |
+                   | T2    90   70    30    80
+         trainees  |
+                   | T3    40   70    20    80
+                   |
+                   | T4    50   40    20    60
+
+    The employer's goal is to make the four job appointments so as the global
+  satisfaction of the trainees is the greatest possible. He will use the
+  appointment model.
+
+
+     3.2 Resolution
+
+    First we must change the satisfaction matrix into a regret matrix, for
+  instance if the satisfaction is 90, the regret is 100 - 90 = 10:
+
+                               Jobs
+                           J1   J2    J3    J4
+                                  
+                   | T1    10   20    80    60
+                   |
+                   | T2    10   30    70    20
+         trainees  |
+                   | T3    60   30    80    20
+                   |
+                   | T4    50   60    80    40
+
+
+  Now we can use program Appoint as follows:
+
+         Number of jobs: 4
+
+         Trainee #1      J1 = 10   J2 = 20   J3 = 80   J4 = 60
+
+         Trainee #2      J1 = 10   J2 = 30   J3 = 70   J4 = 20
+
+         Trainee #3      J1 = 60   J2 = 30   J3 = 80   J4 = 20
+
+         Trainee #4      J1 = 50   J2 = 60   J3 = 80   J4 = 40
+
+
+         Results:
+
+         Trainee #1 ==> Job #2  (S=80)
+
+         Trainee #2 ==> Job #1  (S=90)
+
+         Trainee #3 ==> Job #4  (S=80)
+
+         Trainee #4 ==> Job #3  (S=20)
+
+         Total satisfaction: 270
+
+
+  From [Modèles pratiques de décision Tome 2, By Jean-Pierre Blanger,
+        PSI Editions, France, 1982].
+---------------------------------------------
+End of file Appoint.txt

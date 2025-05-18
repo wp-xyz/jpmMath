@@ -1,0 +1,13 @@
+Program Description
+
+    Program to demonstrate the Simplex Method (basic)
+    Explanation File of Program above (Simplex) NEW
+    Program to demonstrate the Simplex Method (3 types of constraints)
+    Program to demonstrate the Appointment Method
+    Explanation File of Program above (Appoint) NEW
+    Program to demonstrate the Dantzig's Model
+    Program to demonstrate the Time P.E.R.T. Model
+    Program to demonstrate the Transport Method
+    Explanation File of Program above (Transpor) NEW
+    THE SALESMAN'S PROBLEM: Find the Best Itinerary to Visit NV Towns With the Minimum Total Distance Using the "Simulated Annealing Method" NEW 
+

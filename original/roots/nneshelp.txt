@@ -1,0 +1,611 @@
+ ***********************************************************************
+   *                                                                     *
+   *                        HELP FILE FOR NNES                           *
+   *                                                                     *
+   ***********************************************************************
+   *                                                                     *
+   *                                                                     *
+   ***  LOGICAL VARIABLES ***                                            *
+   *                                                                     *
+   *                                                                     *
+   ** ABSNEW **                                                          *
+   *                                                                     *
+   *  DESIGNATES WHETHER ABSOLUTE NEWTON'S METHOD IS TO BE USED.         *
+   *                                                                     *
+   *  DEFAULT VALUE: FALSE                                               *
+   *                                                                     *
+   *  CROSS-REFERENCE: LINESR, NEWTON                                    *
+   *                                                                     *
+   ** CAUCHY **                                                          *
+   *                                                                     *
+   *  THE CAUCHY POINT IS THE POINT AT THE MINIMUM OF THE QUADRATIC      *
+   *  MODEL IN THE STEEPEST DESCENT DIRECTION (THE DISTANCE FROM THE     *
+   *  CURRENT POINT TO THE CAUCHY POINT IS ALWAYS < THE LENGTH           *
+   *  OF THE NEWTON STEP).                                               *
+   *                                                                     *
+   *  CAUCHY:  TRUE =>  INITIAL TRUST REGION IS DISTANCE TO CAUCHY POINT *
+   *           FALSE => INITIAL TRUST REGION IS LENGTH OF NEWTON STEP    *
+   *                                                                     *
+   *  DEFAULT VALUE: FALSE (MORE AMBITIOUS; TRUE IS CONSERVATIVE)        *
+   *                                                                     *
+   *  NOT USED IN LINE SEARCH METHODS                                    *
+   *                                                                     *
+   *  CROSS-REFERENCE: LINESR,DELTA                                      *
+   *                                                                     *
+   ** DEUFLH **                                                          *
+   *                                                                     *
+   *  INITIALIZATION OF THE RELAXATION FACTOR FOR LINE SEARCHES USING    *
+   *  A MODIFICATION OF THE DEUFLHARD METHOD. THE INITIAL LAMBDA IN ANY  *
+   *  LINE SEARCH IS SET TO 1.0 USUALLY, UNLESS IT IS FOUND INTERNALLY,  *
+   *  USING DEUFLHARD'S METHOD, THAT A SMALL VALUE OF LAMBDA IS MORE     *
+   *  LIKELY WHEREUPON LAMBDA IS INITIALIZED TO 0.1.                     *
+   *                                                                     *
+   *  DEUFLH:  TRUE =>  DEUFLHARD INITIALIZATION USED                    *
+   *           FALSE => INITIAL RELAXATION FACTOR IS ALWAYS LAM0         *
+   *                    (LAM0 IS USUALLY 1.0)                            *
+   *                                                                     *
+   *  DEFAULT VALUE: TRUE                                                *
+   *                                                                     *
+   *  NOT USED IN TRUST REGION METHODS                                   *
+   *                                                                     *
+   ** GEOMS **                                                           *
+   *                                                                     *
+   *  TWO CHOICES ARE AVAILABLE WHEN REDUCING THE RELAXATION FACTOR IN   *
+   *  LINE SEARCHES OR THE TRUST REGION SIZE IN TRUST REGIONMETHODS      *
+   *                                                                     *
+   *  GEOMS:   TRUE =>  GEOMETRIC REDUCTION; FACTOR SIGMA FOR L.S .      *
+   *                                                DELFAC FOR T.R.      *
+   *                  I.E., LAMBDA(NEW) = 0.5*LAMBDA(OLD) FOR LINE       *
+   *                  SEARCHES AND DELTA(NEW) = 0.5*DELTA(OLD) FOR       *
+   *                  TRUST REGION METHODS.                              *
+   *           FALSE => SAFEGUARDED POLYNOMIAL INTERPOLATION             *
+   *                                                                     *
+   *  DEFAULT VALUE: TRUE                                                *
+   *                                                                     *
+   *  CROSS-REFERENCES: DELFAC, SIGMA                                    *
+   *                                                                     *
+   ** LINESR **                                                          *
+   *                                                                     *
+   *  DISTINGUISHES BETWEEN MAJOR SOLUTION METHODS.                      *
+   *                                                                     *
+   *  LINESR:  TRUE =>  LINE SEARCH METHOD                               *
+   *           FALSE => TRUST REGION METHOD                              *
+   *                                                                     *
+   *  DEFAULT VALUE: TRUE                                                *
+   *                                                                     *
+   ** MATSUP **                                                          *
+   *                                                                     *
+   *  SUPPRESSES MATRIX PRINTING IN DETAILED OUTPUT.                     *
+   *                                                                     *
+   *  DEFAULT VALUE: FALSE                                               *
+   *                                                                     *
+   *  CROSS-REFERENCE: OUTPUT                                            *
+   *                                                                     *
+   ** OVERCH **                                                          *
+   *                                                                     *
+   *  CHECKS FOR POTENTIAL OVERFLOWS AT KEY LOCATIONS; INSERTS           *
+   *  (+OR-)10**MAXEXP AS AN APPROXIMATION IF AN OVERFLOW IS IMMINENT.   *
+   *                                                                     *
+   *  OVERCH:  TRUE => OVERFLOW CHECKING                                 *
+   *           FALSE => NORMAL EXECUTION                                 *
+   *                                                                     *
+   *  DEFAULT VALUE: FALSE                                               *
+   *                                                                     *
+   *  CROSS-REFERENCE: MAXEXP                                            *
+   *                                                                     *
+   ** WRNSUP **                                                          *
+   *                                                                     *
+   *  SUPPRESSES PRINTING WARNINGS; USED WHEN KNOWN WARNINGS             *
+   *  WILL CLUTTER OUTPUT.                                               *
+   *                                                                     *
+   *  DEFAULT VALUE: FALSE                                               *
+   *                                                                     *
+   *  CROSS-REFERENCE: OUTPUT                                            *
+   *                                                                     *
+   *                                                                     *
+   ***  INTEGER VARIABLES ***                                            *
+   *                                                                     *
+   *                                                                     *
+   ** ACPTCR **                                                          *
+   *                                                                     *
+   *  A STEP CAN BE ACCEPTED BY THE STANDARD OBJECTIVE FUNCTION, WHICH   *
+   *  IS 1/2 {SUM OF SQUARES OF RESIDUALS}, ALONE OR BY DEUFLHARD'S      *
+   *  "NATURAL" OBJECTIVE FUNCTION AS WELL.                              *
+   *                                                                     *
+   *  ACPTCR:  1  => USE ONLY STANDARD OBJECTIVE FUNCTION                *
+   *           12 => ACCEPT STEP BASED ON EITHER CRITERION               *
+   *                                                                     *
+   *  DEFAULT VALUE: 12                                                  *
+   *                                                                     *
+   ** ITSCLF **                                                          *
+   *                                                                     *
+   *  ITERATION AT WHICH ADAPTIVE SCALING OF THE FUNCTIONS BEGINS.       *
+   *                                                                     *
+   *  ITSCLF:  0  => NO ADAPTIVE FUNCTION SCALING                        *
+   *           K  => ADAPTIVE FUNCTION SCALING BEGINS AT ITERATION K     *
+   *                                                                     *
+   *  DEFAULT VALUE: 0                                                   *
+   *                                                                     *
+   *  CROSS-REFERENCE: SCALEF                                            *
+   *                                                                     *
+   ** ITSCLX **                                                          *
+   *                                                                     *
+   *  ITERATION AT WHICH ADAPTIVE SCALING OF THE VARIABLES BEGINS.       *
+   *                                                                     *
+   *  ITSCLX:  0  => NO ADAPTIVE VARIABLE SCALING                        *
+   *           K  => ADAPTIVE VARIABLE SCALING BEGINS AT ITERATION K     *
+   *                                                                     *
+   *  DEFAULT VALUE: 0                                                   *
+   *                                                                     *
+   *  CROSS-REFERENCE: SCALEX                                            *
+   *                                                                     *
+   ** JACTYP **                                                          *
+   *                                                                     *
+   *  JACTYP DETERMINES HOW THE JACOBIAN IS TO BE EVALUATED EXPLICITLY   *
+   *  (VERSUS BEING UPDATED VIA A QUASI-NEWTON METHOD). LOWER AND UPPER  *
+   *  BOUNDS ARE CHECKED TO PREVENT VIOLATIONS.                          *
+   *                                                                     *
+   *  JACTYP:  0  => ANALYTICAL JACOBIAN (DECLARE IN EXTERNAL STATEMENT) *
+   *           1  => FORWARD DIFFERENCES                                 *
+   *           2  => BACKWARD DIFFERENCES                                *
+   *           3  => CENTRAL DIFFERENCES                                 *
+   *                                                                     *
+   *  DEFAULT VALUE: 1                                                   *
+   *                                                                     *
+   *  CROSS-REFERENCE: JUPDM                                             *
+   *                                                                     *
+   ** JUPDM **                                                           *
+   *                                                                     *
+   *  JUPDM DETERMINES WHETHER THE JACOBIAN IS TO BE EVALUATED           *
+   *  EXPLICITLY OR TO BE UPDATED VIA A QUASI-NEWTON METHOD.             *
+   *                                                                     *
+   *  JUPDM:   0 => JACOBIAN EVALUATED EXPLICITLY (SEE JACTYP FOR        *
+   *                DIFFERENCING OPTIONS)                                *
+   *           1 => BROYDEN UPDATE                                       *
+   *           2 => LEE AND LEE UPDATE                                   *
+   *                                                                     *
+   *  DEFAULT VALUE: 0                                                   *
+   *                                                                     *
+   *  CROSS-REFERENCE: JACTYP                                            *
+   *                                                                     *
+   ** MAXEXP **                                                          *
+   *                                                                     *
+   *  MAXIMUM EXPONENT ALLOWED, BASE 10, DETERMINED IN SUBROUTINE SETUP  *
+   *  BY SUBROUTINE MACHAR, E.G., 38 FOR THE VAX, 308 FOR IBM PC'S.      *
+   *                                                                     *
+   *  DEFAULT VALUE: DETERMINED INTERNALLY                               *
+   *                                                                     *
+   *  CROSS-REFERENCE: OVERCH                                            *
+   *                                                                     *
+   ** MAXIT **                                                           *
+   *                                                                     *
+   *  MAXIMUM NUMBER OF ITERATIONS ALLOWED                               *
+   *                                                                     *
+   *  DEFAULT VALUE: 100                                                 *
+   *                                                                     *
+   ** MAXNS **                                                           *
+   *                                                                     *
+   *  MAXIMUM NUMBER OF LINE SEARCH STEPS OR TRUST REGION REDUCTIONS     *
+   *  ALLOWED WHEN THE JACOBIAN HAS BEEN CALCULATED EXPLICITLY, I.E.,    *
+   *  BY FINITE DIFFERENCES OR USING A USER-SUPPLIED JACOBIAN.  THIS     *
+   *  IS USUALLY > MAXQNS, THE NUMBER OF LINE SEARCH STEPS               *
+   *  OR TRUST REGION REDUCTIONS ALLOWED AFTER THE JACOBIAN HAS BEEN     *
+   *  UPDATED USING A QUASI-NEWTON METHOD.                               *
+   *                                                                     *
+   *  DEFAULT VALUE: 50                                                  *
+   *                                                                     *
+   *  CROSS-REFERENCE: MAXQNS                                            *
+   *                                                                     *
+   ** MAXQNS **                                                          *
+   *                                                                     *
+   *  MAXIMUM NUMBER OF LINE SEARCH STEPS OR TRUST REGION REDUCTIONS     *
+   *  ALLOWED WHEN THE JACOBIAN HAS BEEN UPDATED BY A QUASI-NEWTON       *
+   *  METHOD; THIS IS DESIGNED TO PREVENT EXCESSIVE LINE SEARCH STEPS    *
+   *  IN A POOR SEARCH DIRECTION.                                        *
+   *                                                                     *
+   *  DEFAULT VALUE: 10                                                  *
+   *                                                                     *
+   *  CROSS-REFERENCE: MAXNS                                             *
+   *                                                                     *
+   ** MGLL **                                                            *
+   *                                                                     *
+   *  NUMBER OF PREVIOUS MERIT FUNCTION(S) VALUES USED FOR THE           *
+   *  NONMONOTONIC STEP ACCEPTANCE CRITERIA; THE SUM OF SQUARES          *
+   *  AND POSSIBLY DEUFLHARD'S CRITERION IS(ARE) COMPARED TO THE         *
+   *  GREATEST OF THE MOST RECENT "MGLL" VALUES STORED IN THE FTRACK     *
+   *  AND STRACK VECTORS RESPECTIVELY.                                   *
+   *                                                                     *
+   *  E.G. LINE SEARCHES, THE ACCEPTANCE CRITERION FOR A FUNCTION, F, IS *
+   *                                                                     *
+   *   F(NEW) <= FMAX + LAMBDA*ALPHA*DELF^S   WHERE                      *
+   *                                                                     *
+   *   F      IS THE OBJECTIVE FUNCTION                                  *
+   *   LAMBDA IS THE RELAXATION FACTOR                                   *
+   *   ALPHA IS THE ARMIJO CONSTANT                                      *
+   *   DELF   IS THE GRADIENT OF F                                       *
+   *   S      IS THE PROPOSED STEP                                       *
+   *   FMAX   IS GIVEN BY                                                *
+   *                                                                     *
+   *   MAX(F(K-J)), 0 <= J <= M(K)   WHERE                               *
+   *                                                                     *
+   *   M(K) = MIN[M(K-1)+1,MGLL]                                         *
+   *                                                                     *
+   *  DEFAULT VALUE: GIVEN BY USER AS A PARAMETER, 10 IS TYPICAL         *
+   *                                                                     *
+   *  CROSS-REFERENCE: NARMIJ,ALPHA                                      *
+   *                                                                     *
+   ** MINQNS **                                                          *
+   *                                                                     *
+   *  MINIMUM NUMBER OF QUASI-NEWTON STEPS WHICH MUST BE TAKEN           *
+   *  BETWEEN EXPLICIT JACOBIAN EVALUATIONS.                             *
+   *                                                                     *
+   *  DEFAULT VALUE: 6                                                   *
+   *                                                                     *
+   *  CROSS-REFERENCE: JACTYP,JUPDM,RATIOF                               *
+   *                                                                     *
+   ** NARMIJ **                                                          *
+   *                                                                     *
+   *  WHEN THE JACOBIAN IS EVALUATED EXPLICITLY AT EACH ITERATION, IT    *
+   *  IS THE NUMBER OF STEPS WHICH MUST SATISFY THE ARMIJO CRITERION AT  *
+   *  THE START OF THE PROBLEM, I.E., STRICT DESCENT STEPS AT THE        *
+   *  START. IN QUASI-NEWTON METHODS IT IS THE NUMBER OF STEPS WHICH     *
+   *  MUST SATISFY THE ARMIJO CRITERION AFTER EACH EXPLICIT JACOBIAN     *
+   *  EVALUATION. THE ARMIJO CRITERION TESTS WHETHER                     *
+   *                                                                     *
+   *   F(NEW) <= F(OLD) + LAMBDA*ALPHA*DELF^S   WHERE                    *
+   *                                                                     *
+   *   F      IS THE OBJECTIVE FUNCTION                                  *
+   *   LAMBDA IS THE RELAXATION FACTOR                                   *
+   *   ALPHA  IS THE ARMIJO CONSTANT                                     *
+   *   DELF   IS THE GRADIENT OF F                                       *
+   *   S      IS THE PROPOSED STEP                                       *
+   *                                                                     *
+   *  DEFAULT VALUE: 1                                                   *
+   *                                                                     *
+   *  CROSS-REFERENCE: MGLL,ALPHA                                        * 
+   *                                                                     *
+   ** NFETOT **                                                          *
+   *                                                                     *
+   *  TOTAL NUMBER OF FUNCTION EVALUATIONS INCLUDING THOSE REQUIRED      *
+   *  FOR THE FINITE-DIFFERENCE CALCULATION OF JACOBIANS.                *
+   *                                                                     *
+   *  DEFAULT VALUE : N/A (OUTPUT)                                       *
+   *                                                                     *
+   ** NINITN **                                                          *
+   *                                                                     *
+   *  MAY BE USED TO DELAY ONSET OF LINE SEARCHES OR TRUST REGION STEPS. *
+   *  IT IS THE NUMBER OF INITIAL NEWTON STEPS BEFORE LINE SEARCHES OR   *
+   *  TRUST REGION STEPS BEGIN.                                          *
+   *                                                                     *
+   *  DEFAULT VALUE: 0                                                   *
+   *                                                                     *
+   ** NJACCH **                                                          *
+   *                                                                     *
+   *  THE NUMBER TIMES AN ANALYTICAL JACOBIAN IS CHECKED USING FINITE    *
+   *  DIFFERENCES AT THE START OF THE PROBLEM. THE TOLERANCE USED FOR    *
+   *  COMPARISON IS GIVEN BY FDTOLJ.                                     *
+   *                                                                     *
+   *  DEFAULT VALUE : 0                                                  *
+   *                                                                     *
+   *  CROSS-REFERENCE: FDTOLJ                                            *
+   *                                                                     *
+   ** NUNIT **                                                           *
+   *                                                                     *
+   *  NUMBER OF THE LOGICAL UNIT FOR OUTPUT.                             *
+   *                                                                     *
+   *  DEFAULT VALUE: GIVEN BY USER                                       *
+   *                                                                     *
+   ** OUTPUT **                                                          *
+   *                                                                     *
+   *  OUTPUT DETERMINES THE DETAIL OF THE OUTPUT.                        *
+   *                                                                     *
+   *  OUTPUT:  0  => NO OUTPUT                                           *
+   *           1  => ANSWER ONLY                                         *
+   *           2  => ECHO INPUT PLUS ANSWER                              *
+   *           3  => SUMMARY OF EACH ITERATION                           *
+   *           4  => DETAILED DESCRIPTION OF EACH ITERATION              *
+   *           5  => VERY DETAILED DESCRIPTION OF EACH ITERATION         *
+   *                                                                     *
+   *  DEFAULT VALUE: 2                                                   *
+   *                                                                     *
+   ** QNUPDM **                                                          *
+   *                                                                     *
+   *  QNUPDM DETERMINES HOW THE QUASI-NEWTON UPDATE IS DONE.             *
+   *                                                                     *
+   *  QNUPDM:  0  => UPDATE UNFACTORED JACOBIAN                          *
+   *         1  => UPDATE QR DECOMPOSITION OF JACOBIAN                   *
+   *                                                                     *
+   *  QNUPDM=1 IS FASTER. USE THIS UNLESS YOU WANT TO SEE THE            *
+   *  JACOBIAN AT EACH ITERATION.                                        *
+   *                                                                     *
+   *  DEFAULT VALUE: 1                                                   *
+   *                                                                     *
+   ** STOPCR **                                                          *
+   *                                                                     *
+   *  STOPCR DETERMINES THE STOPPING CRITERIA USED.                      *
+   *                                                                     *
+   *  STOPCR: 1  => STOP BASED ON STEP SIZE ONLY                         *
+   *          2  => STOP BASED ON OBJECTIVE FUNCTION VALUE ONLY          *
+   *          12 => STOP BASED ON EITHER STEP SIZE OR FUNCTION VALUE     *
+   *          3  => STOP BASED ON BOTH BEING SATISFIED                   *
+   *                                                                     *
+   *  SEE FTOL, NSTTOL AND STPTOL FOR DETAILS OF THE CRITERIA. THERE ARE *
+   *  TWO STEP SIZE CRITERIA: THE ONE BASED ON THE FULL NEWTON STEP IS   *
+   *  GOVERNED BY NSTTOL, AND THE OTHER BASED ON THE STEP SIZE AFTER     *
+   *  THE LINE SEARCH OR TRUST REGION REDUCTION IS GOVERNED BY STPTOL.   *
+   *                                                                     *
+   *  DEFAULT VALUE: 12                                                  *
+   *                                                                     *
+   *  CROSS-REFERENCE: TRMCOD,FTOL,NSTTOL,STPTOL                         *
+   *                                                                     *
+   *                                                                     *
+   ** SUPPRS **                                                          *
+   *                                                                     *
+   *  SUPPRESS DETAILED OUTPUT FOR "SUPPRS" ITERATIONS; USED PRIMARILY   *
+   *  TO SEE DETAILED OUTPUT BEFORE A FAILURE IN A LARGE PROBLEM.        *
+   *                                                                     *
+   *  DEFAULT VALUE: 0                                                   *
+   *                                                                     *
+   *  CROSS-REFERENCE: OUTPUT                                            *
+   *                                                                     *
+   ** TRMCOD **                                                          *
+   *                                                                     *
+   *  TRMCOD TELLS WHICH STOPPING CRITERIA WERE MET.                     *
+   *                                                                     *
+   *  TRMCOD: 1  => STOP BASED ON STEP SIZE ONLY                         *
+   *          2  => STOP BASED ON OBJECTIVE FUNCTION VALUE ONLY          *
+   *          12 => STOP BASED ON EITHER STEP SIZE OR FUNCTION VALUE     *
+   *          3  => STOP BASED ON BOTH BEING SATISFIED                   *
+   *                                                                     *
+   *  SEE FTOL, NSTTOL AND STPTOL FOR DETAILS OF THE CRITERIA. THERE ARE *
+   *  TWO STEP SIZE CRITERIA: THE ONE BASED ON THE FULL NEWTON STEP IS   *
+   *  GOVERNED BY NSTTOL, AND THE OTHER BASED ON THE STEP SIZE AFTER     *
+   *  THE LINE SEARCH OR TRUST REGION REDUCTION IS GOVERNED BY STPTOL.   *
+   *                                                                     *
+   *  DEFAULT VALUE: N/A (OUTPUT)                                        *
+   *                                                                     *
+   *  CROSS-REFERENCE: STOPCR,FTOL,NSTTOL,STPTOL                         *
+   *                                                                     *
+   ** TRUPDM **                                                          *
+   *                                                                     *
+   *  TRUPDM DETERMINES THE TRUST REGION UPDATING METHOD.                *
+   *                                                                     *
+   *  TRUPDM:  0  => POWELL'S SCHEME                                     *
+   *           1 => DENNIS AND SCHNABEL'S SCHEME                         *
+   *                                                                     *
+   *  DEFAULT VALUE: 0                                                   *
+   *                                                                     *
+   *                                                                     *
+   ***  REAL VARIABLES ***                                               *
+   *                                                                     *
+   *                                                                     *
+   ** ALPHA **                                                           *
+   *                                                                     *
+   *  ARMIJO CONSTANT. FOR MONOTONIC LINE SEARCHES, A STEP IS ACCEPTED IF*
+   *                                                                     *
+   *   F(NEW) <= F(OLD) + LAMBDA*ALPHA*(DIRECTIONAL DERIVATIVE)   WHERE  *
+   *                                                                     *
+   *  F      IS THE OBJECTIVE FUNCTION                                   *
+   *  LAMBDA IS THE RELAXATION FACTOR IN THE LINE SEARCH                 *
+   *  THE DERIVATIVE IS IN THE LINE SEARCH DIRECTION.                    *
+   *                                                                     *
+   *  SIMILARLY, FOR TRUST REGION METHODS, THE CRITERION IS              *
+   *                                                                     *
+   *   F(NEW) <= F(OLD) + ALPHA*(DIRECTIONAL DERIVATIVE)   WHERE         *
+   *                                                                     *
+   *  THE DERIVATIVE IS IN THE TRUST REGION STEP DIRECTION.              *
+   *                                                                     *
+   *  THE CRITERION IS DIFFERENT FOR NONMONOTONIC SEARCHES, SEE MGLL.    *
+   *                                                                     *
+   *  DEFAULT VALUE: 1.0D-04                                             *
+   *                                                                     *
+   *  CROSS-REFERENCE: MGLL ,NARMIJ                                      *
+   *                                                                     *
+   ** CONFAC **                                                          *
+   *                                                                     *
+   *  CONSTRAINT FACTOR WHICH GIVES THE FRACTION OF THE DISTANCE         *
+   *  TO THE FIRST VIOLATED CONSTRAINT AT WHICH A LINE SEARCH WOULD      *
+   *  START OR A TRUST REGION LIMIT SET.                                 *
+   *                                                                     *
+   *  DEFAULT VALUE: 0.95                                                *
+   *                                                                     *
+   ** DELTA **                                                           *
+   *                                                                     *
+   *  DELTA IS THE TRUST REGION RADIUS. IF IT IS NEGATIVE ON             *
+   *  INPUT, THE INITIAL TRUST REGION SIZE IS CALCULATED INTERNALLY;     *
+   *  SEE CAUCHY. A POSITIVE ENTRY SETS THE INITIAL TRUST REGION.        *
+   *                                                                     *
+   *  DEFAULT VALUE: -1.0                                                *
+   *                                                                     *
+   *  CROSS-REFERENCE: CAUCHY,LINESR                                     *
+   *                                                                     *
+   ** DELFAC **                                                          *
+   *                                                                     *
+   *  DELFAC IS THE FACTOR BY WHICH THE TRUST REGION RADIUS IS CHANGED,  *
+   *  BOTH WHEN INCREASED AND WHEN DECREASED, IF DELTA IS NOT BEING      *
+   *  BEING INCREASED TO THE LENGTH OF THE NEWTON STEP.                  *
+   *                                                                     *
+   *  DEFAULT VALUE: 2.0D0                                               *
+   *                                                                     *
+   *  CROSS-REFERENCE: TRUPDM,DELTA                                      *
+   *                                                                     *
+   ** EPSMCH **                                                          *
+   *                                                                     *
+   *  MACHINE PRECISION; AN ESTIMATE OF THE SMALLEST FLOATING POINT      *
+   *  NUMBER SUCH THAT 1.0+X > 1.0.                                      *
+   *                                                                     *
+   *  DEFAULT VALUE: CALCULATED INTERNALLY                               *
+   *                                                                     *
+   ** ETAFAC **                                                          *
+   *                                                                     *
+   *  FACTOR USED IN DETERMINING THE SHAPE OF THE DOUBLE DOGLEG STEP     *
+   *  IN TRUST REGION METHODS; ETAFAC=1 CORRESPONDS TO SINGLE DOGLEG.    *
+   *                                                                     *
+   *  DEFAULT VALUE: 0.2                                                 *
+   *                                                                     *
+   ** FCNNEW **                                                          *
+   *                                                                     *
+   *  ON RETURN, FCNNEW HOLDS THE FINAL VALUE OF THE SUM-OF-SQUARES      *
+   *  OBJECTIVE FUNCTION.                                                *
+   *                                                                     *
+   *  DEFAULT VALUE: N/A (OUTPUT)                                        *
+   *                                                                     *
+   ** FDTOLJ **                                                          *
+   *                                                                     *
+   *  TOLERANCE FOR A FINITE-DIFFERENCE CHECK OF AN ANALYTICAL JACOBIAN. *
+   *  IF JACFD(I) IS THE FINITE-DIFFERENCE APPROXIMATION AND JACAN(I)    *
+   *  IS THE ANALYTICAL DERIVATIVE, WHEN                                 *
+   *                                                                     *
+   *   ABS(JACFD(I)-JACAN(I))/MAX(ABS(JACFD(I)),1) >= FDTOLJ             *
+   *                                                                     *
+   *  THEN A FAILURE IS DECLARED.                                        *
+   *                                                                     *
+   *  DEFAULT VALUE: 1.0D-06                                             *
+   *                                                                     *
+   *  CROSS-REFERENCE: NJACCH                                            *
+   *                                                                     *
+   ** FTOL **                                                            *
+   *                                                                     *
+   *  STOPPING TOLERANCE FOR MAX-NORM OF SCALED FUNCTION VECTOR; IF      *
+   *                                                                     *
+   *   MAX(SCALEF(I)*ABS(FVEC(I)) ) I=1,...,N <  FTOL ,STOP.             *
+   *                                                                     *
+   *  DEFAULT VALUE: EPSMCH**(1/3)                                       *
+   *                                                                     *
+   *  CROSS-REFERENCE: STOPCR,TRMCOD                                     *
+   *                                                                     *
+   ** LAM0 **                                                            *
+   *                                                                     *
+   *  USED TO SET THE INITIAL RELAXATION FACTOR IN LINE SEARCHES         *
+   *  TO A VALUE LESS THAN 1.0 FOR EXTREMELY NONLINEAR PROBLEMS          *
+   *  THIS OVERRIDES DEUFLHARD INITIALIZATION.                           *
+   *                                                                     *
+   *  DEFAULT VALUE: 1.0                                                 *
+   *                                                                     *
+   *  CROSS-REFERENCE: DEUFLH                                            *
+   *                                                                     *
+   ** MSTPF **                                                           *
+   *                                                                     *
+   *  FACTOR USED TO SET THE MAXIMUM STEP SIZE ALLOWED. USUALLY THE      *
+   *  MAXIMUM STEP SIZE IS SET BY NNES IS MUCH TOO LARGE TO HAVE ANY     *
+   *  EFFECT, BUT IN SOME CASES THE USER MAY NEED TO RESTRICT POSSIBLY   *
+   *  FATAL STEPS. THE MAXIMUM STEP IS SET BY:                           *
+   *                                                                     *
+   *  MAXSTP = MSTPF*MAX(NORM1,NORM2) WHERE                              *
+   *                                                                     *
+   *   NORM1 = 2-NORM OF SCALED STARTING ESTIMATES                       *
+   *   NORM2 = 2-NORM OF COMPONENT SCALING FACTORS                       *
+   *                                                                     *
+   *  DEFAULT VALUE: 1000.                                               *
+   *                                                                     *
+   ** NSTTOL **                                                          *
+   *                                                                     *
+   *  STOPPING TOLERANCE FOR FULL NEWTON STEP; STOP IF, FOR ALL I,       *
+   *                                                                     *
+   *   MAX(ABS[SN(I)]/MAX(ABS[X(I)],1/SCALEX(I)) < NSTTOL*(1+NORM(DX(I)))*
+   *                                                                     *
+   *   SN(I)     IS THE I(TH) COMPONENT OF THE NEWTON STEP               *
+   *   SCALEX(I) IS THE COMPONENT SCALING FACTOR                         *
+   *   DX(I)     IS SCALEX(I)*X(I)                                       *
+   *                                                                     *
+   *  DEFAULT VALUE: EPSMCH**(2/3)                                       *
+   *                                                                     *
+   *  CROSS-REFERENCE: STOPCR,TRMCOD,SCALEX                              *
+   *                                                                     *
+   ** OMEGA **                                                           *
+   *                                                                     *
+   *  FACTOR IN THE LEE AND LEE QUASI-NEWTON UPDATES.                    *
+   *                                                                     *
+   *  DEFAULT VALUE: 0.1                                                 *
+   *                                                                     *
+   *  CROSS-REFERENCE: JUPDM                                             *
+   *                                                                     *
+   ** RATIOF **                                                          *
+   *                                                                     *
+   *  FACTOR USED IN QUASI-NEWTON METHODS TO DECIDE WHETHER AN           *
+   *  EXPLICIT JACOBIAN UPDATE SHOULD BE DONE. IF                        *
+   *                                                                     *
+   *   F(NEW) > RATIOF*F(OLD)   THEN:  NFAIL=NFAIL+1                     *
+   *                                                                     *
+   *  ELSE IF                                                            *
+   *                                                                     *
+   *   F(NEW) < 0.01*F(OLD)   THEN : NFAIL=NFAIL-1                       *
+   *                                                                     *
+   *  IF NFAIL > MINQNS, NNES RESTARTS AT THE BEST POINT FOUND SO FAR    *
+   *  AS IF THAT POINT WERE A NEW INITIAL ESTIMATE.                      *
+   *                                                                     *
+   *  DEFAULT VALUE: 7.0D-01                                             *
+   *                                                                     *
+   *  CROSS-REFERENCE: MINQNS                                            *
+   *                                                                     *
+   ** SIGMA **                                                           *
+   *                                                                     *
+   *  FACTOR USED IN GEOMETRIC STEP REDUCTIONS TO DECREASE THE           *
+   *  RELAXATION FACTOR IN LINE SEARCHES:                                *
+   *                                                                     *
+   *   LAMBDA(NEW) = SIGMA*LAMBDA(OLD)                                   *
+   *                                                                     *
+   *  DEFAULT VALUE: 5.0D-01                                             *
+   *                                                                     *
+   *  CROSS-REFERENCE: GEOMS                                             *
+   *                                                                     *
+   ** STPTOL **                                                          *
+   *                                                                     *
+   *  STOPPING TOLERANCE FOR STEP AFTER REDUCTION; STOP IF, FOR ALL I,   *
+   *                                                                     *
+   *   MAX(ABS[S(I)]/MAX(ABS[X(I)],1/SCALEX(I)) < STPTOL                 *
+   *                                                                     *
+   *   S(I)     IS THE I(TH) COMPONENT OF THE REDUCED STEP               *
+   *   SCALEX(I) IS THE COMPONENT SCALING FACTOR                         *
+   *                                                                     *
+   *  DEFAULT VALUE: EPSMCH**( 2/3)                                      *
+   *                                                                     *
+   *  CROSS-REFERENCE: STOPCR, TRMCOD,SCALEX                             *
+   *                                                                     *
+   *                                                                     *
+   ***  REAL VECTORS ***                                                 *
+   *                                                                     *
+   *                                                                     *
+   ** BOUNDL **                                                          *
+   *                                                                     *
+   *  LOWER BOUNDS FOR THE COMPONENTS.                                   *
+   *                                                                     *
+   *  DEFAULT VALUE: -10**MAXEXP                                         *
+   *                                                                     *
+   *  CROSS-REFERENCE: MAXEXP,BOUNDU                                     *
+   *                                                                     *
+   ** BOUNDU **                                                          *
+   *                                                                     *
+   *  UPPER BOUNDS FOR THE COMPONENTS.                                   *
+   *                                                                     *
+   *  DEFAULT VALUE: 10**MAXEXP                                          *
+   *                                                                     *
+   *  CROSS-REFERENCE: MAXEXP,BOUNDL                                     *
+   *                                                                     *
+   ** SCALEF **                                                          *
+   *                                                                     *
+   *  SCALING FACTORS FOR THE FUNCTIONS. THESE ARE INVERSELY             *
+   *  PROPORTIONAL TO TYPICAL VALUES FOR EACH OF THE FUNCTIONS.          *
+   *                                                                     *
+   *  DEFAULT VALUE: 1.0                                                 *
+   *                                                                     *
+   ** SCALEX **                                                          *
+   *                                                                     *
+   *  SCALING FACTORS FOR THE COMPONENTS.  THESE ARE INVERSELY           *
+   *  PROPORTIONAL TO TYPICAL VALUES FOR EACH OF THE COMPONENTS.         *
+   *                                                                     *
+   *  DEFAULT VALUE: 1.0                                                 *
+   *                                                                     *
+   ** XC **                                                              *
+   *                                                                     *
+   *  CONTAINS INITIAL ESTIMATE ON ENTRY.                                *
+   *                                                                     *
+   *  DEFAULT VALUE: GIVEN BY USER                                       *
+   *                                                                     *
+   ** XPLUS **                                                           *
+   *                                                                     *
+   *  LATEST ESTIMATE ON RETURN.                                         *
+   *                                                                     *
+   *  DEFAULT VALUE: N/A (OUTPUT)                                        *
+   *                                                                     *
+   ***********************************************************************

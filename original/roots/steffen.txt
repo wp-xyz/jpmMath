@@ -1,0 +1,99 @@
+                      EXPLANATION FILE OF PROGRAM STEFFEN
+                       ===================================
+
+
+  Aitken-Steffenson Iteration
+  ---------------------------
+
+    Aitken-Steffenson iteration is a variation on the Aitken acceleration sche-
+  me. lt has very good convergence properties (quadratic) if the initial guess
+  is in the vicinity of the root. This is to be contrasted with some of the al-
+  gorithms discussed earlier which can diverge even if the initial guess is ve-
+  ry close to the root. 
+
+    As with Aitken acceleration (see file aitken.txt), this method is designed
+  to find the fixed points of x = g(x). If we again define g(x) = x + cy(x),
+  then the Aitken-Steffenson iteration formula is
+
+                                 [g(xn) - xn]²
+                  x'n = xn - ----------------------          (6.12.1)
+                             g[g(xn)] - 2g(xn) + xn 
+
+  x'n is employed to directly calculate xn+l using xn+l = g(x'n). This procedure
+  differs from that of the Aitken acceleration algorithm which requires three
+  prior values in order to perform the acceleration calculation. 
+
+    The Aitken-Steffenson iteration scheme is applied in program Steffen. The
+  results of using this subroutine to find the roots associated with the three
+  following equations are shown below. 
+
+            A) y(x) = x - 2 sin x               initial guess x0 = pi/2 
+            B) y(x) = x^3 + 2x^2 - X - 2        initial guess x0 = -1.5
+            C) y(x) = sin x                     initial guess x0 = 20
+
+  Example A)
+  ----------
+                               Convergence Factor, c 
+
+          E       -0.1 	        +0.1 	       -1 	     1 	     -l/dy/dx
+           
+        0.1   1.9105667(4)  1.8999486(4)  1.9066462(4)  1.8623822(5)  2.0006853 
+     0.0001   1.8955203(8)  1.8954486(6)  1.8955338(8)  1.8954390(13) 1.8955769 
+   0.000001   1.8954931(10) 1.8954929(10) 1.8954944(12) 1.8954938(19) 1.8954942
+  0.0000001       ---           ---           ---           0(39)         ---
+
+ True Value   1.8954942     1.8954942     1.8954942           0       1.8954942  
+
+  Example B)
+  ----------
+                               Convergence Factor, c 
+ 
+          E 	  -0.1 	        +0.1 	       -1 	     1 	     -l/dy/dx
+           	   
+        0.1  -1.5646928(3) 	----	 -2.0584778(5) 	-0.9918552(4)  -1.053669 	   
+     0.0001  -1.999971(15) 	----	 -2.0000454(13) -0.9999888(8)  -0.999998 	   
+   0.000001  -1.9999996(19) 	----	 -2.0000004(18) -0.9999996(10) -1 (6) 	   
+  0.0000001  -1.9999999(21) 	----	 -2 (20) 	-1 (12)        -1 (6) 	   
+
+ True Value       -2 		               -2 	     -1 	    -1 	   
+
+  Example C)
+  ----------
+   
+		               Convergence Factor, c
+                                			   
+          E 	  -0.1 	        +0.1 	       -1      	     1 	      -l/dy/dx 	   
+        0.1  31.440408(12) 15.659416(26)  18.849381(4) 	28.283849(6)  15.813427 	   
+     0.0001  31.415944(22) 50.265578(104) 18.849556(5) 	28.274334(6)  15.707963 	   
+   0.000001     ---	      ---         18.849556(5) 	28.274334(6)  15.707963 	   
+  0.0000001 	---	      ---	  18.849556(5) 	28.274334(6)  15.707963 	   
+
+ True Value  31.415927 	   50.265482 	  18.849556 	28.274334     15.707963 	 
+
+    If we use these examples as a guide, and compare them to the results of file
+  Aitken.txt, we will see that Aitken-Steffenson iteration appears to behave
+  much the same as Aitken acceleration. But it is somewhat slower in convergence
+  --more iterations are required. ln 12 of the 60 examples, the iteration did
+  not termina te at a11, probably because of round-off error problems in the
+  calculation. 
+
+    As with Aitken acceleration, convergence can be slow if the chosen c is too 
+  small. Also, jumps can occur if c is too large and/or of the wrong sign (see
+  example (A) for the case E = 0.0000001, c = 1). 
+
+    Convergence can also be poor if |dg/dx| == 1 near the root. Because the de- 
+  rivative of g(x) is 
+                                              c
+                                dg/dx = 1 + -----
+                                            dy/dx
+
+  poor convergence can occur if dy/dx == O. Geometrica11y, this result is not
+  surprising.
+   
+    Even with these limitations, Aitken-Steffenson iteration and its relative,
+  Aitken acceleration, are perhaps among the most powerful of the simple root-
+  finding techniques available.
+
+  From [BIBLI 01].
+---------------------------------------------
+End of file Steffen.txt

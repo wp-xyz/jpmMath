@@ -1,0 +1,42 @@
+Program Description
+
+    Program to compute Bernoulli numbers using function BERNOA
+    Program to compute Euler numbers using function EULERA
+    Calculate Mathieu Functions and their First Derivatives
+    Calculate Airy functions and their First Derivatives using Subroutine AIRYA NEW
+    Calculate the first NT zeros of Airy functions NEW
+    Calculate Beta Function NEW
+    Calculate the cosine and sine integrals using subroutine CISIA NEW
+    Calculates a specific characteristic value of Mathieu functions using subroutine CVA1
+    Compute the confluent hypergeometric function M(a,b,x) using subroutine CHGM NEW
+    Compute the Struve function H0(x) using subroutine STVH0 NEW
+    Compute the Struve function H1(x) using subroutine STVH1 NEW
+    compute the Struve function Hv(x) for an arbitrary order v using subroutine STVHV NEW
+    Compute the modified Struve function L0(x) using subroutine STVL0 NEW
+    Compute the modified Struve function L1(x) using subroutine STVL1 NEW
+    compute the modified Struve function Lv(x) for an arbitrary order v using subroutine STVLV NEW
+    Program to demonstrate arcsine recursion
+    Program to demonstrate Hyperbolic Functions
+    Explanation File of Program above (Hyper)
+    Program to demonstrate Inverse Hyperbolic Functions
+    Explanation File of Program above (Invhyper)
+    Program to demonstrate Evaluating elliptic integrals of first and second kinds (complete)
+    Explanation File of Program above (Cliptic)
+    Program to demonstrate Hermite coefficients
+    Program to demonstrate Lagrange interpolation
+    Explanation File of Program above (Lagrange)
+    Program to demonstrate Laguerre coefficients
+    Program to demonstrate Legendre coefficients
+    Evaluate a Legendre Polynomial P(x) of Order n for argument x by using Horner's Rule
+    Cubic spline interpolation of a discreet function F(X), given by N points X(I),Y(I)
+    Bracketing a minimum of a real function F(X)
+    Explanation file of program below(GOLDEN)
+    Seek Minimum of a real function F(X) by Golden Section Search
+    Explanation file of program below(BRENT)
+    Seek Minimum of a real function F(X) by Brent's Method
+    Explanation file of program below(TAMOEBA)
+    Multidimensional minimization of a function FUNC(X) where X is an NDIM-dimensional vector, by the downhill simplex method of Nelder and Mead Discarding the Direction of Largest Decrease
+    Program to demonstrate multi-dimensional Steepest Descent Optimization (Partial derivatives not required)
+    Explanation File of Program above (Steepda)
+    Program to demonstrate multi-dimensional Steepest Descent Optimization (Partial derivatives required)
+    Explanation File of Program above (Steepds) 

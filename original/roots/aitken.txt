@@ -1,0 +1,206 @@
+
+
+                       EXPLANATION FILE OF PROGRAM AITKEN
+                       ==================================
+
+
+  Aitken Acceleration
+  -------------------
+
+
+    In this section, we return to an examination of the fundamental iteration
+  form: 
+                               x = g(x) 
+
+  Recall that in applying this equation numerically. the iteration sequence is
+
+                              x    = g(x )
+                               n+1      n
+
+  When convergence occurs, the result is called a fixed point. However, as de-
+  monstrated in the earlier discussion and examples, convergence is assured only
+  if |dg/ dx| < 1 in the range of the iteration sequence. The doser dg/ dx is to
+  zero, the faster the convergence will be. 
+
+    The convergence properties of the above iteration formula can be improved on
+  by using the Aitken D² method. This technique is, in essence, based on accoun-
+  ting for the curvature of the function as the root is approached. As shown in
+  the previous section for the Newton and secant algorithrns, the curvature of 
+  the function can greatly affect convergence if the iteration is not dose to a
+  root. itken has provided a means for accelerating the convergence by develo- 
+  ping an algorithm that employs three earlier calculated values to parabolical-
+  ly predict an improved position. The acceleration formula is
+
+                                     (xn - xn-1)²
+                        x'n = xn - ----------------        (6.11.1)
+                                   xn - 2xn-1 +xn-2
+
+  It is important to note that this formula requires three previous Xn+1 = g(xn)
+  iteration steps to be calculated before the acceleration can be performed.
+  Once the accelerated vaIue is determined, it is used as the first guess in
+  another sequence of three iterations.
+
+    To apply this methodology to the problem of finding the locations of the ze- 
+  ros of y(x), we will again examine the following form: 
+
+                        x = g(x) = x + cy(x) 
+
+  We found previously that the Newton, secant, and false-position formulae could 
+  be derived if c = -l/(dy/dx). However, this form requires knowledge of dy/dx, 
+  which we will not resort to. Instead, a constant value will be used for c. ln
+  principle, we can always find values of c that are sufficiently small (and of
+  sign opposite to dy/dx) to assure convergence if the iteration is near a root,
+  However, the resulting convergence may be slow. Therefore, c can be considered
+  an empirically chosen convergence factor. This will be discussed more in asso-
+  ciation with later examples.
+   
+    A subroutine that applies the concept of Aitken acceleration to finding the
+  roots of a function, y(x), has been implemented in program Aitken. This sub-
+  routine requires as input the converge factor, c, and an error goal that
+  causes a return when the iterative change in x. is less than E. The subroutine
+  also requires an initial guess, XO, and an iteration limit, M. Two values are
+  returned: X and N. X is the estimate of the position of the zero, and N is the
+  number of iterations used to obtain that estimate. The last value calculated 
+  for Y is also available. 
+
+    Aitken acceleration can be very effective. For example, consider the follo- 
+  wing functions which were used in previous examples: 
+
+            A)  y(x) = x - 2 sin x          (initial guess xO = pi/2)
+            B)  y(x) = Xl + 2X2 - X - 2     (initial guess xO = -1.5)
+            C)  y(x) = sin x                (initial guess xO = 20)
+
+  Sample results are shown below. lncluded in the last column of each tabulation
+  are the results obtained using c = l/(dy/dx), Newton's method coupled with 
+  Aitken acceleration.
+
+  Example A)
+  ----------
+                               Convergence Factor, c 
+
+          E       -0.1 	        +0.1 	       -1 	     1 	     -l/dy/dx
+           
+        0.1   1.9829056(3)  2.0200624(3)  1.9999994(2) -0.083621(5)    2.0006853 
+     0.0001   1.8783217(5)  1.9056554(7)  1.8954142(7) -0.001450537(6) 1.8955769 
+  0.0000001   1.8954973(15) 1.8954979(19) 1.8954940(11) 0.00000045(8)  1.8954937
+
+ True Value   1.8954943     1.8954943     1.8954943           0        1.8954943  
+
+  Example B)
+  ----------
+                               Convergence Factor, c 
+ 
+          E 	  -0.1 	        +0.1 	       -1 	     1 	     -l/dy/dx
+           	   
+        0.1  0.167656(4)    0.0533662(3) -2.0119023(4) -0.875(2)        1(2) 	   
+     0.0001 -2.0038728(15) -1.43(17)	 -2.0001375(8) -0.99989661(8)   1(2) 	   
+  0.0000001 -1.9999989(25) -2.0000013(97) -2.(16)      -0.99999989(14)  1(2)
+
+ True Value       -2            -2             -2 	     -1          -1 	   
+
+  Example C)
+  ----------
+   
+		               Convergence Factor, c
+                                			   
+          E 	  -0.1 	        +0.1 	       -1      	     1 	      -l/dy/dx 	   
+        0.1  17.967623(3)  17.504558(9)   19.087055(2) 	46.180888(3)  18.790797 	   
+     0.0001  21.952955(9)  12.505906(5)   18.649192(7) 	47.123642(7)  18.849757 	   
+  0.0000001  21.99113(19)  12.566314(9)   18.849556(12)	47.12389(10)  18.849556 	   
+
+ True Value  21.99115 	   12.566371 	  18.849556 	47.12389      18.849556 	 
+
+
+    There are several observations to be made. First, using a constant for c in-
+  stead of the Newton form leads to mixed results in terms of the number of ite-
+  rations required for a given E. ln the first table (Example A), the conver-
+  gence is somewhat slower for high-precision results when the Newton form for c
+  is used rather than employing a constant. ln the second table (Example B), the
+  reverse is true. The two are comparable in the third table (Example C). 
+
+    The second observation is that the accuracy of the results should be viewed 
+  with caution. The accuracy is not E; it can be much better or much worse. How-
+  ever, E can be used to roughly estima te the error. 
+
+    It has been suggested by Hamming that instead of specifying an error limit 
+  E, the number of iterations should be used as the iteration termination crite-
+  rion. However, by doing this, you would have no idea of the resulting accura-
+  cy. But, as a counterargument, fatal loops (possibly due to round-off error)
+  could be avoided by setting the number of iterations (M). Here, we use both
+  methods by employing E as the termination criterion and M to avoid infinite
+  loops. 
+
+    The third observation is that there appears to be considerable freedom in
+  the choice of values for the convergence factor, c. It is usuaIly the case
+  that the smaIler c is, the slower the convergence. However, large values of c
+  can result in leaps in the iteration, which in turn lead to different roots.
+  This is evident in aIl of the tables. Also, the sign of c may or may not af-
+  fect which root is converged on, but can affect convergence rate. 
+
+    The power of the Aitken acceleration method rests in its stable convergence 
+  properties. Initial guesses for the locations of the zeros need not be as ac-
+  curate as those required for the Newton and secant methods. Also, the number
+  of iterations required is reasonably constant. As with any root-seeking me-
+  thod, however, there are limitations. 
+
+    The numerical implementation of Aitken's method suffers from a potential 
+  round-off error problem associated with the denominator of the acceleration
+  formula: xn - 2xn-1 + xn-2. When the iteration nears completion, this factor
+  aproaches zero, although the individual values, xn, xn-1 and xn-2, are nonzero
+  (i.e., they are aIl nearly equal). This can lead to a round-off error problem
+  at the very least, and perhaps a divide-by-zero overflow error. The subroutine
+  as written guards against the overflow problern, but the potential round-off
+  error can result in a reduction in the efficiency of the routine. 
+
+    Another complication is the choice of the convergence factor, c. As discus-
+  sed earlier, if c is chosen so that convergence occurs, however slowly, the
+  accuracy test (the difference between successive values being less than E) may
+  not work weIl. That is, successive values may be close to one another but not
+  close to the root, and termination may occur far from the root. Also, choosing
+  too large a value for c can lead to convergence difficulties. Unfortunately,
+  you have no a priori knowledge of what the appropria te range for c is! Fortu-
+  nately, the algorithm is forgiving. 
+
+    Another more general difficulty exists in the evaluation of y(x) itself.
+  There are some ways to evaluate y(x) that are better than others. For example,
+  consider the function y(x) = (x + 1)^5. Two distinctly different computational
+  ways of writing this equation are 
+
+                  y1 = (x + l)(x + l)(x + l)(x + l)(x + 1) 
+
+  and             y2 = x^5 + 5x^4 + 10x^3 + 10x^2 + 5x + 1 
+
+  The first form is more compact and faster in execution. It is also less prone
+  to round-off error in evaluation. This can be demonstrated as foIlows.
+   
+    Consider the evaluation of y(x) near its root, say x = -1 + E. Under ideal 
+  conditions (i.e., no round-off), the two computations become 
+
+        y1 = E^5 
+                    5           4            3            2
+  and   y2 = (1 - E)  + 5(1 - E)  - 10(1 - E)  + 10(1 - E) - 5(1 - E) + 1
+
+  Mathematically, both expressions give y = 0 when E = O. However, when evalua-
+  ting the these forms numerically, y1 will evaluate to zero when E = 0, but y2
+  may not because of round-off error. Because we know that there must be values
+  of E that numerically lead to y2 = 0, it is apparent that round-off error may
+  (and very likely does) create a "root" that differs from the "true" or mathe-
+  matical root by some small amount. ln effect, by choosing a particular way to
+  evaluate y(x), fa Ise roots may unknowingly be introduced. Example 3 shows how
+  extreme the effect can be. 
+
+    Given the above discussion, we can order what may go wrong with the Aitken 
+  acceleration algorithm. First, the iteration may diverge or jump around if c
+  is too large, or if it is of the wrong sign. Second, the iteration may conver-
+  ge, but slowly, and the convergence test |Xn - Xn-1| < E may prematurely ter-
+  minate the iteration. Third, the convergence may be fast, but the result may
+  be a false root caused by round-off error. This last problem is not limited to
+  just the Aitken acceleration subroutine. 
+
+    Despite all these potential problems, Aitken acceleration is a very useful
+  technique. In another section, we will consider a variation of this method
+  (see file Steffen.txt).
+   
+  From [BIBLI 01].
+--------------------------------------------------
+End of file Aitken.txt

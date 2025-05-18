@@ -1,0 +1,52 @@
+N° - Reference 	
+     Programs (original)
+     
+---------------------------------------------------------------------------------------------------------------------
+
+01 - BASIC Scientific Subroutines, Vol. II By F.R. Ruckdeschel, BYTE/McGRAW-HILL, 1981.
+
+     (with suffix .bas) aitken, akima, allroot,arcsin, asymerf, bairstow, bessel, bessel1, besslser, bisect, 
+     chi-sq, chisqa, chebecon, chebyser, chi-sqr,cliptic, cmplxser, derivati, hermite, horner, hyper,intbessl, 
+     integra, invhyper, invnorm, lagrange, laguerre, legendre, lin, logn!, lsqply, lstsqr, lstsqr1, lstsqr2, 
+     lstsqr2b, mltnlreg, mueller, mueller2, newton, newton1, nextroot, parafit, recipro, regiter, regula, 
+     reverse, rootnum, roottest, rsyndiv, secant, steepda, steepds, steffen, zcircle, zmueller, znewton
+    
+02 - Calcul symbolique et informatique. Du calcul numérique au calcul littéral (programmes en BASIC de A. DESHAYES), Masson Paris, 1985. 
+	
+     algebra.bas
+     
+03 - Mathematiques en Turbo-Pascal by Marc Ducamp and Alain Reverchon, 1. Analyse, Editions Eyrolles, Paris, 1991. 
+
+    (with suffix .pas) analfour, discfour, disinteg, ltddev.pas, ltddev1, ltddev2, ltddev3, nlinsyst, primitiv, 
+    stormer, teqdif1, teqdifn, teqdifp, teqdifpc, tromberg, tsimpson
+    
+04 	Methodes de calcul numerique, Tome 2 By Claude Nowakowski, PSI Edition France, 1984. 	Portrait 	(with suffix .pas)
+approx, eulromb, laplace, laplace1, laplace2, limits, shoot
+05 	Mathematiques en Turbo-Pascal by Marc Ducamp and A. Reverchon (vol 2), Editions Eyrolles, Paris, 1988. 	Portrait 	(with suffix .pas)
+arcircle, basis, basisop, combi,combipol, complex1, conical, conical1, derivpol, diophan, divpol, divpol1, evalpol, gcd, gcdpol, multpol, polynoms, substpol, surface, tequa2, triangle, ucomplex, zmatsys
+06 	Mathematiques par l'informatique individuelle Programmes en basic by H. Lehning and D. Jakubowicz, MASSON Paris, 1982. 	Portrait 	bairsto1.bas, factors.bas, fraction.bas, ndays.bas, planets.bas, prime.bas
+07 	Methodes de calcul numerique, Tome 1 By Claude Nowakowski, PS1 Editions France, 1981. 	Portrait 	bernou.bas, dinteg.bas, tlinear.bas, lagrange1.bas
+08 	Numerical Recipes, The Art of Scientific Computing by W.H. Press, B.P. Flannery, S.A. Teukolsky and W.T. Vetterling, Cambridge University Press, 1986. 	Portrait 	(with suffix .f77)
+brent, chebyshe,deter1, elprotd, fdistri, gamma, golden, inv_lu, lu, mnbrak, sort1, sort2, sort3, tchebint, tchebysh, test_lu, test_lu1, tjacobi, toeplitz, tpolint, tpowell, tqcksrt, tratint, tridiag, tseval, tsparse, tsvbksb, tvander
+09 	A book on C by Al Kelley and Ira Pohl, The Benjamin/Cummings Publishing Company, Inc, 1984. 	Portrait 	bubble.c, merge.c
+10 	Algebre, Algorithmes et programmes en Pascal by Jean-Louis Jardrin, DUNOD Paris, 1988. 	Portrait 	carpol2.pas, carpol3.pas, cdetmat, deter.pas, rshcgt, syslin.pas, tpwimgt.pas, tpwm.pas, trslcgtc, cdetmat, ticgt, trslcgtc, rshcgt
+
+11 - Numerical algorithms with C, by Gisela Engeln-Muellges and Frank Uhlig, Springer-Verlag, 1996.
+    (with suffix .c) ab_mou, awp, basis, bulirsch, cgtst1, clencurt, einb_rk, fband, fbando, fgauss, gear, 
+    implruku, legendre, kubgauss, kubnec, mgear, rwp, tband, tcholy, t_dlgs, tdifrom, thqr.c, tk3gan.c, 
+    tk3nec, tk4gau, tkubnec, tseidel, tzeroin, urkf45, vmblock
+    
+12 	MASSON 1990, Graphisme dans le plan et dans l'espace en Turbo Pascal 4.0 by R. DONY 	Portrait 	(with suffix .pas)
+crtgr2d, billard, bolygone, chaos. henon, julia, lorenz, mandel, mandbrot, mira, roessler, rk, verhulst
+13 	Mathematiques et statistiques by H. Haut, PSI Editions, France, 1981. 	Portrait 	distri.bas, fstat.bas, moment.bas, root4.bas, sysmat.bas
+13a 	Modèles pratiques de décision Tome 2 By J-P Blanger PSI Editions, France, 1983. 	Portrait 	appoint.bas, dantzig.bas, simplex.bas,tpert.bas, transpor.bas, tsimplex.bas
+14 	Analyse numérique en C by Alain Reverchon and Marc Ducamp, Armand Colin Editeur, Paris, 1990. 	Portrait 	nderiv.c
+15 	Lawrence R.Rabiner and Bernard Gold, Theory and application of digital processing. Prentice Hall Inc., Englewoodcliffs, NEW JERSEY, 1975. 	Book not available 	tfft.f77, tfilters.f77
+16 	Mécanique des vibrations linéaires by M. Lalanne, P. Berthier and J. Der Hagopian, Masson, Paris, 1980. 	Portrait 	tgauss.bas, 1dof01.bas, 1dof02.bas, modes.bas, ndof01.bas, ndof02.bas, ndof03.bas, ndof04.bas.
+17 	LAPACK Fortran 77 Library, University of Tennessee, University of California Berkeley, NAG Ltd., Courant Institute, Argonne National Laboratory and Rice University,March 31, 1993. 	No book (electronic file) 	Lapack1.f90, Lapack2.f90, Lapack3.f90, Tcgesv.f90, Tcgbsv.f90.
+18 	NUMATH Fortran 77 Library By Tuan Dang Trong (*)
+(*) Retired Engineer from Aerospatiale, France (now EADS). 	No book (electronic file) 	(with suffix .f90)
+approx1, nsbslv, tbessi, tbessj, tbessk, tbessy, tceigen, tclague, tdlittl, thorner, tqanc8, trootj, tros4, tseval, tsymsol, ttql2, ttred2, tzbesj, tzbesk, tzbesy, tzerojp.
+19 	Advanced Turbo C, By Herbert Schildt, Osborne McGraw-Hill, 1987. 	Portrait 	parser.c
+20 	Problem Solving with Fortran 90 By David R. BROOKS Springer-Verlag, 1997.. 	Portrait 	beam.f90, circuit.f90, rel_mass.f90, refract.f90, starmag.f90, sierpins.f90
+21 	Turbo Pascal for Windows - Techniques and Utilities, PC Magazine & ZD Press, 1992. 	Portrait 	pcalcfun.pas, calc.pas 

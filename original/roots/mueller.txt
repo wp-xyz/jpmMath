@@ -1,0 +1,124 @@
+
+                      EXPLANATION FILE OF PROGRAM MUELLER
+                      ===================================
+
+
+  Mueller's Method in One Dimension
+  ---------------------------------
+
+    In another chapter we found that Newton's method could be improved upon by 
+  employing Aitken acceleration, and subsequently Aitken-Steffenson iteration. 
+  These improvements were based on the observation of a weak point in Newton's
+  method--the assumption that the function was linear near the root. However,
+  many nontrivial functions have curvature which causes error, or at least slows
+  convergence, in Newton's algorithm. The solution is to at least partially ac-
+  count for this curvature. That was the basis of the Aitken acceleration con-
+  cept. 
+
+    In this section, we will consider an algorithm called Mueller's method. This 
+  algorithm assumes the function to be parabolic in the neighborhood of the
+  root. Because the complex-plane implementation of this technique is algebrai-
+  cally complicated, we will first examine the procedure for one-dimensional
+  functions f(x), then extend it iteratively to two dimensions, and finally pro-
+  ceed on to the complex plane formulation. As you will see, Mueller's method is
+  very powerful in terms of both convergence rate and stability. 
+
+    In Mueller's method, the idea is to find three evaluation points near the
+  root, fit a parabola through those points, and then de termine the roots of
+  the corresponding second degree equations. The root closest to X3 is then ta-
+  ken as a new evaluation point: 
+
+                          X1 is dropped 
+	                  X2   --> X1 
+	                  X3   --> X2 
+                          Xnew --> X3 
+
+  The procedure is repeated until the change in X3 is less than some chosen cri-
+  terion
+                          |Xnew - X3| < E
+
+  Note that conceptually this is a simple upgrade of the secant method in which
+  two points are used to generate a linear equation for the intersection with
+  the X axis. This new value is then used to replace one of the previous two
+  points. 
+
+    The algebra associated with this method is somewhat complicated and is only 
+  briefly described below. (For a more complete discussion, refer to the text by
+  Becket Hurt, Ref. 8). 
+
+    We will start by defining two dimensionless parameters, L and D: 
+
+                             X3 - X2
+                         L = ------- 
+                             X2 - X1
+
+                             X3 - X1
+                         D = ------- 
+                             X2 - X1
+
+  These are used to calcula te Gand C: 
+
+            G = L² f(X1) - D² f(X2) + (L + D) f(X3) 
+
+            C ~ L|L f(X1) - D f(X2) + f(X3)| 
+
+  The above definitions are then used to calculate the parameter lambda: 
+
+                                    -2D f(X3)
+                    lambda = ------------------------
+                             G +/- sqrt(G²-4DC f(X3))
+
+  The sign in the denominator is chosen so that the magnitude of lambda is mini-
+  mized. The new estimate for the location of the root is then 
+
+                    Xnew = X3 + lambda (X3 - X2) 
+
+  X1 is subsequently dropped from the group and the process is repeated until 
+  some convergence criterion is met. This procedure has been implemented in 
+  program Mueller. 
+
+    In the first example, the function examined was y = x(x - l)(x - 2)(x - 3)
+  (x - 4). The first two runs show very good convergence. The third run termi-
+  nated in six iterations according to the error criteria, E = 0.001, but it was
+  in error by much more than that. Thus the warning: do not assume that the
+  error in the final result is less than the error criterion! Convergence may be
+  slow in sorne situations. Such was also the case for the fourth run in which
+  the initial guess was far from any root. After ten iterations, the error was
+  very large. However, extending the iteration limit to 20 (fifth run) and then
+  30 (sixth run) indicates that despite the initial slow convergence, the algo- 
+  rithm eventuaIly, and very accurately, found a root. 
+
+    Why was the convergence initially so slow? The answer to this question rests 
+  in the difference between what the algorithm assumes the form of the function 
+  to be, and what the form actually is. The algorithm assumes the function to be
+  locally parabolic. But for an initial guess of XO = -30, which is far from the
+  cluster of five roots, the form of the function is approximately y = x^5. The
+  algorithm has difficulty coping with this, but at least it does not Fail. 
+
+    Let us give an additional example of this convergence problem. In this case,
+  the function is y = (x + 1)^5. Whether the evaluation point is near to or far 
+  from the multiple root, the functional form always has the high curvature as- 
+  sociated with a quintic function. The sample runs aIl show how the algorithm
+  is struggling to find the root, and how it is converging slowly. 
+
+    These were two particularly difficult examples. Most functions do not create 
+  as much trouble for Mueller's method as these do, especially when the initial 
+  guess is reasonably near a root. You can compare the results for the y=(x+1)^5
+  case with a similar example given in another chapter using Newton's method.
+  The comparison clearly shows the superior properties of the Mueller algorithm. 
+
+  The implementation of the one-dimensional Mueller algorithm as shown in pro-
+  gram Mueller contains several checks to avoid errors in execution. For the
+  most part, these error checks involve avoiding divide-by-zero failures. How-
+  ever, one particular check is associated with a potentially fatal situation. 
+  In this case, the three evaluation points lead to a parabolic fit that does
+  not cross the X axis; the roots are imaginary. This is not helpful to the al-
+  gorithm and the error check substitutes an artificial set of intersections to
+  at least keep the iteration going. 
+
+    In another section (see file Mueller2.txt), we will investigate the exten-
+  sion of Mueller's method to two dimensions by using successive substitution.
+
+  From [BIBLI 01]
+--------------------------------------
+End of file Mueller.txt

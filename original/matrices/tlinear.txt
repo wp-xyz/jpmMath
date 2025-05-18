@@ -1,0 +1,63 @@
+        SOLVE A LINEAR SYSTEM BY TRIANGULARIZATION (GAUSS) METHOD
+
+                      E X P L A N A T I O N   F I L E
+
+
+
+ Linear systems, AX = B, can be put in triangular form only if the determinant
+ of matrix A does not equal zero, that is if a solution exists.
+
+ We know that every line of A(I,J) can be replaced by a linear combination of
+ other lines (without changing the solution).
+
+ So it is possible by a series of linear transformations to reduce any given
+ linear system to an upper triangular associated linear system, this is the
+ Gauss elimination method.
+
+ Let us see it with an example of size N=3:
+
+   a11 x1 + a12 x2 + a13 x3 = b1    (1)
+   a21 x1 + a22 x2 + a23 x3 = b2    (2)
+   a31 x1 + a32 x2 + a33 x3 = b3    (3)
+
+ Let us multiply line (1) by a21/a11:
+
+   a21 x1 + a21/a11 a12 x2 + a21/a11 a13 x3 = a21/a11 b1  (1 bis)
+
+ By substracting line (1 bis) from line (2), we obtain a new line (2) without
+ the x1 term:
+
+   0 x1 + (a22 - a21/a11 a12) x2 + (a23 - a21/a11 a13) x3 = b2 - a21/a11 b1  (2 bis)
+
+ We proceed in the same way to eliminate the x1 term of the third line, and
+ the system becomes (in matrix notation):
+
+       | a'11  a'12  a'13 | | x1 |   | b'1 |
+       | 0     a'22  a'23 | | x2 | = | b'2 |
+       | 0     a'32  a'33 | | x3 |   | b'3 |
+
+ with
+       a'11 = a11, a'12 = a'13, a'13 = a13, b'1 = b1
+       a'22 = a22 - a21/a11 a12, a'23 = a23 - a21/a11 a13, b'2 = b2 - a21/a11 b1
+       a'32 = a32 - a31/a11 a12, a'33 = a33 - a31/a11 a13, b'3 = b3 - a31/a11 b1
+
+ Now we eliminate the x2 term of the third line in the same way: we multiply the
+ second line of the new system A'X = B' by a'32/a'22 and we substract this new line
+ from the third line, a'22, the x2 term, vanishes and our system matrix becomes an
+ upper triangular matrix:
+
+       | a"11  a"12  a"13 | | x1 |   | b"1 |
+       | 0     a"22  a"23 | | x2 | = | b"2 |
+       | 0     0     a"33 | | x3 |   | b"3 |
+
+ with
+       a"11 = a'11, a"12 = a'12, a"13 = a'13, b"1 = b'1
+       a"22 = a'22, a"23 = a'23, b"2 = b'2
+       a"33 = a'33 - a'32/a'22 a'23, b"3 = b'3 - a'33/a'22 b'2
+
+ Solving the linear system A"X = B" is easy.
+
+ NOTES: This is only feasible if a11 <> 0 and a'22 <>0. These particular coefficients
+        are called pivots. If not so, one can still permutate lines.
+
+        This algorithm destroyes the original A matrix.

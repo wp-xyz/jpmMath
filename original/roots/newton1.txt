@@ -1,0 +1,51 @@
+                 EXPLANATION FILE OF PROGRAM NEWTON1
+                  ===================================
+
+
+    Newton's Method
+    ---------------
+
+
+    If the function and its derivative are known analytically, then a simple
+  routine can be written for Newton's method. As Hamming notes (see Ref. 16),
+  when Newton's method closes in on a zero, the number of digits accuracy rough-
+  ly doubles with each iteration step. This is termed quadratic convergence.
+  However, there are conditions under which the direct application of Newton's
+  method does not converge. This may seem confusing in that we used the idea of
+  maximizing the convergence rate to obtain Newton's method. We can examine the
+  problem by recalling that, for Newton's method, 
+
+                                     y
+                        g(x) = x - -----
+                                   dy/dx
+
+  The derivative of g(x) is
+
+                    dg(x)        dy/dx     y(d²y/dx²)   y(d²y/dx²)
+                    ----- = 1 - -------- + ---------- = ----------   (6.8.1)
+                    d(x)         dy/dx      (dy/dx)²     (dy/dx)²
+
+  If y(x) is nearly a straight line near the location of the zero, we have dy/dx
+  =0, and convergence is guaranteed. However, if there is considerable curvature
+  to y(x) [d²y/dx² >= (dy/dx)²/y], the method may converge poorly, or sirnply
+  diverge. 
+
+    Although Newton's method is very good when it works, there is a problem in
+  making it converge quickly. The convergence rate problem can usually be over-
+  come if the starting guess is sufficiently near the root so that dg/dx = 0 in
+  equation (6.8.1). Thus, Newton's method is most applicable as the final rou-
+  tine in finding a root, where the first routine approximately locates the po-
+  sition of that root before-hand. 
+
+    The Newton's method has been implemented in program Newton1. The variables
+  passed to the subroutine are the initial guess, XO, the maximum number of ite-
+  rations, M, and the desired accuracy, E. Returned is the approximate root, X,
+  the number of iterations, N, and the last value of Y calculated. The subrou-
+  tine itself calls another routine which contains the evaluation of y(x), Y,
+  and its derivative, YI. An example of a function subroutine is given in the 
+  program listing.
+
+
+  From [BIBLI 01].
+-----------------------------------------
+End of file Newton1.txt

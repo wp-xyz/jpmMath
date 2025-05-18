@@ -1,0 +1,127 @@
+
+                   EXPLANATION FILE OF PROGRAM CHEBYSHE
+                   ====================================
+
+
+  Cbebyshev Approximation
+  -----------------------
+ 
+  The Chebyshev polynomial of degree n is denoted Tn(x), and is given the
+  explicit formula 
+  
+		Tn(x) = cos(n arccos x)             (5.6.1)
+ 
+  This may look trigonometrie at first glanee (and there is in fact a close 
+  relation between the Chebyshev polynomials and the discrete Fourier trans-
+  form); Howeever (5.6.1) can be combined with trigonometrie identities to yield
+  explicit expressions for Tn(x),
+
+		To(x) = 1
+ 
+		T1(x) = X 
+		
+		T2(X) = 2x2 - 1                     (5.6.2)
+	
+		T3(x) = 4x3 - 3x 
+
+		T4(x) = 8x4 - 8x2 + 1 
+
+  The Chebyshev polynomials are orthogonal in the interval [-1,1] over a weight 
+  (1 - X2)-1/2. ln particular, 
+
+                 1  Ti(x) Tj(x)        |0   	i <> j     
+        	Sum ------------ dx =  |pi/2	i=j <> 0    (5.6.3)
+                -1  sqrt(1-x²)         |pi 	i= j = 0
+ 
+  The polynomial Tn(x) has n zeros in the interval [-1,1], and they are located 
+  at the points
+ 
+  	                 pi(k-1/2)
+		x = cos -----------	k = 1, 2,...,n      (5.6.4) 
+		             n 
+
+  In this same interval there are n + 1 extrema (maxima and minima), located at 
+
+		x = cos ( pi k/n )      k = 0, 1, ... ,n    (5.6.5)
+
+  
+  At all of the maxima Tn(x) = 1, while at all of the minima Tn(x) = -1; it is 
+  precisely this property that makes the Chebyshev polynomials so useful in 
+  polynomial approximation of functions.
+ 
+  The Chebyshev polynomials satisfy a discrete orthogonality relation as well 
+  as the continuous one (5.6.3): If Xk (k = 1, ... , m) are the m zeroes of 
+  Tm(x) given by (5.6.4), then 
+
+		 m                   |0         i <> j
+		Sum Ti(xk) TJ(Xk) =  |m/2	i=j <> 0    (5.6.6)
+		k=1                  |m 	i = j = 0	
+
+  It is not too difficult to combine equations (5.6.1), (5.6.4), and (5,6.6) 
+  to prove the following theorem: If f(x) is an arbitrary function in the in 
+  the interval [-1, 1], and if N coefficients Cj, j = 1,..., N, are defined by 
+                  
+                   N        
+        c = (2/N) Sum f(xk) Tj-1(xk) 
+         j        k=1
+ 
+                   N           pi(K-1/2)       pi(j-1)(k-1/2) 
+	  = (2/N) Sum f [cos (---------)] cos (--------------)   (5.6.7) 
+                  k=1              N                 N
+
+  then the approximation formula
+
+                 N                
+	f(x) = [Sum c T   (x)]- (1/2) c                (5.6.8)
+                k=1  k k-1             1
+
+  is exact for x equal to all of the N zeros of TN(x). 
+
+  For a fixed N, equation (5.6.8) is a polynomial in x which approximates 
+  the function f(x) in the interval [-1,1] (where an the zeros of TN(x) are 
+  located). Why is this particular approximating polynomial better than any 
+  other one, exact on some other set of N points? The answer is not that (5.6.8) 
+  is necessarily more accurate than some other approximating polynomial of 
+  the same order N (for some specified definition of "accurate"), but rather 
+  that (5.6.8) can be truncated to a polynomial of lower degree m « N in a 
+  very graceful way, one which does yield the "most accurate" approximation 
+  of degree m (in a sense which can be made precise). Suppose N is so large 
+  that (5.6.8) is virtually a perfect approximation of f(x). Now consider the 
+  truncated approximation 
+
+		f(x) = [Sum c T   (x)] - (1/2) c       (5.6.9) 
+                             k k-1              1
+
+  with the same cj's, computed from (5.6.7). Since the Tk(X)'S are an bounded 
+  between ±1, the difference between (5.6.9) and (5.6.8) can be no larger than 
+  the sum of the neglected Ck's (k = m + 1,...,N). ln fact, if the Ck's are 
+  rapidly decreasing (which is the typical case), then the error is dominated 
+  by Cm+1Tm(x), an oscillatory function with m + 1 equal extrema distributed 
+  smoothly over the interval [-1, 1]. This smooth spreading out of the error is
+  a very important property: The Chebyshev approximation (5.6.9) is very nearly 
+  the same polynomial as that holy grail of approximating polynomials the 
+  minimax polynomial, which (among an polynomials of the same degree) has the 
+  smallest maximum deviation from the true function f(x). The minimax polyno-
+  mial is very difficult to find; the Chebyshev approximating polynomial is 
+  almost identical and is very easy to compute! 
+
+  So, given some (perhaps difficult) means of computing the function f(x), we 
+  now need algorithms for implementing (5.6.7) and (after inspection of the 
+  resulting Ck'S and choice of a truncating value m) evaluating (5.6.9). The
+  latter equation then becomes an easy way of computing f(x) for an subsequent
+  time.
+ 
+  The first of these tasks is straightforward. A generalization of equation 
+  (5.6.7) that is here implemented is to allow the range of approximation to be 
+  between two arbitrary limits a and b, instead of just -1 to 1. This is
+  effected by a change of variable
+ 
+                    x - (1/2)(b + a)
+		y = ----------------          (5.6.10) 
+                      (1/2)(b-a)  
+
+  and by the approximation of f(x) by Chebyshev polynomial in y.
+
+  From [BIBLI 08].
+----------------------------------------------------------------
+End of file chebyshe.txt

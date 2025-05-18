@@ -1,0 +1,142 @@
+
+
+                    EXPLANATION FILE OF PROGRAM NEWTON
+                    ==================================
+
+
+  Newton Divided-Differences Interpolation and Error Estimates
+  ------------------------------------------------------------
+
+    Another approach to obtaining the Nth-degree polynomial interpolation curve
+  required to piece-wise fit a given table is to consider the Taylor series ex-
+  pansion about a particular nearby table value:
+                                             2 2              3  3
+                               df|     (x-xi) d f |     (x-xi)  d f |
+          f(x) = f(xi) + (x-xi)--|   + ------ ---2|   + ------  ---3| 
+                               dx|xi     2!   d x |xi     3!    d x |xi
+
+                               4  4                    n  n
+                         (x-xi)  d f |           (x-xi)  d f |
+                       + ------  ---4|   + ... + ------  ---n|   + ...  (5.3.1)
+                           4!    d x |xi           n!    d x |xi
+
+                                          n
+  By truncating the series at the (x - xi)  term, the function f(x) is approximated with 
+  an Nth-degree polynomial. The resulting error is contained largely in the first term 
+  neglected. It can be shown that the error is
+
+                                 n+1  n+1
+                         (x - xi)    d   f |
+                         --------    ------|
+                          (n+1)!     dx^n+1|x'
+
+  where x' is sorne value in the interval between x and xi.
+   
+    To generate an algorithm that implements this expansion, table values neighboring the
+  position of interest are employed to find estimates for the (1/ N!) dnf / dxn terms in
+  a form called dioided differences. These factors can be derived very methodically as
+  follows: 
+                                        (1)   fi+1 - fi
+           First divided difference  = Fi   = ---------
+                                              xi+l - xi
+
+                                               (1)    (1)
+                                         (2)  Fi+1 - Fi
+           Second divided difference = Fi   = ---------
+                                              xi+1 - xi
+                                                               (5.3.2)
+                                               (2)    (2)
+                                         (3)  Fi+1 - Fi    
+           Third divided difference  = Fi   = --------- 
+                                              xi+1 - xi 
+
+                                               (N-1)   (N-1)
+                                         (N)  Fi+1 - Fi    
+             Nth divided difference  = Fi   = --------- 
+                                              xi+1 - xi 
+
+
+  The polynomial fitted between xi and xi+1 is then
+
+                                     (1)           2  (2)           3  (3)
+      f(x) = p(x) = fi + (x - xi)Fi   + (x - xi) Fi    + (x - xi) Fi    + ...   (5.3.3) 
+
+    Observe that the divided differences automatically include the factorials appearing in
+  equation (5.3.1). Note also that the divided difference corresponding to dnf / dxn is
+  calculated by employing fi values somewhat remote from the region of interest: Fi(l) uses
+  fi and fi+1, Fi(2) uses fi, fi+1 and fi+2, etc. ln fact, all but one of the points invol-
+  ved is forward of the interpolation position. Therefore, the required derivatives are not
+  being estimated at the exact position desired, but rather a little after it. This same
+  bias is built into the Lagrange formulation. The effect can be reduced by applying a for-
+  ward/backward, or central divided-differences hybrid formula instead. However, this alter-
+  ation to improve the accuracy is not worth the effort when the increased complexity (and
+  slower execution speed) of the resulting program is considered along with the round-off
+  error, which appears to dominate the accuracy anyway. 
+
+    There are two sources of error in the Newton divided-differences interpolation scheme.
+
+  The first and most obvious source is the intrinsic error due to truncating the Taylor
+  series. If Nth-order interpolation is employed, then the truncation error is asiated with
+  the first term not included:
+
+                            N+1   (N+1)
+                    (x - xi)     d     f
+            Erroe = ----------- ---------              (5.3.4)
+                                   (N+1)  
+                      (N+1)!     dx
+
+  (The error for the actual numerical calculation has this sa me form, but it is a little 
+  different. It will be discussed shortly).
+   
+    Truncation error is, in principle, amenable to estimation. However, in the specific
+  case of Newton interpolation, it is usually not the dominant source of inaccucy. The Nth
+  divided difference involves N calculations of the differences between nearly equal numbers.
+  This leads to significant round-off error. Unfortunately, this round-off error cannot
+  easily be estimated. We will see its very large effect in a later example.
+   
+    A subroutine for third-order (cubic) Newton interpolation appears in program Newton. 
+  The associated input/output variables are the same as those for the Lagrange routine,
+  with the exception of N. Because the interpolation is cubic, the order input, N, is super-
+  fluous. 
+
+    The NEWTON subroutine can easily be extended to higher orders of interpolation, but this
+  is not wise. Such an extension leads to an increase in the round-off error which, as we will
+  soon see, is bad even at the cubic level.
+   
+    A priori, the only obvious advantages to the Lagrange interpolation routine are that it is
+  shorter in length, and that it does not require several additional large-diensioned arrays.
+  Mathematically, Lagrange and Newton interpolation of the same type (forward, backward, etc.)
+  and order are equivalent--only the evaluation forms are different. Therefore, they have the
+  same intrinsic accuracy. ln fact, the truncation error for the cubic case in each is
+
+                                                            4
+                    (x - xi)(x - xi+1)(x - xi+2)(x - xi+3) d f |
+            Error = -------------------------------------- ---4|       (5.3.5)
+                                    4!                      dx |x'
+
+  where x' is an evaluation point somewhere in the interval between xi and xi+3. Equations
+  appear to be different, with the latter method giving larger values for the error estimate.
+  The difference between the two equations can be rationalized as follows. Equation (5.3.4)
+  assumes implicitly that we know the value of all the required derivatives at the position xi.
+  However, such is not the case in the numerical calculation. Rather, a group of table values is
+  used to estimate the required derivaes, thereby increasing the error. For example, the divided-
+  difference third derivative calculation involves using the points xi, xi+l, xi+2, and xi+3.
+  The value found is the third derivative at some point in that interval (by the mean value
+  theorem). This introduces into the algorithm an intrinsic inaccuracy beyond that expected from 
+  equation (5.3.4). For a further discussion of this issue, see Applied Numerical Methods, Ref.10. 
+
+    From the form of the error estimate, it is apparent that a cubic polynomial is fitted exactly
+  because the fourth derivative of a cubic is necessarily zero throughout the interval. This error
+  estimate is also calculated in the Newton program. The Newton method is two orders of magnitude
+  less accurate than the Lagrange method in this particular example. It is not sufficient to simply
+  reduce the truncation error by using more closely spaced table values or higher-order inter- 
+  polation; round-off error must also be guarded against. 
+
+    It is obvious that Lagrange interpolation is superior to Newton's divided-differences technique
+  in terms of final accuracy. The precautions associated with using NEWTON are identical to those en- 
+  countered with LAGRANGE (see file Lagrange.txt).
+
+From [BIBLI 01]
+--------------------------------------------------
+End of file Newton.txt
+  

@@ -1,0 +1,122 @@
+
+
+                  EXPLANATION FILE OF PROGRAM LSQPLY
+                  ==================================
+
+
+  Least-Squares Fitting With Orthogonal Polynomials
+  -------------------------------------------------
+   
+    The major problem associated with applying the one-dimensional least-squares 
+  polynomial algorithm given before (see file Lstsqr.txt) is round-off error.
+  This error is due to the large number of mathematical operations associated
+  with implementing equation (1.4.4):
+   
+                              t  -1 t
+                        D = (X X)  X Y 
+
+    By using Forsythe polynomials instead of simple powers of X, however, you
+  can still apply the same general matrix equation while drastically reducing
+  the number of calculations. (For a discussion of this technique, see Applied
+  Numerical Methods, Ref. 10. It is interesting to note that the very signifi-
+  cant round-off error implications of this alternative method are fairly
+  obvious, but appear to have escaped forceful attention in the common litera-
+  ture). 
+
+    We will denote the Forsythe polynomial of degree j as Pj(x). The associated
+  approximation equation which is equivalent to equation (1.4.1) is 
+
+            y(X) = D + D P (x) + D P (X) + ... + D P (X)     (1.6.1) 
+                    0   1 1       2 2             n n
+
+  We will define the matrix P as
+
+
+                   | 1  P1(x1)  P2(x1) ... Pn(x1) |
+                   | 1                            |
+               P = | 1                            |
+                   | 1                            |
+                   | 1                            |
+                   | 1  P1(xm)  P2(xm) ... Pn(xm) |
+
+
+  This has the sa me appearance as the X matrix shown in section 1.4, and we can 
+  thereby write the approximation equation as 
+
+                            Y = PD                             (1.6.2)
+                             
+  Again, following the analysis of that section, we will define the error func-
+  tion for the fit to be 
+                                      t
+                      Error = (Y - PD) (Y - PD)                (1.6.3)
+                       
+  The corresponding solution obtained for the coefficient vector, 0, is 
+
+                                t  -1 t
+                          D = (P P)  P Y                       (1.6.4)
+
+  The savings in computation (and thus in round-off error) is associated with
+  the form of P^tP. If all the off-diagonal terms of that matrix could somehow
+  be forced to be zero, the total number of calculations would be greatly re-
+  duced. (P^tP)^-1 would then not require a full matrix inversion that is very
+  prone to round-off error. ln fact, if that could be accomplished, the coef-
+  ficients would simply be
+
+                                m
+                               Sum P (xi) yi
+                               i=1  j
+                          D  = --------------                  (1.6.5)  
+                           j    m        2
+                               Sum P (xi)
+                               i=1  j
+
+  The ability to force this condition rests in the choice of the Pj(x) poly-
+  nomials. Forsythe found just a set. The recursion relation for calculating
+  them is 
+
+                     P (x) = (x - g ) P   (x) - d  P   (x)     (1.6.6)
+                      j            j   j-1       j  j-2
+
+               with  P  (x) = 0  and  P (x) = 1     
+                      -1               1
+
+                            m               2
+                           Sum xi |P   (xi)|
+                           i=1      j-1
+                      g  = -----------------                   (1.6.7)
+                       j    m            2
+                           sum |P   (xi)|
+                           i=1   j-1
+
+                            m             
+                           Sum xi P   (xi) P   (xi)
+                           i=1     j-1      j-2
+                      d  = ------------------------            (1.6.8)
+                       j        m            2
+                               sum |P   (xi)|
+                               i=1   j-2
+
+  Besides having the nice round-off error property, this formulation also has
+  the advantage that the order of the fit can be increased by one degree without
+  extensive recalculation. The calculation for the additional degree can simply
+  be added on. 
+
+    Program LSQPLY performs these calculations. The user inputs the degree of
+  fit (N), the number of data points (M), and the data pairs [X(I),Y(I)]. Also,
+  an optional error reduction factor (E) can be included. If E = 0, the subrou-
+  tine will provide a fit to the degree N. If E > 0, an increasing sequence of
+  fits will be tried until the standard deviation either is reduced by less
+  than that factor or increases, or until the Nth-degree fit is reached. ln the
+  case of termination before the Nth degree, the actual degree of fit is retur-
+  ned in L. 
+
+    It is apparent from the examples given that this algorithm is fairly resis-
+  tant to round-off error.
+   
+    The precautions involved in using this subroutine are simple. The number of
+  distinct data points must exceed the degree of fit (M >= N + 1). E must be
+  nonnegative. This method is highly recommended for polynomial regression.
+
+  From [BIBLI 01].
+-----------------------------------------------------
+End of file lsqply.txt

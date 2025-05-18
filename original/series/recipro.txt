@@ -1,0 +1,75 @@
+
+
+                   EXPLANATION FILE OF PROGRAM RECIPRO
+                   ===================================
+
+
+  Polynomial Inversion
+  --------------------
+
+    The next utility algorithm we will consider is the polynomial approximation
+  to l/P(x). We will denote the approximating polynomial as Q(x). The relation-
+  ship to satisfy is 
+ 
+                P(x) Q(x) = 1 
+
+  or
+                               2                      2
+                (a0 + alx + a2x  + .. )(bo + b1x + b2x  + ... ) = 1 
+
+  By again equating like powers of x, we ob tain the following sequence of equa-
+  tions:
+                 0
+                x :  a0b0 = 1
+
+                 1
+                x :  a0b1 + a1b0 = 0
+
+                 2
+                x :  a0b2 + a1b1 + a2b0 = 0
+
+                ---------------------------
+
+                 n
+                x :  a0bn + a1bn-1 + ... + anb0 = 0
+
+
+    By solving the first coefficient equation, enough information is obtained
+  to solve the second, and so on throughout the sequence. There is an infinite
+  number of equations to be solved, but they can be processed only one degree
+  at a time, starting with b0. Therefore, in principle, any level of approxima-
+  tion is possible. The one restriction on this is that the infinite series for
+  Q(x) will not converge for values of x that correspond to roots of P(x). Also,
+  the truncated approximation to Q(x) behaves in a manner similar to a truncated
+  Taylor series--the error tends to grow with increasing x.
+   
+    The solution to the coefficient equations can be numerically implemented as 
+  shown in program Recipro. This inversion subroutine accepts as input the de-
+  gree (N) of P(x), the corresponding coefficients [A(1)], and the degree (M) of
+  the reciprocal polynomial, Q(x). The M + 1 coefficients calculated for Q(x)
+  are returned in the array B(I).
+   
+    Three examples are given. These particular examples were picked because each
+  displays a different type of approximation error. 
+
+    In the first example, the full inverse series diverges at x = ±1/2, even
+  though P(x) has only one root: x = -1/2. However, for [x] < 0.2, the truncated
+  series accurately approximates 1/ P(x). 
+
+    The second example shows an inverse polynomial that diverges at x = ±1. This 
+  expected in that both points are roots of P(x).
+ 
+    The third example is curious, P(x) has no real roots, but Q(x) clearly
+  diverges at x = 10 and roughly x = -12. However, the approximation to 1/ P(x)
+  is very good over the range -5 < x < 5. 
+ 
+    Program Recipro is fairly reliable. It will always give an approximation to 
+  1/P(x) which is good close to x = 0 as long as a0 <> O. A divide-by-zero error
+  will occur if a0 = O. As we saw from the examples, the approximation to Q(x)
+  will surely diverge at the roots of P(x). However, it may also diverge at
+  other values. Therefore, it is wise to empirically check the range of validity
+  of the calculated polynomial before using it. 
+
+  From [BIBLI 01].
+----------------------------------------------
+End of file Recipro.txt

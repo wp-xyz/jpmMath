@@ -1,0 +1,55 @@
+
+
+
+                     EXPLANATION FILE OF PROGRAM ASYMERF
+                     ===================================
+
+
+  The Error Function
+  ------------------
+
+      The error function erf(x) can be approximated with an asymptotic series.
+
+                                     x   -t^2 dt
+                erf(x) = 2/sqrt(pi) Sum e
+                                     0
+
+      This function or its complement, erfc(x) = 1 - erf(x), is often involved
+
+      in the solutions to heat transfer and ionic diffusion problems. It also
+
+      appears in statistics. In many cases, there is need to know the value of
+
+      erf(x) for large values of the argument ( x > 3); tables seldom cover
+
+      this range adequately.
+
+      Peirce gives a convenient asymptotic expansion for positive values of x:
+
+                            1      1 x 3    1 x 3 x 5
+             erf(x) = 1 - ---- + -------- - --------- + ...
+                          2x^2   (2x^2)^2   (2x^2)^3
+
+      As with most asymptotic series, the above expression eventually diverges.
+
+      However, we can again terminate the summation at the smallest term and
+
+      use the magnitude of the next term as a measure of the error bound. This
+
+      is done in program ASYMERF: The input is X, the returned values are
+
+      Y = erf(X), Y1 = erfc(X), the error estimate E and the number of terms
+
+      summed, N.
+
+      For x <= 3, a rapidly convergent Taylor series approximation can be used:
+
+                                    3       5              7
+        erf(x) = (2/sqrt(pi)) (x - x / 3 + x / (5 * 2!) - x / (7*3!) + ...)
+
+
+
+ Extract from Reference [BIBLI 01].
+
+ ------------------------------------------------
+ End of file asymerf.txt

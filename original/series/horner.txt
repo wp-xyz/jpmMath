@@ -1,0 +1,89 @@
+
+                   EXPLANATION FILE OF PROGRAM HORNER
+                   ==================================
+
+
+  Shifting the Expansion Point with Horner's Rule
+  -----------------------------------------------
+
+    The most difficult source of inaccuracy that must be dealt with in numerical 
+  analysis is round-off error. ln many cases, it is unavoidable. However, it is
+  often possible to restructure the calculation to minimize the influence of
+  round-off error. In this subsection, we will examine how this can be accom-
+  plished for some polynomial calculations. 
+
+    Consider the following quartic polynomial: 
+
+                               2      3    4
+             y(x) = 1 + 4x + 6x  + 4 x  + x
+
+  If this polynomial appeared within a calculation and were to be evaluated near
+  x=-1, there is a strong possibility that round-off error would seriously
+  affect the accuracy of the computation. The reason for this is that ideally
+  y(-1) = 1 - 4 + 6 + 4 + 1 = O. However, numerically the result would be E,
+  and the relative error would be infinite. If y(x) is a multiplier in an analy-
+  sis, the results can be useless. 
+
+    If it were known beforehand that the calculations would involve x values in
+  the vicinity of -1, y(x) could be replaced with a better conditioned form: 
+
+                           4
+             y(x) = (x + 1) 
+
+  Now if there is round-off errer, its influence is mu ch reduced.
+   
+    What we have done in the above example is to shift the expansion point so
+  that 
+
+                              2                                 2
+         y(x) = a  + a x + a x  + ... = b  + b (x-x ) + b (x-x )  + ...  (2.6.5)
+                 0    1     2            0    1    0     2    0
+
+  The problem is therefore one of determining the coefficients b. (i = 0, 1,
+  ... ). To solve for the bi coefficients in terms of the ai and xo values, we
+  again equate like powers:
+                             2
+	 a  = b  - b x + b  x  - ...
+          0    0    1 0   2  0
+          	                2
+	 a  = b  - 2b x  + 3b  x  - ...		. 
+          1    1     2 0     3  0
+
+  and so on. For an Nth-degree polynomial, there are N + 1 equations in the
+  N + 1 unknowns (bo, b1, ... , bn), and the problem is, in principle, soluble.
+   
+    Homer developed an algorithm for quartic polynomials that is relatively
+  simple. We will start with the definition 
+
+          -1
+         b   = a     for n = 0, 1, 2, 3, 4
+          n     n
+                                                  m
+  Next, for m = 0, 1, 2, 3, 4 we will calcula te b :
+                                                  0
+          m     m-1
+         b  = b
+          0     0
+
+          m       m      m-1   
+         b  = x  b    + b        for n = 1, 2, 3, 4 - m
+          n    0  n-1    n
+
+  Finally,
+                 4-m
+         b    = b                for m = 0, 1, 2, 3, 4
+          m      m
+
+  This algorithm can be generalized for polynomials beyond the quartic, but for
+  the purposes of this discussion, we willlimit ourselves to the quartic case. 
+
+
+  A subroutine for applying Horner's algorithm is given in program Horner.
+
+  This program is easy to use and requires no special precautions. As a simple
+  exercise, extend HORNER to polynomials of a higher degree than the quartic.
+
+From [BIBLI 01].
+-------------------------------------------------------
+End of file horner.txt
+  

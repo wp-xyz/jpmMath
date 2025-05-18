@@ -1,0 +1,44 @@
+Program Description
+
+    Explanation File of program below (EULROMB) NEW
+    Solve Y'= F(X,Y) with Initial Condition Y(X0)=Y0 using the Euler-Romberg Method
+    Solve Y'= F(X,Y) with Initial Condition Y(X0)=Y0 using the Adams-Bashforth Method
+    Explanation File of Program above (Adambash) NEW
+    Solve Y'= F(X,Y) with initial conditions using the Adams-Moulton Prediction-Correction Method NEW
+    Differential equations of order 1 to N by Runge-Kutta method of order 4
+    Explanation File of Runge-Kutta Method NEW
+    Test program of above unit for N=1 and 1 variable
+    Test program of above unit for N=1 and 1 variable with graph option
+    Test program of above unit for N>1 (maximum N=9) and 1 variable
+    Test program of above unit for N>1 (maximum N=9) and 1 variable with graph option
+    Test program of above unit for N=1 and P variables
+    Test program of above unit for N=1 and P variables with graph option
+    Differential equation of order 2 by Stormer method
+    Explanation File of Program above (Stormer) NEW
+    Differential equation of order 1 by Prediction-correction method
+    Unit used by program below (urkf45.pas)
+    Integrate a System of Ordinary Differential Equations By the Runge-Kutta-Fehlberg method (double precision)
+    Solve a first order Stiff System of Differential Equations using the Rosenbrock method of order 3 or 4
+    Solve an ordinary system of first order differential equations using automatic step size control (used by Gear method and rwp)
+    Test Program of procedure awp
+    Gauss algorithm for solving linear equations (used by Gear method)
+    Examples of 1st Order Systems of Differential Equations
+    Implicit Gear Method Solver for program below
+    Solve a first order Stiff System of Differential Equations using the implicit Gear's method of order 4
+    Explanation File for Gear's Method
+    Solve Laplace Equation by relaxation Method: d2T/dx2 + d2T/dy2 = 0 Example #1: Temperatures in a square plate with limit conditions
+    Solve Laplace Equation by relaxation Method: d2T/dx2 + d2T/dy2 = 0 (2) Example #2: Temperatures in a rectangular plate with a hole
+    Solve Laplace Equation by relaxation Method: d2T/dx2 + d2T/dy2 = 0 (3) Example #3: Idem Example #1 with new limit conditions
+    Solve an ordinary system of differential equations of first order using the predictor-corrector method of Adams-Bashforth-Moulton (used by rwp)
+    Test Program of Adams-Bashforth-Moulton's Method
+    Solve a system of first degree ordinary differential equations using the extrapolation method of Bulirsch-Stoer-Gragg (used by rwp)
+    Test Program of Bulirsch-Stoer-Gragg's Method
+    Solve a two point boundary problem of first order with the shooting method (rwp)
+    Driver program to solve a boundary value problem for a first order DE system via the shooting method by determining an approximation for the initial values
+    Solve a boundary value problem for a second order DE using Runge-Kutta
+    Solve a first order DE system (N=2) of the form y' = F(x,y,z), z'=G(x,y,z) using a Runge-Kutta integration method
+    Solve an ordinary system of first order differential equations (N<=10) with initial conditions using a Runge-Kutta integration method
+    Unit EQUDIF to solve First Order ODE systems used by program below
+    Optional unit UTILS1 for screen output used by progral below
+    Solve an ordinary system of first order differential equations (N<=10) with initial conditions using a Runge-Kutta integration method with time step control
+    Solve a two point boundary problem of second order with the shooting method NEW 

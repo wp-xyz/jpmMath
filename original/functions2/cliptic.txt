@@ -1,0 +1,96 @@
+
+                   EXPLANATION FILE OF PROGRAM CLIPTIC
+                   ===================================
+
+
+  Elliptic IntegraIs by Recursion
+  -------------------------------
+ 
+    Elliptie integrals outwardly appear to be very esoteric functions and many
+  practicing scientists and engineers avoid them. But these functions are inti-
+  mately related to such very common and simple concepts as the period of a pen-
+  dulum and the circumference of an ellipse.
+   
+    We will consider the complete elliptic integrals of the first and second
+  kinds. They are defined respectively as 
+
+                               pi/2         1
+                     K(k) = Sum     ------------------- dt        (3.6.1)
+                               0    sqrt(1-k^2 sin^2 t)
+  and
+                               pi/2         1
+                     E(k) = Sum     ------------------- dt        (3.6.2)
+                               0    sqrt(1+k^2 sin^2 t)
+
+  K(k) can easily be used to accurately calculate the period of an ideal pendu-
+  lum as follows. If the length of the pendulum is l, the gravitational constant
+  g and the maximum amplitude of swing alpha (in radians), then the period is 
+
+                  T = 4 K(k) sqrt(l/g)  where k = sin(alpha/2)    (3.6.3)
+
+  ln most introductory courses and texts that discuss the pendulum, it is assu-
+  med that the amplitude of swing is so small that sin(theta) can be replaced
+  with theta in the defining differential equation. ln that case, k is near 0
+  and T is near 2 pi sqrt(l/g). For amplitudes of vibration so small that this
+  approximation is valid, the period is independent of the amplitude and is said
+  to be isochronous. However, as the maximum amplitude is increased, the period
+  gets longer (e.g., a church bell stuck upside down). Greenhill gives a prac-
+  tical example that shows that if a pendulum's amplitude is adjusted from a 6°
+  swing to a 10° swing, it will lose 26 seconds a day. As you can imagine, the-
+  se calculations were particularly important in the days when the pendulum (or
+  a similar dock mechanism) was the primary timepiece.
+   
+    The complete elliptie integral of the second kind, E(k), also has a simple
+  application. If the major and minor axes of an ellipse are 2a and 2b, respec-
+  tively, then the circumference of that ellipse is 
+
+                   c = 4b E(k)   where k^2 = (b^2 - a^)/b^2       (3.6.4) 
+
+  For the special case of a circle, a = b and c = 2 pi b.
+
+    As you can see, elliptie integrals are involved in sorne very fundamental
+  calculations. We will now consider how K(k) and E(k) can be approximated. 
+
+    The steps in the elliptic integral recursion procedure are very similar to
+  those involved in the arctangent calculation. First, the starting values are
+  defined:
+
+                           ao = 1 + k
+                                                                  (3.6.5)
+                           ho = 1 - k 
+
+  Next, the recursion relation is repeatedly exercised until lan - bnl is less
+  than sorne convergence criterion, E:
+   
+                           a    = (a + b) / 2 
+                            i+1     i   i
+                                              for i = 1, 2, ...   (3.6.6)
+
+                           (a b)^(1/2)
+                            i i
+
+  Note that equation (3.6.6) is nearly identical to equation (3.4.2).) Once the
+  convergence criterion has been met, K(k) is evaluated as
+
+                           K(k) = pi/2 a
+                                        n
+
+  E(k) requires sorne further calculation:
+   
+       E(k) = (K(k/2)[2 - (a² - b²) - 2(a² - b²) - 4(a² - b²) - ... ]   (3.6.8)
+                            0    0       1    1       2    2
+
+  Technically, the form of the evaluation for E(k) is prone to round-off error.
+  Convergence is usually rapid, however, and the round-off error tends to be
+  small.
+   
+    The above recursive procedure can be very compactly programmed in BASIC as
+  shown in program CLIPTIC.BAS. The inputs to CLIPTIC are simply the parameter K
+  (0 <= K <= 1) and the convergence criterion, E. The outputs are El = K(K),
+  E2 = E(K), and the number of steps performed, N.
+   
+    As is typical with this kind of recursion calculation, the accuracy is good. 
+ 
+  From [BIBLI 01].
+---------------------------------------------------------
+End of file cliptic.txt

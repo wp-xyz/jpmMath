@@ -1,0 +1,24 @@
+Directory Description
+
+https://jean-pierre.moreau.pagesperso-orange.fr/pascal.html
+
+    Arithmetic problems
+    Evaluation of Bessel Functions
+    Roots in the Complex Domain
+    Differential equations
+    Functional approximations by Iteration & Recursion
+    Special Functions NEW
+    Geometry programs
+    Graphic programs
+    Least squares approximation
+    Linear Programming
+    Algorithms concerning matrices
+    Programs concerning Mechanics
+    Miscellaneous Programs
+    Operations on Polynomials
+    Roots of real functions
+    Series approximation techniques
+    Signal processing
+    Sorting
+    Statistics
+    Utility procedures for graphics 

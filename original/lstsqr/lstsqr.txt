@@ -1,0 +1,557 @@
+
+         
+
+                 EXPLANATION FILE FOR LEAST-SQUARES APPROXIMATIONS
+                 =================================================
+                       
+
+  1. General Introduction to Polynomial Approximations
+     -------------------------------------------------
+
+    The discussion here centers on one of the popular concepts in approximation
+  theory: least-squares curve fitting. or regression (the statistical determina-
+  tion of parametric dependencies, e.g., the polynomial coefficients of a least-
+  squares curve fit to a set of data). Although the associated techniques are 
+  usually applied to sets of data containing noise, they may also be employed to
+  provide approximations in functions. This is particularly useful when high-
+  accuracy tables that represent the function are available. ln the subroutines
+  given, there is no operational distinction made between curve-fitting noisy 
+  data or fitting function tables. Therefore, these subroutines can be used both
+  for statistical regression and for functional approximations. 
+
+    The least-squares curve-fitting criterion is simple and is based directly on
+  statistical concepts. We will take the linear correlation between two varia-
+  bles, x and y, as an example. If x is defined as the independent variable, and
+  y the dependent variable, then ideally the linear relationship between the two
+  is
+                   y = a + bx                                   (1.1.1)
+   
+  If we are given a set of data values (xi, yi) in which there is sorne error in
+  the yi measurement, we have 
+
+                   yi = a + bx, + Ëi                            (1.1.2)
+                    
+  Ei represents the measurement error. However, the error is usually an unknown
+  quantity. Therefore, a and b cannot be obtained from equation (1.1.2). In-
+  stead, the form of equation (1.1.1) is assumed, and by sorne means, the data 
+  set is used to obtain approximate values for a and b. We will call these 
+  approximations alpha and beta respectively.
+
+    If the error, E;, is normally distributed with variance a2 (this is a fairly
+  good assumption and is expected from the Central Limit Theorem-see Ref. 3), 
+  then the probability that the estimate, yi = alpha + beta xi, is within dy of 
+  yi is 
+
+                                    2 dy                           2   2
+  P(yi - dy <= yi <= yi + dy) = ----------- exp(-(yi-alpha-beta xi) /2s )  
+                                s*sqrt(2pi)
+  (1.1.3)
+                                 2
+  ln addition, if the variance, s, is independent of yi (i.e., the noise is 
+  additive and not signal dependent), and the errors are not correlaied (i.e.,
+  Ei is independent of Ej, i <> j), then the probability that aIl the predicted
+  values are within some dy of the measured values is 
+
+             2dy     N       N                      2
+    P = (-----------)  exp( Sum [-(yi-alpha-beta xi) ] )    (1.1.4)
+         s*sqrt(2pi)        i=1
+
+  P is called the likelihood. The values of alpha and beta that maximize P are 
+  called the maximum-likelihood estimators (see Ref. 4). lt can further be shown 
+  that the values of alpha and beta that maximize P are the most precise 
+  unbiased estimates of a and b statistically attainable using the given data. 
+
+    The maximum-likelihood criterion can be restated in the more familiar least-
+  squares form as follows. The "best" values of alpha and beta are those that 
+  minimize S(alpha,beta): 
+
+                                   N                    2
+                  S(alpha,beta) = Sum (yi-alpha-beta xi)     (1.1.5)
+                                  i=1
+
+    As we will see later, the above least-squares example can be generalized to
+  an Mth-degree polynomial (M <= N - 1). 
+
+    The approximation algorithms that result from the least-squares criterion 
+  will be considered in subsequent sections. The discussion for the remainder 
+  of this section will concentrate on the differences between least-squares 
+  curve fitting and several of the other approximation methods, notably Taylor
+  series and min-max polynomials. An understanding of the intrinsic error 
+  characteristics of these distinctly different approximation methods is very 
+  helpful in choosing the best algorithm for the task. 
+
+    Perhaps the most frequently used polynomial approximation method is the 
+  Taylor eries expansion:
+                                              2  2
+                              df|     (x - x0)  d f |
+      f(x) = f(xo) + (x - x0) --|   + --------  ---2|   + ...      (1.1.6)  
+                              dx|x0      2!      dx |x0
+ 
+  Its popularity is based on generality: any analytical function can be expanded
+  in a Taylor series. The standard mathematical handbooks (e.g., References 5, 
+  6, and 7) contain tables of Taylor series expansions for many functions. lt 
+  is therefore not surprising to find that functions are often evaluated in 
+  computers by means of these expansions.
+
+    ln particular, this seems to be the case with much of the software for small
+  computers in which the basic trigonometrie and exponential functions (and 
+  their inverses) are implemented in assembly language. The programmers who 
+  write this type of software are usually not aware of the significant short-
+  falls of Taylor series expansions. 
+
+    As discussed in the last chapter of Volume 1 of BASIC Scientific Subrou-
+  tines, Taylor series expansions are very convenient, but they are usually 
+  among the poorest of the polynomial approximation techniques. 
+
+    A much better approximation can be obtained simply by using a fourth-degree
+  least-squares polynomial. ln this case, the fourth-degree polynomial was gene-
+  rated by accurately calculating values for [ln (1 + x)] / x at 101 points (100
+  intervals) in the range 0 <= x <= 1. A least-squares cubic polynomial was then
+  fitted to this "data." The result was a much better fourth-degree approxi-
+  mation than that obtained by using the Taylor series, with the maximum error 
+  reduced by a factor of 200 (figure not shown here). 
+
+    The uneven distribution of error in least-squares approximations is cha-
+  racteristic of the method. Becket and Hurt (Ref. 8) point out that there are 
+  theoretical reasons for not expecting the error near the endpoints of the 
+  interval to go to zero regardless of the degree of the fit. This is remini-
+  scent of the Gibbs' Phenomenon in Fourier transform theory; a little ringing
+  is always present. Therefore, if least-squares fitting is employed, it is a
+  good practice to approximate the function over a range wider than that even-
+  tually needed.
+
+    It is possible to force the truncation error to be more evenly distributed. 
+  This is accomplished by employing min-max polynomials. Approximations to these
+  special polynomials can be obtained by using the truncated Chebyshev series 
+  discussed in Chapter 2. For the ln (1 + x) example, a four-term truncated 
+  Chebyshev series approximation results in a maximum error about the same as 
+  that observed for the quartic least-squares fit. If the next term in the 
+  Chebyshev series were included, the maximum error would be reduced sevenfold. 
+
+    Truncated Chebyshev series do not give true min-max polynomials. An exact 
+  min-max fit would have equal-ripple error. ln sorne situations (e.g., Bessel
+  functions), it is desirable to evalua te the function for large values of 
+  the argument. One class of approximations is particularly weIl suited for 
+  this application: asymptotic series.
+
+    To have more general information about available methods, see chapter one 
+  of [BIBLI 01].
+
+
+  2. First-Order Least Squares
+     -------------------------
+
+    The simplest and most common fitting function is the straight line. The 
+  reasons for its popularity are that real data (e.g., population studies) are
+  often very noisy and do not warrant higher-order fits, and that linear fits 
+  are ideal for sensitivity analysis. For example, in many control system models, 
+  the key parametric inputs to the analysis are the derivatives (slopes) of the 
+  input/output responses at the nominal control point. The derivation of the 
+  coefficients for this case is very simple and forms a good basis for under-
+  standing the mathematics for higher-order fits. 
+
+    Recall from above the S(alpha,beta) function: 
+                                        N                    2
+                       S(alpha,beta) = Sum (yi-alpha-beta xi)
+                                       i=1
+
+  The parameters alpha and beta are to be chosen such that S(alpha,beta) is 
+  minimized. At this minimum, it must be the case that dS/dalpha = 0 and 
+  dS/dbeta = o. Thus, we have the following two equations: 
+
+                         N 
+                        Sum (yi - alpha - beta xi) = 0 
+                        i=1 
+
+                         N 
+                        Sum xi (yi - alpha - beta xi) = 0 
+                        i=1 
+
+  (See Ref. 4, "Fitting Equations to Data", for a detailed discussion of this 
+  method). We establish the following definitions:
+   
+                         _          N
+                         x = (1/N) Sum x
+                                   i=1  i
+                                                                      (1.2.1)
+                         _          N
+                         y = (1/N) Sum y
+                                   i=1  i
+
+  The solutions for the coefficients are then
+
+                                N        _       _   N        _ 2
+                        beta = Sum (xi - x)(yi - y)/Sum (xi - x)      (1.2.2)
+                               i=1                  i=1
+
+                                _        _
+                        alpha = y - beta x
+   
+  The final fitted equation is   y = alpha + beta x                   (1.2.3) 
+
+  In addition, the unbiased estima te of the standard deviation is
+
+                               N                      2
+                            | Sum (yi - alpha beta xi) |1/2
+                            | i=1                      |
+                       Sd = | ------------------------ |              (1.2.4)
+                            |        N - 2             |
+                            |                          |
+
+    The above equations can be implemented as shown in program Lstsqr1. The 
+  inputs to the program are the number of data points (N) and the data pairs 
+  [X(M), Y(M)]. The results returned are the coefficients A and B (Y = A + BX), 
+  and an unbiased estimate of the standard deviation, D.
+
+    It is instructive to apply Lstsqr1 to the linear approximation of sin X in
+  the first octant. Eleven equally spaced points were used to obtain the fol-
+  lowing least-squares estimate: 
+
+                      sin x == 0.104 + 0.662x     for 0 <= x <= pi/2 
+
+  The standard deviation of this fit is s = 0.08. It is apparent that the 
+  least-squares fit is much better on the whole than the Taylor series 
+  approximation. As expected from the earlier discussion, the truncated Taylor 
+  series polynomial is accurate near the expansion point (x = 0), but the error 
+  grows rapidly as x increases. The least-squares fit also behaves as expected; 
+  the maximum relative errors are at the endpoints of the interval. 
+
+    The least-squares line-fitting subroutine can be applied to create an even 
+  better fit by observing that x is a common factor in the Taylor series expan-
+  sion. Thus, a more accurate fit is expected by using the function x(a + bx). 
+  This is accomplished by replacing sin x with sin x / x, and approximating the 
+  latter function. The resulting approximation is 
+
+                        sin x == x(1.078 - 0.3966x) 
+
+  The standard deviation of this estimate is s = 0.05, which is a definite 
+  improvement over the previous example. ln addition, the relative error near 
+  x = 0 has been greatly reduced.
+
+    It is interesting to note that using the first two terms of the Taylor 
+  series to approximate sin x, y = x - x^3/3!, gives a higher standard deviation
+  (s = 0.31) than that obtained using just the first term (s = 0.27). The 
+  addition of the second term causes an overcorrection as measured by the 
+  least-squares error metric. 
+
+    Program Lstsqr1 is very easy to apply and is not very sensitive to round-off
+  error. lt also executes quickly. It requires as input at least three data 
+  points, two of which must be distinct. The three-point requirement is due to 
+  the M - 2 divisor in the standard-deviation calculation. The distinct-points 
+  requirement is due to a simple geometrical consideration: at least two dis-
+  tinct points are needed to define a line. Because these conditions are seldom
+  violated, the subroutine does not check to see if they are met. 
+
+    Below, we will examine second-order least-squares fitting using the parabo-
+  la.
+
+
+  3. Second-Order Least Squares
+     --------------------------
+
+    The concepts of the previous section can easily be extended to parabolic
+  fits. If we assume that the true dependence is y = a + bx + cx^2, then the
+  problem is one of determining estimates for the coefficients of that quadra-
+  tic. Continuing with the notation of the previous section, we will cali these
+  estimates alpha, beta, and gamma. The function to minimize then is
+
+                            N                                  2 2
+     S(alpha,beta,gamma) = Sum (yi - alpha - beta xi - gamma xi )      (1.3.1)
+                           i=1
+
+  The partial derivative approach can again be employed to generate three simul-
+  taneous equations. The solution to the se equations is a little cumbersome
+  unless some additional definitions are established:
+
+                                      N        _ 2
+                         S   = (1/N) Sum (xi - x)
+                          xx         i=1
+
+                                      N        _       _
+                         S   = (1/N) Sum (xi - x)(yi - y)
+                          xy         i=1
+
+                                      N        _ 2
+                         S   = (1/N) Sum (yi - y)
+                          yy         i=1
+                                                                      (1.3.2)
+                                      N        _        _
+                         S   = (1/N) Sum (xi - x)(xi² - x²)
+                          xx²         i=1
+
+                                      N       _  2
+                        S    = (1/N) Sum (xi² - x²)
+                         x²x²        i=1
+
+                                      N        _        _
+                         S   = (1/N) Sum (yi - y)(yi² - y²)
+                          yx²        i=1
+
+  (For further reference, see any standard statistics text, e.g., Ref. 11.)
+  Using these definitions, it can be shown that the least-squares solutions for
+  the coefficients are
+
+
+                                    Sxy Sx²x² - Syx² Sxx²
+                             beta = ---------------------
+                                     Sxx Sx²x² - (Sxx²)²
+
+                                    Sxx Sy²x² - Sxx² Sxy            (1.3.3)
+                            gamma = ---------------------
+                                     Sxx Sx²x² - (Sxx²)²
+                                    _        _         _
+                            alpha = y - beta x - gamma x²
+   
+
+    Program Lstsqr2 performs these laborious calculations. The inputs are the
+  number of data points (N) and the data pairs [X(M),Y(M)]. The returned values
+  are the quadratic coefficients (A, B, and C) and the standard deviation (D).
+  The given examples correspond to those in previous section in which a linear
+  fit to sin x was obtained. lncreasing the order of the fit to a quadratic
+  greatly improves the standard deviation. 
+
+    The only warning regarding the use of program Lstsqr2 is relative to the
+  minimum number of data points. There must be at least four data pairs; at
+  least three of them must be distinct. 
+
+    The generalization of this least-squares approach is the subject of the next
+  two sections. In those sections, polynomial least-squares fits of arbitrary
+  order are considered by repeating the previous analysis using matrices. The
+  real utility of this generalization is the extension to more than one dimen-
+  sion. For one-dimensional applications, this methodology is not recommended
+  because of round-off error. Rather, the orthogonal polynomial algorithm dis-
+  cussed in another file is suggested.
+
+
+  4. Nth-Order Least Squares
+     -----------------------
+
+    The linear and parabolic least-squares fitting algorithms discussed in the
+  previous sections represent special (and simple) cases of the general least-
+  squares polynomial approximation procedure. The special case subroutines were
+  presented separately for two reasons. First, those algorithms are easy for the
+  novice to understand. Second, and more importantly, the general case subrou-
+  tine is slower in execution because much more overhead exists in the calcula-
+  tion. The power of the general approach, however, is that it opens the door to
+  multidimensional curve fitting, as weIl as to mixed functional dependencies.
+  This will become clear as we go on. 
+
+    We will develop the mathematics of the general algorithm using matrix alge-
+    bra. For those who are familiar with (or who simply dislike) this subject,
+    the ensuing discussion can be bypassed. 
+
+    Consider the following polynomial approximation to y(x):
+
+                           0      1            n
+                y(x) == D0x  + D1x  + ... + Dnx                   (1.4.1)
+
+     
+  If the measurement (or table) pairs are (xi, y,), and if there are M of them,
+  then the approximation can be written in the following matrix form: 
+
+                           Y == X D                               (1.4.2) 
+
+  In this notation, Y is a column vector of length M; X is an M row by N + 1
+  column matrix, and D is a column vector of length N + 1: 
+ 
+                                |y1|
+                                |y2|
+                                |..|
+                            Y = |..|    = Value vector
+                                |..|
+                                |..|
+                                |ym|
+
+                                   0   1      n
+                                |x1  x1 ... x1 |
+                                |  0   1      n|
+                                |x2  x2 ... x2 |
+                                |..............|
+                            X = |..............|    = input data array
+                                |..............|
+                                |..............|
+                                |  0   1      n|
+                                |ym  ym ... ym |
+
+                                |D0|
+                                |D1|
+                                |..|
+                            D = |..|    = Coefficient vector
+                                |..|
+                                |..|
+                                |Dn|
+
+  Recall that the error function [e.g., S(alpha,beta) in § 2) had the appearance
+  of the square of the length of a vector in Euclidean space. We can set up the
+  same structure in matrix notation: 
+
+                                            t
+                            Error = (Y - XO) (Y - XO)                (1.4.3)
+                             
+  The variable in this equation is the coefficient vector. D. As we did earlier,
+  we can calculate the differential
+                                               t
+                            d(Error) = (Y - XO) X dD 
+
+  We want this differential to be zero. Because dD is arbitrary, this equation
+  reduces to 
+                                    t
+                            (Y - XO) X = 0 
+
+  The coefficient vector can th en be solved for as 
+
+                                  t  -1 t
+                            D = (X X)  X Y                           (1.4.4)  
+
+    Equation (1.4.4) has a very simple structure and permits easy solution for
+  the coefficients through very fundamental matrix operations.
+
+    The entire procedure has been implemented as shown in program Lstsqr. That
+  program consists of several modular parts, The main program is responsible for
+  obtaining the M data pairs in (X(I), Y(I)) form, and the degree of the fit, N.
+  However, a two-dimensional input data array, Z(I,J) is needed. This array cor-
+  responds to the matrix X in equation (1.4.4).The POLYCM (Polyomial Coefficient
+  Matrix) subroutine performs that task and creates the Z(I,J) array using the
+  X(I) data values. This array, along with M, N, and Y(I), is passed to LSTSQR,
+  a supervisory subroutine that implements equation (1.4.4) by calling several
+  matrix-operation subroutines. Note that N + 1, not N, is passed to Lstsqr.
+  Program Lstsqr returns the coefficients to the calling program in the vector
+  D(I). The calling program then obtains the standard deviation from subroutine
+  Sigma. The reason for choosing this modular structure will become apparent in
+  the next section when we consider multidimensional regression.
+
+    The main operational precautions to be observed in using these subroutines
+  center around the validity of the input data. The calling program must ensure
+  that at least N + 1 distinct data pairs are passed to POLYCM and LEASTSQR.
+  Also, there are several arrays to be dimensioned. 	'\ 
+
+    The practical precaution is simple-watch out for round-off error. ln the
+  three examples given, the input data set was perfectly linear. By choosing
+  fits higher than linear, larger matrices were processed (in particular,
+  inverted) than necessary, leading to increased round-off error. It is there-
+  fore suggested that low-order fits be attempted first, and that the standard
+  deviation be examined as higher orders are tried. 
+
+    Equation (1.4.4) represents a very elegant and powerful solution to the ge-
+  neral least-squares problem. However, because matrices are involved, round-off
+  error has a strong influence on the results. ln later sections, means by which
+  this source of error can be greatly reduced will be discussed. Before doing
+  so, however, we will examine the extension of the ideas in this section to
+  more th an one dimension.
+
+
+  5. Multidimensional Least Squares
+     ------------------------------
+
+    In the previous section we examined the use of matrix equations to find a
+  one-dimensional polynomial fit to a given set of data. We will proceed now to
+  generalize the algorithm for multidimensional use. 
+
+    The key to the problem is the two-dimensional input data array X (actually, 
+  Z(I,J) in the subroutines). It decides the outcome of equation (1.4.4) along
+  with the measured result vector, Y. The form of this matrix was established by
+  equation (1.4.1):
+
+                         0      1            n
+               y(x) == D0x  + D1x  + ... + Dnx
+
+  The alteration to treat multiple dimensions can be made at this step. 
+
+    One approach might be to redefine equation (1.4.1) as follows (for two
+  dimensions, x1 and x2): 
+
+                    0       1              m1         0          1
+    y(x1,x2) == Dox1  + D1x1  + ... + Dm1x1  + Dm1+1x2  + Dm1+2x2  +  ... 
+                            m2
+                + Dm1+m2+1x2 
+
+  The implied assumptions in this approximation are that the degree of the poly-
+  nomial is m1, in x1 and m2 in x2, and that there are no cross-dependencies,
+  This is the equivalent of assuming y(x) == P1(x1) + P2(x2), and is very unre-
+  alistic. Another approach might be to assume the form y(x1,x2) == P1(x1) x
+  P2(x2). This permits a measure of the interdependence, but is much too limi-
+  ting an assumption. 
+
+    The complete form is much more complicated, but it can be laid out in a lo-
+  gical structure. For example, in two dimensions the structure is
+   
+                     0      1             m1    0
+    y(x1,x2) == (D1x1 + D2x1 + ... + Dm1x1  ) x2
+
+                          0                m1    1
+                + (Dm1+2x1 + ... + D2m1+2x1  ) x2                   (1.5.1) 
+ 
+                + ...
+                                0                       m1   m2
+                + (Dm2(m1+1)+1x1 + ... + D(m2+1)(m1+1)x1  )x2
+
+
+  The number of coefficients required in this representation is N=(M1+1)(M2+1),
+  where M1 and M2 are the degrees of fit in each dimension. If three dimensions
+  were employed, there would be an additional level of brackets required, and 
+  the number of coefficients would be N = (M1 + 1)(M2 + 1)(M3 + 1). 
+
+    Undoubtedly the most difficult problem in using the least-squares curve-
+  fitting algorithm in several dimensions is deciphering the resulting coeffi-
+  cients. Therefore, if you are actually going to use the subroutine that will
+  be presented shortly, the encoding scheme must be clearly understood.
+
+    As an example, we will consider the form of the X array [actuaIly, 2(I,J) in
+  the subroutines] for the three-dimensional case in which the degree of fit is
+  linear in the first two dimensions, but quadratic in the third. The number of
+  coefficients to be found is N = 2x2x3 = 12. Each row of the X array corres-
+  ponds to a particular data point, say y(l). Therefore, we have 
+
+  Row I of x: 1, x1(I), x2(I), x1(I)x2(I), x3(I), xl(I)x3(I), x2(I)x3(I),
+              x1(I)x2 I)x3(I), x3^2(I), xl(I)x3^2(I), x2(I)x3^2(I),
+              x1(I)x2(I)x3^2(I) 
+
+  Because there are 12 coefficients to be de termine d, there must be at least
+  12 distinct data points. Therefore, the minimum size of the X array is 12 X 12. 
+
+    As an exercise, try to de termine what the X array would look like if the
+  number of dimensions were three, but the fits were quadratic, linear, and
+  linear respectively.
+   
+    Although generating such an array and processing it according to matrix
+  equation (1.4.4) would be almost impossible by hand, computers are weIl suited
+  to such tasks.
+   
+    We can use the computer algorithm given in the previous section for one-
+  dimensional least-squares fitting simply by replacing a few modules. First,
+  the subroutine that generates the X array [actually, 2(I,J) in the program] is
+  replaced with that shown in program MLTNLREG). This subroutine takes the data
+  and generates the 2(I,J) matrix used by LEASTSQR. Also, this replacement sub-
+  routine calculates the standard deviation on the second calling, and thereby
+  also replaces SIGMA for multidimensional problems. AlI the other subroutines 
+  used in the previous program (LEASTSQR and aIl the matrix-operation programs) 
+  are kept intact. 
+
+    The multidimensional least-squares procedure is demonstrated in program
+  Mltnlreg. In the given examples, the data was generated from the equation y =
+  x1 + x2. The algorithm clearly identified the linear dependencies, and with
+  reasonably good round-off error. Note, however, that the round-off error was
+  higher for the case in which a parabolic fit was attempted in one of the
+  dimensions. Large arrays lead to increased round-off error. 
+
+    There are several precautions associated with the use of this collection of
+  programs. First, the degree of fit in each dimension must be linear or higher.
+  This is certainly not a restriction on the utility of the calculation, but it
+  does put the responsibility on the calling program that realistic inputs be
+  supplied. Second, there must be at least N + 1 data points, with N of them
+  distinct, where N = (M1 + 1)(M2 + 1) ... (ML + 1). Third, the number of di-
+  mensions that can be processed is limited to nine. Beyond that point, the
+  coefficient-generation subroutine will abort and set L = O. However, it it
+  very unlikely that this limit would ever be approached since the minimum size
+  of the 2(I,J) array corresponding to nine linear dimensions would be (29 + 1)
+  X (29), or 513 rows by 512 columns. Finally, remember to dimension the arrays
+  in the calling program. 
+
+    In the next section, we will consider an alternative approach to polynomial
+  regression in one dimension. It will have the advantage of low round-off
+  error, high execution speed, and an automatic termination option (see file
+  Lsqply.txt).
+
+  From [BIBLI 01].
+-----------------------------------------------
+End of file Lstsqr.txt

@@ -1,0 +1,81 @@
+
+
+                  EXPLANATION FILE OF PROGRAM ZNEWTON
+                  ===================================
+
+
+  Newton's Method in the Complex Domain
+  -------------------------------------
+
+    When the generallocation of a root is known reasonably well, it is possible
+  to apply the rapidly convergent Newton technique discussed in another chapter
+  to very accurately determine its value. 
+
+    Recall the form of the Newton iteration equation in real space: 
+
+                       x    = x  - f(xi)/f'(xi)
+                        i+1    i
+
+  The analogous form in the complex plane is
+
+                       z    = z  - f(zi)/f'(zi)            (7.4.1)
+                        i+1    i
+
+  If we represent f(z) with the form µ(x,y) + i v(x,y), then the ratio in the
+  above equation becomes 
+ 
+	 f	µ + iv 	   µ µx + v µy 	     v µx - µ µy
+        ---  =  ------  = -------------  + i ------------   (7.4.2)
+         f'     µx + µy     µx² + µy²         µx² + µy²
+ 	   
+       where 	µx = dµ/dx     µy = dµ/dy   (partial derivatives)				   
+				 
+  Equation (7.4.1) can then be broken down into x and y components as follows: 
+
+                           µ µx + v µy
+                x   = x  - -----------
+                 i+1   i    µx² + µy²
+                                                            (7.4.3)
+                           v µx - µ µy
+                y   = y  - ------------
+                 i+1   i    µx² + µy²
+
+  If µ(x,y), v(x,y), dµ/ dx, and dv/dy are available, then Newton's method can
+  be simply applied using equation (7.4.3). 
+
+    The program Znewton performs this operation. The functions and variables em-
+  ployed are:
+
+    Variables
+    ---------
+                  X0, Y0       Initial guess
+                  E            Convergence criterion
+                               Return on (xi+1 - xi)²+(yi+1 - yi)² < E²
+                  N            Maximum number of iterations
+                  X, Y         Calculated root
+                  K            Actual number of iterations performed
+
+    Functions
+    ---------
+                  U  = µ(x,y)
+                  V  = v(x,y)
+                  U1 = dµ/dx
+                  U2 = dµ/dy
+    
+    Two examples of the use of this program are shown. ln the first example, the
+  initial guess was close to one of the roots and the convergence was very rapid
+  (quadratic after the second iteration). ln the second example, the initial
+  guess was not close to the root, and the error roughly halved on each itera-
+  tion up to fourth, after which the algorithm quickly closed in on the root.
+  Undoubtedly, there are other functions for which the initial convergence rate
+  is even slower, [ustifying the use of an algorithm such as ZClRCLE. 
+
+    Newton's method in the complex plane suffers from the same instabilities or 
+  weaknesses as the corresponding algorithm in real space. High curvature can
+  very dramatically slow convergence, and zero derivatives can be disastrous,
+  especially when round-off error is factored in. ln any case, it is best to
+  start the iteration near the root, and to avoid regions where df/dz = O.
+
+  From [BIBLI 01].
+----------------------------------------
+End of file Znewton.txt

@@ -1,0 +1,192 @@
+
+
+                Explanation File for Euler-Romberg Method
+                =========================================
+
+
+          We want to solve the Cauchy's problem:
+
+
+            | y' = f(x,y)
+            |
+            | with y(x0) = y0
+
+        using the Euler-Romberg method.
+
+          For that, we calculate approximate values for y1, y2,...yn,
+        the exact solution is y(x1), y(x2),...y(xn), using an iterative
+        algorithm based on:
+
+                  * repeatedly apply the Euler method in the same
+                    interval with an integration step halved after
+                    each iteration.
+
+                  * linearly extrapolate to obtain a better
+                    approximation.
+
+        This procedure allows getting the same precision all along the
+        computation.
+
+        Let be (xn, yn) and a starting step h0, the approximation yn+1
+        is obtained by building up a table in the same way than in the
+        integration Romberg method.
+                                                                  0
+        We start with estimating an initial value of yn+1, noted y0 by
+        Euler method, using step h0:
+
+               0
+              y0 = yn + h0 f(xn,yn)
+
+        then the new step is h0/2 and we do the same computations for
+        all the points of the sub-interval:
+
+                          0
+                 h0      y0
+
+                          1       0
+           L=1   h0/2    y0      y1
+
+                     2    2       1       0
+           L=2   h0/2    y0      y1      y2
+
+           ----------------------------------
+                     k    k       k-1          1       0
+           L=k   h0/2    y0      y       ...  y       y                       
+                                  1            k-1     k
+                           0
+        The first element y0 of the column 0 is an approximation of
+        y(x   ) with the step h0=x    - x . The other elements are the 
+           n+1                    n-1    n
+
+        successive approximations of y(x   ) given by the Euler's formula
+                                        n+1
+        for h0/2, h0/4... i.e.:
+
+                  L=1          h1=h0/2
+
+                  x0=xn        y0=yn        f0=f(x0,y0)            
+
+                  x1=xn+h1     y1=y0+h1f0   f1=f(x1,y1)
+
+                                              1
+                  x2=xn+2h1    y2=y1+h1f1 -> Y0 = Y2
+                                             -------
+                      k
+        The elements Y  of the column m (m=1,2...) are obtained by using
+                      m
+        the linear extrapolation formula:
+
+                            k              k+1
+                    k      Ym-1[h-h   ] - Ym-1[h-h ]
+                                   k+m            k
+                   Y (h) = -------------------------
+                    m           h  - h
+                                 k    k+m
+
+        and when h -> 0:
+
+                         k         k+m     k+1       k
+                    k   Y   [0-h0/2   ] - Y   [0-h0/2 ]
+                         m-1               m-1
+                   Y  = -------------------------------
+                    m             k       k+m
+                              h0/2  - h0/2
+
+        Dividing by h0/2, we obtain:
+
+                                 m  k+1    k
+                           k    2  Ym-1 - Ym-1
+                          Y  =  -------------
+                           m       m
+                                  2  - 1
+                                            k
+          Observing how the table elements Ym are calculated, we can see
+        that it is not necessary to keep in memory a table with two dimen-
+                                   k-1      k-2           0             k
+        sions, we first calculate Y1, then Y2  ... until Yk. The table Ym
+        is then replaced by the one-dimension table, Tk:
+
+                                        k
+           iteration #     step        Ym             Tk
+           ---------------------------------------------------
+                                      0            
+               0           h         Y0            T1
+                
+                                      1  0
+               1           h/2       Y0 Y1         T2  T1
+
+                                      2  1  0
+               2           h/4       Y0 Y1 Y2      T3  T2 T1
+
+             ----         ----       ---------     ---------
+                              k       k      0
+               k           h/2       Y0 ... Yk     Tk ... T1
+
+           ---------------------------------------------------
+
+          To fully understand the mechanism, we recommend the reader to
+                                            0   1      0   2
+        manually calculate a few elements: Y1, Y1 and Y2, Y1, etc.
+
+        Or else:
+                               m
+                              2  T    - T
+                                  K=1    k
+                        T  = -------------    (k = L...1)
+                         k       m
+                                2  - 1
+
+          To sum up, we have in the program EULROMB the following steps:
+
+          1. Define the function f(x,y), the starting values, X(1), Y(1),
+             the starting step H, the maximum error ER, the max. number
+             of subdivisions LA and the number of calculations NC.
+
+                             NC = (X    - X ) / H
+                                    n+1    1
+
+          2. Approximate Yn+1 by Euler's method:
+
+                   0                               0
+                  Y0 = Yn + h f(xn,yn)  and  T1 = Y0
+
+          3. Calculate the Tk elements of the extrapolation table; we
+             initialize the iteration with L=1.
+
+             a) XC = X  ; YC = Y         
+                      n         n
+
+                approximate Y    by Euler's method successively dividing
+                             n+1
+                the step by 2   ;   T    is the value of Y    given by
+                                     L+1                  n+1
+                Euler.
+
+             b) Initialize the column count m=1; k=L is the T index.
+
+                           k
+             c) calculate Ym or rather T  using:
+                                        k
+                         m              
+                        2  T    - T
+                            k+1    k
+                   T = -------------
+                    k      m
+                          2  - 1
+
+             d) if k<1 goto subroutine f.
+
+             e) test convergence: if |Tk - Tk+1| < ER, the iteration is
+                finished, otherwise increment m, decrement k, go to step c)
+
+             f) if L<Lmax, increment L then goto step a) else display a
+                message "No convergence!"
+
+             g) if n < N, increment n, go to 2. else end program.
+
+
+             Note: the program EULROMB is made such as the solution Yk is
+                   stored for all the points (this is not always necessary).
+
+
+             [From BIBLI 04].

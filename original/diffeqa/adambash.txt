@@ -1,0 +1,422 @@
+
+                    EXPLANATION FILE OF PROGRAM ADAMBASH
+                    ====================================
+
+
+  Ordinary Differential Equations Y' = F(x,y)
+  -------------------------------------------
+
+
+  Linked Steps Method
+  -------------------
+
+    We have seen that Euler, Runge-Kutta... methods can be put under the general
+  form:
+
+                y    = y  + h phi(x , y , h)
+                 n+1    n          n   n
+
+  and each point y    of the solution is only determined from previous point, y
+                  n+1                                                          n
+
+  Calculations are made for y1, y2,...,yn-1, yn, yn+1... These methods are cal-
+  led "with separate steps": each step is independant from the previous one. To
+  obtain a given accuracy, each step has to be divided into intermediate steps.
+
+  Let us take an example:
+
+  For the Runge-Kutta method of order 4, we use the formulas:
+
+                k1 = h f(xn, yn)
+
+                k2 = h f(xn+h/2, yn+k1/2)
+
+                k3 = h f(xn+h/2, yn+k2/2)
+
+                k4 = h f(xn+h, yn+k3)
+
+                y    = y  + (1/6)(k1+2k2+2k3+k4)
+                 n+1    n
+
+  Another method consists in using the previous calculations to improve speed;
+  the y   point is evaluated from y , y    and y    points.
+       n+1                         n   n-1      n-2
+
+  The general formula is:
+
+                y    = a y + a y   + ... + a y 
+                 n+1    0 n   1 n-1         k n-k
+
+                       + h (b  f   + b f + b f    + ... + b f
+                             -1 n+1   0 n   1 n-1          k n-k
+
+  This can be written as:
+
+                        k              k
+                y    = Sum a y    + h Sum  b  f
+                 n+1   j=0  j n-j     j=-1  j  n-j
+
+
+    These methods are called "with linked steps" and f(x,y) evaluations are only
+  made at points x0, x1, x2,..., xn.
+
+  If b   = 0, the process is explicit; y    is directly obtained by applying the
+      -1                                n+1
+  formula.
+
+  If b   <> 0, the process is implicit: we must solve an equation of the form
+      -1
+
+  y    = phi(y   ) to obtain y   .
+   n+1        n+1             n+1
+
+    For the three first points, y1, y2, y3, we have no previous points to calcu-
+  late them: these methods cannot start by themselves like "with separate steps"
+  methods.
+
+    The truncation error Tn is estimated by using the Taylor formula for y(x   )
+                                                                            n+j
+                                 (jh)²                (jh)^p  (p)
+    y(x   ) = y(x ) + jhy'(x ) + ----- y"(x ) + ... + ------ y   (x )
+       n+j       n          n      2!      n            p!         n
+
+                    + h^p eps(h)
+
+    and also for f(x   , y(x   )):
+                    n+j     n+j
+
+
+    f(x   , y(x   )) = y'(x +jh)
+       n+j     n+j         n                         p-1
+                                 h               (jh)      (p)
+                     = y'(x ) + j y"(x ) + ... + -------- y   (x ) + h^p eps(h)
+                           n          n           (p-1)!        n
+
+    Example: let us estimate the truncation error for the implicit formula:
+
+                     y    = y  + (h/2) (f    + f )
+                      n+1    n           n+1    n
+
+                     T    = y(x   ) - y
+                      n+1      n+1     n+1
+                                                                    3
+    y(x   ) = y(x ) + hy'(x ) + (h^2/2) y"(x ) + (h^3/3) y"'(x ) + h  eps(h)
+       n+1       n         n                n                 n
+
+                                                    2               3
+    (h/2) f    = (h/2) y'(x + h) = (h/2) y'(x ) + (h /2) y"(x ) + (h /4)
+           n+1             n                 n               n
+                              3
+                   y"'(x ) + h  eps(h)
+                        n
+
+    (h/2) f  = (h/2) y'(x )
+           n             n
+                                                                  
+    Hence   y(x   ) - y    = y(x   ) - y  + (h/2) (f    + f ) = 
+               n+1     n+1      n+1     n           n+1    n
+
+                               3                 3
+                           = (h /12) y"'(x )  + h  eps(h)
+                                          n
+
+    Here the method is of order two.
+
+
+    The methods with separate steps can be integrated by the formula
+
+                                    xn+2h
+                y(x   ) - y(x   ) =  Sum  f(t,y(t)) dt
+                   n+1       n-M     xn
+
+    and by applying the Simpson's formula
+
+                 b             b - a            a + h
+                Sum (f(t) dt = ----- {f(x) + 4f(-----) + f(b)}
+                 a               6                2
+
+    Hence       y    - y  = (h/3)[f + 4f   + f   ]
+                 n+2    n          n    n+1   n+2
+
+    Here we have an implicit process.
+
+
+    In a more general way, knowing y , y   , y   , we can calculate f , f   ,
+                                    n   n-1   n-2                    n   n-1
+
+  f    and approximate y' = f(x,y) by an interpolation polynomial at points  
+   n-2
+
+  x , x   , x   :
+   n   n-1   n-2                      x
+                                       n+1
+                        y    = y    + Sum  P(x) dx 
+                         n+1    n-M   x
+                                       n-M
+
+   where y    is an approximation of y(x   ) and y    is an approximation of
+          n-M                           n-M       n+1
+
+   y(x   ).
+      n+1
+
+  In the case of an implicit method, y(x   ) can be approximated by the formula:
+                                        n+1
+                                     x
+                         p            n+1
+                        y   = y    + Sum  P(x) dx
+                         n+1   n-M   x
+                                      n-M
+
+                          p             p
+  This allows evaluating f   = f(x   , y   ) and we can resume the interpolation
+                          n+1     n+1   n+1
+
+  step with a new polynomial P*(x). y    is calculated by the correction formula
+                                     n+1
+
+                                     x
+                         c            n+1
+                        y   = y    + Sum  P*(x) dx
+                         n+1   n-M   x
+                                      n-M
+
+  As the points are equally spaced and indices are decreasing, xn, xn-1, xn-2...
+  we can use the Newton formula with back diferences:
+
+             Div (f ) = f - f   
+                   n     n   n-1
+
+                2
+             Div (f ) = f - 2f    +f
+                   n     n    n-1   n-2
+
+             --------------------------
+                k           |k|      |k|               k
+             Div (f ) = f - | | f    | | f   +...+ (-1) f
+                   n     n  |1|  n-1 |2|  n-2            n-k
+
+  Hence              x                             2
+         p            n+1      Div(fn)          Div (fn)
+        y   = y    + Sum  [f + ------- (x-x ) + -------- (x-x )(x-x   ) + ...
+         n+1   n-M   x      n    h         n      2h^2       n     n-1
+                      n-M
+
+                        k
+                     Div (fn)
+                   + -------- (x-x )(x-x   )...(x-x     )] dx
+                      k! h^k      n     n-1        n-k+1
+
+        Let us put u = (x-x )/h, then  du = dx/dh and
+                           n                            2
+                    p             1                  Div (fn)
+                   y    = y    + Sum [f + Div(f )u + -------- u(u+1) + ...
+                    n+1    n-M   -M    n       n        2
+
+                        k
+                     Div (fn)
+                   + -------- u(u+1)(u+2)...(u+k-1) h du
+                        k!
+
+       After integration:
+
+        p               _     _           _     2             _    k
+       y    = y    + h [P f + P Div(f ) + P  Div (f ) + ... + P Div (f )]
+        n+1    n-M       0 n   1     n     2       n           k      n
+
+              _    1   1
+       where  P  = -- Sum u(u+1)(u+2)...(u+j-1) du 
+               j   j! -M
+
+                j           |j|      |j|               j
+       and   Div (f ) = f - | | f    | | f   +...+ (-1) f
+                   n     n  |1|  n-1 |2|  n-2            n-j
+
+                            |j|      j!
+                    with    | | = ---------   (Newton's coefficients) 
+                            |m|   m! (j-m)!
+
+       Fianally   p
+                 y    = y
+                  n+1    n-M + h [P f  + P f    + ... + P f   ]
+                                   0 n    1 n-1          k n-k
+
+       Example: M=3, k=2
+
+                     x                              2
+        p             n+1       Div(fn)          Div (fn)
+       y    = y    + Sum  [f  + ------- (x-x ) + -------- (x-x )(x-x   )] dx
+        n+1    n-3   x      n     n         n      2h²        n     n-1
+                      n-3
+
+       Let us put u = (x-xn)/h, then
+                                             2
+        p             1                   Div (fn)
+       y    = y    + Sum [f + Div(f ) u + -------- u (u+1)] h du
+        n+1    n-3   -3    n       n         2
+
+       After integration:
+
+        p                                        2
+       y    = y    + h [4f - 4 Div(f ) + (8/3)Div (f )
+        n+1    n-3        n         n               n
+
+  This leads to the Milne's formula (explicit process):
+
+        p
+       y    = y    + (4h/3) [2f - f   + 2f   ]
+        n+1    n-3             n   n-1    n-2
+
+  We do in a similar way for the implicit process. For example, with M=1 and
+  k=2, the Milne's corrector formula is:
+
+        c
+       y    = y    + (h/3) [f    + 4f  + f   ]
+        n+1    n-1           n+1     n    n-1
+
+  This corresponds to the numerical integration of
+
+       x
+        n+1
+       Sum  f(x) dx   by the Simpson's method. 
+       x
+        n-1
+
+  For the Adams-Moulton's implicit formulas, we have:
+
+              p          h
+       k=1   y    = y  + - [3f - f   ]
+              n+1    n   2    n   n-1
+
+              c          h
+             y    = y  + - [f   + f ]
+              n+1    n   2   n+1   n
+
+              p          h
+       k=2   y    = y  + -- [23f - 16f   + 5f   ]
+              n+1    n   12     n     n-1    n-2
+
+              c          h
+             y    = y  + -- [5f   + 8f  - f   ]
+              n+1    n   12    n+1    n    n-1
+
+              p          h
+       k=3   y    = y  + -- [55f - 59f   + 17f    - 9f   ]
+              n+1    n   24     n     n-1     n-2     n-3
+
+              c          h
+             y    = y  + -- [9f   + 19f  - 5f    +f   ]
+              n+1    n   24    n+1     n     n-1   n-2
+
+              p           h
+       k=4   y    = y  + --- [1901f - 2984f   + 2616f    - 1274f   + 251f   ]
+              n+1    n   720       n       n-1       n-2        n-3      n-4
+
+              c           h
+             y    = y  + --- [251f   + 646f  - 264f    +106f   - 19f   ]
+              n+1    n   720      n+1      n       n-1      n-2     n-3
+
+
+    In these formulas, the main part of what is left aside in the integration
+  corresponds to the truncation error.
+                                                 3
+                  c                             h   "'
+    Example: for y    = y  + (h/2) (f   + f ) - -- y  (ksi)
+                  n+1    n           n+1   n    12
+
+             with x  <= ksi <= x
+                   n            n+1
+
+    Another way to obtain an explicit or implicit process is using a recursive
+  formula:
+
+            y    = a y  + a y    + ... + a y
+             n+1    0 n    1 n-1          k n-k
+
+                                       + h [b  f    + b f  + ... + b y   ]
+                                             -1 n+1    0 n          k n-k
+
+    For y, the polynomial of greatest degree is:
+
+           y(x) = 1,  y'(x) = 0
+           y(x) = x,  y'(x) = 1
+           y(x) = x², y'(x) = 2x
+           ---------------------
+                   m            m-1
+           y(x) = x , y'(x) = mx
+
+    So
+           1 = a0 + a1 + ... + ak
+           x = (x-h)a  + (x-2h)a  + ... + ha   + b  +b + b + ... +b
+                     0          1           k-1   -1  0   1        k
+           
+           x² = (x-h)²a  + (x-2h)²a  + ... + ha
+                       0           1           k-1
+
+                       + 2 [xb  +(x-h)b + ... + hb
+                              -1       0          k-1
+           --------------------------------------------------
+            l        l           l
+           x  = (x-h) a  + (x-2h) a  + ... + ha
+                       0           1           k-1
+
+                             l-1          l-1
+                       + l [x   b   +(x-h)   b + ... + hb
+                                 -1           0          k-1
+
+  Example: Nystroem's explicit formula:
+
+                                        3
+                       y    = y    + h Sum b  f
+                        n+1    n-1     j=0  j  n-j
+
+                            3         2
+                       y = x , y' = 3x
+
+                      3                3
+         ==>  y    = x ,  y    = (x-2h)
+               n+1         n-1
+                                        2                2                2
+                       f  = y'  = 3(x-h) , f    = 3(x-2h) , f    = 3(x-3h)
+                        n     n             n-1              n-2
+
+               3         2              2           2           2
+         ==>  x  = (x-2h)  + 3h [b (x-h)  + b (x-2h)  + b (x-3h)
+                                  0          1           2
+
+  By developing and identifying:
+
+                   b0 + b1 + b2 = 2
+
+                   b0 + 2b1 +3b2 = 2
+
+                   b0 + 4b1 + 9b2 = 8/3
+
+     We find:      b0 = 7, b1 = -2, b2 = 1.
+
+
+  So we have the Adams's formulas:
+
+     Explicit, order 2:  y    = y  + h/2 (3f  - f   )
+                          n+1    n          n    n-1
+
+               order 3:  y    = y  + h/12 (23f  - 16f    + 5f   )
+                          n+1    n            n      n-1     n-2
+
+     Implicit, order 2:  y    = y  + h/2 (f   + f )
+                          n+1    n         n+1   n
+
+  and Nystroem's formulas:
+
+     Explicit, order 2:  y    = y   + 2h f
+                          n+1    n-1      n
+
+               order 3:  y    = y   + h/3 (7f  - 2f    + f   )
+                          n+1    n+1         n     n-1    n-2
+
+     Implicit, order 3:  y    = y   + h/12 (f   + 4f -f   )
+                          n+1    n-1         n+1    n  n-1
+
+  From [BIBLI 04].
+------------------------------------------------
+End of file adambash.txt

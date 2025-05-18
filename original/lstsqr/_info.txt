@@ -1,0 +1,18 @@
+Program Description
+
+    Least squares approximation of a discrete real function F(x)
+    Explanation File of Program above (approx) NEW
+    Least squares approximation of a discrete function F(x) with orthogonal polynomials
+    Program to demonstrate Chi-square Statistic
+    Program to demonstrate one dimensional operation of the multi-nonlinear regression
+    Program to demonstrate least squares polynomial fitting
+    Explanation File of Program above (Lsqply) NEW
+    Least squares of order 1 or 2 demonstration program
+    Explanation File concerning Least Squares Regressions NEW
+    Program to demonstrate multi-dimensional operation of the multi-nonlinear regression
+    Program to demonstrate the Parafit subroutine
+    Explanation File of Program above (Parafit) NEW
+    Program to demonstrate multidimensional operation of the multi-nonlinear regression
+    with iterative error reduction
+    Explanation File of Program above (Regiter) NEW
+    Multi-Dimensional Curve Fitting By SIMPLEX Method 

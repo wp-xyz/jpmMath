@@ -1,0 +1,126 @@
+
+                        EXPLANATION FILE OF PROGRAM ROOT4
+                        =================================
+
+
+  The program root4 calculates the real or complex roots of a polynomial of degree two, 
+  three or four.
+
+  1. Numerical Methods
+     -----------------
+
+     1.1  Case 2nd degree: x^2 + bx + c = 0   (1)
+
+          The real roots depend on the sign of q = sqrt(b*b-4*c).
+
+          a) q >= 0: two real roots exist:
+
+             x1 = -b/2 - sqrt(q)/2
+
+             x2 = -b/2 + sqrt(q)/2
+
+          b) q < 0: two complex roots exist:
+
+             x1 = -b/2 - i * sqrt(-q)/2
+
+             x2 = -b/2 + i * sqrt(-q)/2
+
+     1.2  Case 3rd degree: x^3 + a2 x^2 + a1 x + a0 = 0   (2)
+
+          Let be lambda the greatest absolute value of a  coefficients.
+                                                        i
+          It is known that:
+
+          a) if a0 > 0, one real negative root exists in interval [-(1+lambda), 0].
+
+          b) if a0 < 0, one real positive root exists in interval [0, (1+lambda)].
+
+          First, we calculate this real root x1  by the bisector method.
+
+          Then we divide equation (2) by (x - x1 ), the other two roots are solutions
+          
+          of quadratic equation:
+
+             x^2 + (a2 + x1) x + (a1 + (a2 + x1) x1) = 0   (3)
+
+          that can be easily solved.
+
+     1.3 Case 4th degree: x^4 + a x^3 + b x^2 + c x + d = 0   (4)
+
+         Let us put x = y - a/4, then equation (4) can be transformed into a product
+         of two quadratic equations (2nd degree):
+
+            (y^2 + 2ky + l)(y^2 - 2ky + m) = 0   (5)
+
+         where:  l + m -4k^2 = q      (q = b - 3a^2/8)
+
+                 2k (m - 1)  = r      (r=c-(ab/2)+(a^3/8) )               (6)
+
+                 lm = s               (s=d-(ac/4)+(a^2b/16)-(3a^4/256) )
+
+
+                 k^2 = z is a real root of cubic equation:
+
+                 z^3 + alpha z^2 + beta z + gamma = 0                     (7)
+
+                 with   alpha = q/2, beta = (q^2-4s)/16, gamma = -r^2/64
+
+         So the method consists in:
+
+            a) solving equation (7) as shown in § 1.2
+
+            b) solving linear system (6) to find l and m
+
+            c) solving the two equations (5) to find the four roots of (4).
+
+              
+  2. Programming Technique
+     ---------------------
+
+     We define a vector R of size 4 to store roots and a matrix A of size (4,4)
+
+     to store the coefficients of equation of degree N:
+
+                  i=N
+                  Sum A(N, i) x^i = 0    (N=2,3,4)
+                  i=0
+
+     In the Quick Basic program, subroutine 1000 is the main search root driver,
+
+     subroutine 2000 solves equation x^3 + A(3,2) x^2 + A(3,1) x + A(3,0) = 0,
+
+     subroutine 3000 solves equation x^2 + A(2,1) x + A(2,0) = 0 .
+
+
+     Except the bisector method (not explained here), the program is linear.
+
+     However, please note the different ways to solve the linear system (6):
+
+
+            a) if gamma <> 0, then k^2 <> 0 and (6) can be solved by:
+
+                  l + m = q + 4 k^2
+                                       (8)
+                  l - m = r / 2k
+
+            b) if gamma = 0, then k=0 is a solution of (7)
+
+               1) if q^2 - 4s >= 0, we have:  l + m = q and lm = s
+
+                  id est  l + m = q and l - m = sqrt(q^2 - 4s)
+
+                  easily solved.
+
+               2) if q^2 - 4s < 0, the above method does not work. However,
+
+                  in that case, equation(7) is reduced to z^2 + alpha z + beta =0
+
+                  and has two real roots (because beta < 0) with opposite signs.
+
+                  We then choose the positive root and can use (8) to calculate
+
+                  l and m.
+
+  -------------------------------------------------------------
+
+  End of file root4.txt

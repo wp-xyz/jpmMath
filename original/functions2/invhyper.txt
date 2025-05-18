@@ -1,0 +1,66 @@
+
+                        EXPLANATION FILE OF PROGRAM INVHYPER
+                        ====================================
+
+
+  Inverse Hyperbolic Trigonometrie Functions
+  ------------------------------------------
+
+    This section conclu des the chapter on COROIC approximations. The following 
+  discussion is actually not related to the CORDIC method itself, but rather
+  merely completes the analysis of the hyperbolic trigonometrie functions.
+
+   
+    Recall from the previous section (see file Hyper.txt) the simple functional
+  relations for the inverses  of the hyperbolic functions:
+
+                         -1                  2
+                      sinh  x = ln (x + sqrt(x  + 1)
+
+                          -1                  2
+                      cosh  X = ln (x + sqrt(x  - 1)                   (4.7.8)
+
+                          -1             1 + x
+                      tanh  x = (1/2) ln ----- 
+	 	                         1 - x
+
+  At first glance, it appears that the evaluation is straightforward. The modi-
+  fied CORDIC natural-Iogarithm function of section 4.6 can be used in conjunc-
+  tion with a good square-root function. (Even the square-root iteration algo-
+  rithm discussed earlier can be included if no internaI square-root function is
+  available.) As with the earlier discussion, however, there is a potential
+  round-off error problem. For example, in the sinh-1 x case, large negative
+  values of x lead to taking the difference between two large and nearly equal
+  numbers. However, because sinh -x = -sinh x, the evaluation can be adjusted
+  to always involve addition: 
+
+                         -1                          2
+                     sinh  x = sign x ln |x| + sqrt(x  + 1)            (4.8.1)
+          -1            
+  The cosh  x evaluation has potential round-off difficulty near x = +/- 1. The 
+  function can be rewritten as
+
+                         -1
+                     cosh  x = ln (x + sqrt(x + 1).sqrt(x - 1) 
+   
+  The round-off error due to the x ± 1 factors is unavoidable.
+
+            -1                                         -1
+    The tanh  x evaluation has the same problem as cosh  x, but with an extra 
+  twist. If x is so near unity that the x - 1 factor evaluates to zero, a
+  divide-by-zero error will result. This must be guarded against. 
+
+    In program INVHYPER, the accuracy of the calculated results is mainly limi-
+  ted by the round-off error that occurs in the natural-Iogarithm subroutine.
+   
+    There are two situations to be wary of while using these subroutines. First,
+  the argument transferred to the cosh-1 x subroutine is restricted to the range
+  1 <= x < inf. If x < 1, an incorrect value will be returned. Second, the argu-
+  ment in the tanh-1 x subroutine is tested to avoid a divide-by-zero error.
+  Thus, aIl x values sufficiently close to unity will result in the same large
+  value returned. Also, the valid argument range for  tanh-1 x is 0 <= x < 1.
+  If x is outside this range, an incorrect value will be returnned.
+
+From [BIBLI 01].
+------------------------------------------------
+End of file Invhyper.txt

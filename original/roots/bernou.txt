@@ -1,0 +1,70 @@
+                  EXPLANATION FILE OF PROGRAM BERNOU
+                    ==================================
+
+
+  Bernouilli's Method
+  -------------------
+
+    This method allows calculating the greatest root of the polynomial, alpha;
+  by dividing the polynomial by (x-alpha), we can apply again the method and so
+  on to determine all the roots.
+
+    Let us consider the equation phi, associated to the polynomial
+
+                      n      n-1
+           Pn(x) = a0x  + a1x    + ... + an-1x + an:
+
+           phi = a  y  + a  y   + ... + a y    = 0
+                  0  k    1  k-1         n
+
+    The particular solutions of this equation (looking like a linear differen-
+  tial equation) have the form yk = beta^k where the beta's are the roots of the
+  equation:
+
+                 k         k-1               k-n
+           a beta  + a beta    + ... + a beta    = 0
+            0         1                 n
+
+  of the same kind than Pn(x) = 0 the roots of which, supposed distinct, are
+  x1, x2, ... xn. The equation phi being linear, the general solution is a lin-
+  ear combination:
+
+                   k      k            k
+           y  = c x  + c x  + ... + c x
+            k    1 1    2 2          n n
+
+    If the roots are such than |x1| > |x2| > |x3| > ... > |xn| then
+
+                   k                     k
+           y  = c x  [ 1 + (c2/c1)(x2/x1)  + ...]
+            k    1 1
+
+                     k+1                    k+1
+    and    y    = c x    [1 + (c2/c1)(x2/x1)    + ...]
+            k+1    1 1
+
+                                             k+1
+                          [1 + (c2/c1)(x2/x1)   + ...]
+    hence  y   / y  =  x1 ----------------------------  
+            k+1   k                          k
+                          [1 + (c2/c1)(x2/x1)  + ...]
+
+
+    as x1 > x2, (x2/x1)^k, (x3/x1)^k ... --> 0 when k --> infinity
+
+    so y   / y  --> x1 when k --> inf and  x1 = Lim    (y   / y )
+        k+1   k                                k-->inf.  k+1   k
+
+    If equation phi has n+1 coefficients, a particular solution, yk can be de
+  termined from the n values, y   , y   ,...,y     y   , this allows recursi-
+                                   k-1   k-2      n-2,  n-1
+  vely calculating particular solutions of equation phi.
+
+    To calculate the greatest root of the polynomial, we start from particular
+  solutions: y0=0, y1=0, y2=0,...,yn-1=1 to calculate yn, also a particular
+  solution. The same process is used to calculate yn+1 from y1=0, y2=0...yn-1=1,
+  yn and so on until yK+1/yk almost does not vary.
+
+  From [BIBLI 04].
+----------------------------------------
+End of file Bernou.txt

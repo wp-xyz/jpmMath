@@ -1,0 +1,10 @@
+Program Description
+
+    Calculate relativistic mass and speed of an electron accelerated in an electron gun NEW
+    Calculate angle of refraction for an incident ray using Snell's Law NEW
+    Caculate the absolute stellar magnitude based on relative magintude and distance NEW
+    One-dimensional cellular automata with rule that generates a Sierpinski triangle NEW
+    Encode / Decode a text file by the letter transposing method NEW
+    Encoding an ASCII text using a random encoding table NEW
+    Decoding an ASCII text knowing the random encoding table NEW
+    Decode a text in morse NEW 

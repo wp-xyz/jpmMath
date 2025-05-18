@@ -1,0 +1,57 @@
+
+    		EXPLANATION FILE OF PROGRAM TEQUDIF1
+        	====================================
+
+  
+  The Runge-Kutta Method
+  ----------------------
+
+
+  We present here the Runge-Kutta method of order 4 to integrate an ODE
+
+  of order 1:       Y' = F(X, Y)
+
+  The development of Y around x  coincidates with its Taylor development
+                               n
+  of order 4:
+
+       y    = y  + h y' + (h^2/2) y" + (h^3/6) y"' + (h^4/24) y""
+        n+1    n      n            n            n              n
+
+  Other orders may also be used for the Runge-Kutta method, for instance
+
+  the Euler's method is a Runge-Kutta of order one.
+
+  Order 4 is often used because it is a good compromise between speed and
+  
+  accuracy.
+
+  From a current point (x , y ), the next point is determined by:
+                         n   n
+
+  	K  = h f(x , y )
+         0        n   n
+
+	k  = h f(x + h/2, y + K /2)
+         1        n        n   0
+
+	k  = h f(x + h/2, y + K /2)
+         2        n        n   1
+
+	k  = h f(x + h, y + K )
+         3        n      n   2
+
+  and   y   = y  + (1/6)(K + 2 K + K )
+         n+1   n          0     1   3
+
+  It can be proved that the error at each step is about h^5.
+
+  The only drawback is the time of calculation: at each step, four function
+
+  evaluations are necessary.
+
+  From [BIBLI 03].
+
+-------------------------------------------------------------
+End of file rkutta.txt.
+  

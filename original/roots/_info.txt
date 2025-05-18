@@ -1,0 +1,50 @@
+Program Description
+
+    Program to demonstrate the Aitken acceleration subroutine
+    Explanation File of Program above (Aitken) NEW
+    Program to demonstrate the complex domain Allroot subroutine
+    Program to demonstrate the Bairstow subroutine (2 conjugate complex roots)
+    Program to demonstrate the Bairstow subroutine (all roots)
+    Explanation File of Program above (Bairsto1) NEW
+    Program to demonstrate the Bernouilli subroutine
+    Explanation File of Program above (Bernou) NEW
+    Program to demonstrate Bisection subroutine
+    Program to demonstrate Bisection & Quartile subroutines
+    Program to demonstrate the Lin's method subroutine
+    Explanation File of Program above (Lin) NEW
+    Program to demonstrate Mueller's method
+    Explanation File of Program above (Mueller) NEW
+    Program to demonstrate a two dimensional version of Mueller's method
+    Explanation File of Program above (Mueller2) NEW
+    Program to demonstrate Newton's method subroutine
+    Explanation File of Program above (Newton1) NEW
+    Program to demonstrate NextRoot subroutine
+    Program to demonstrate the modified false position subroutine
+    This program calculates the real or complex roots of algebraic equations of degree 2, 3 and 4
+    Explanation File of Program above (Root4) NEW
+    Root testing program for polynomials
+    Division of Polynomials
+    Program to demonstrate Secant method
+    Program to demonstrate the Aitken Steffenson iteration method
+    Explanation File of Program above (Steffen) NEW
+    Program to demonstrate Brent's method
+    Explanation File of Program above (Zbrent) NEW
+    Define six real functions for Pegasus method
+    Module to find a real root of a real function f(x) by Pegasus method
+    Test program for Pegasus Method
+    Unit to find the real root of a continuous function by the Zeroin method
+    Program to demonstrate the Zeroin method of unit fzeroin.pas
+    Program to find the root of a non-linear function F(x) by Lagrange NEW
+    Explanation File of Program above NEW
+    Program to solve a nonlinear system of two variables
+    Unit with Brown's method used by program below (with examples)
+    Program to solve nonlinear systems of equations by Brown's method
+    Module NNES to Solve a Set of non-linear Equations (Part 1/3)
+    Module NNES to Solve a Set of non-linear Equations (Part 2/3)
+    Module NNES to Solve a Set of non-linear Equations (Part 3/3)
+    Utility Subroutines used by NNES
+    Examples of non-linear Systems for NNES
+    Driver program for NNES
+    Help File of Project NNES
+    Unit LM to Solve a Set of non-linear Equations by Least Squares
+    Driver Program for unit LM 

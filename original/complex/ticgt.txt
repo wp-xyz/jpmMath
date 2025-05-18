@@ -1,0 +1,331 @@
+{***************************************************************
+* calculate inverse of a complex square matrix by Gauss Method *
+* with full pivoting.                                          *
+* ------------------------------------------------------------ *
+* SAMPLE RUN:                                                  *
+* Calculate inverse of complex square matrix:                  *
+*                                                              *
+*       | (0, 1) ( 2,0) (-1,-1) |                              *
+*   A = | (1, 0) ( 1,1) ( 0,-3) |                              *
+*       | (0,-2) (-1,1) ( 3, 0) |                              *
+*                                                              *
+* Inverse matrix:                                              *
+* (  0.0000,  0.0000) (  0.3333,  0.0000) (  0.0000,  0.3333)  *
+* (  0.7500,  0.0000) ( -0.1667, -0.0833) (  0.3333,  0.0833)  *
+* (  0.2500, -0.2500) ( -0.0833,  0.2500) (  0.2500, -0.0833)  *
+*                                                              *
+* Product AM1*A:                                               *
+* (  1.0000,  0.0000) (  0.0000,  0.0000) (  0.0000,  0.0000)  *
+* (  0.0000,  0.0000) (  1.0000,  0.0000) (  0.0000,  0.0000)  *
+* (  0.0000, -0.0000) ( -0.0000,  0.0000) (  1.0000, -0.0000)  *
+*                                                              *
+* ------------------------------------------------------------ *
+* Ref.: "Algèbre, Algorithmes et programmes en Pascal          *
+*        By Jean-Louis Jardrin, DUNOD Paris, 1988".            *
+***************************************************************}  
+Program InvMatC;
+
+Uses WinCrt;
+
+Const NMAX = 20;
+
+  Type
+       Complex = Record
+         R, I: Real
+       End;
+
+       Matc = Array[1..NMAX,1..NMAX] of Complex;
+       Vecc = Array[1..NMAX] of Complex;
+       Veci = Array[1..NMAX] of Integer;
+
+  Var
+       i,it,j,m,n: Integer;
+       dta,eps: Real;
+
+       A, AM1, MI: Matc;
+
+
+  Function CABS(Z:Complex): Real;
+  Begin
+    CABS := sqrt(Z.R*Z.R+Z.I*Z.I)
+  End;
+
+  Procedure CADD(Z1,Z2:Complex; Var Z:Complex);
+  Begin
+    Z.R := Z1.R + Z2.R;
+    Z.I := Z1.I + Z2.I
+  End;
+
+  Procedure CDIF(Z1,Z2:Complex; Var Z:Complex);
+  Begin
+    Z.R := Z1.R - Z2.R;
+    Z.I := Z1.I - Z2.I
+  End;
+
+  Procedure CMUL(Z1,Z2:Complex; Var Z:Complex);
+  Begin
+    Z.R := Z1.R*Z2.R - Z1.I*Z2.I;
+    Z.I := Z1.R*Z2.I + Z1.I*Z2.R
+  End;
+
+  Procedure CDIV(Z1,Z2:Complex; Var Z:Complex);
+  Var d:Real; C:Complex;
+  Begin
+    d := Z2.R*Z2.R + Z2.I*Z2.I;
+    if d<1E-10 then
+      writeln(' Complex Divide by zero !')
+    else
+    begin
+      C.R:=Z2.R; C.I:=-Z2.I;
+      CMUL(Z1,C,Z);
+      Z.R:=Z.R/d; Z.I:=Z.I/d
+    end
+  End;
+
+  Procedure CSwap(Var Z1,Z2: Complex);
+  Var tmp:Complex;
+  Begin
+    tmp.R:=Z2.R; tmp.I:=Z2.I;
+    Z2.R:=Z1.R; Z2.I:=Z1.I;
+    Z1.R:=tmp.R; Z1.I:=tmp.I
+  End;
+
+  {****************************************************************
+  * TSCGT procedure implements the triangularization algorithm of *
+  * Gauss with full pivoting at each step for a complex matrix, A *
+  * and saves the made transformations in KP and LP.              *
+  * ------------------------------------------------------------- *
+  * INPUTS:                                                       *
+  *          N:   size of complex matrix A                        *
+  *          A:   complex matrix of size N x N                    *
+  * OUTPUTS;                                                      *
+  *          it:  =0 if A is singular, else =1.                   *
+  *           C:  contains the upper triangular matrix and the    *
+  *               multipliers used during the process.            *
+  *          KP:  contains the column exchanges.                  *
+  *          LP:  contains the line exchanges.                    *
+  *                                                               *
+  ****************************************************************}
+  Procedure TSCGT(eps:Real; N:integer; A:Matc; Var it:integer; Var C:Matc;
+                    Var KP,LP:Veci);
+  Var i,j,k,k0,l0:integer;
+      C0,C1,P0:Complex;
+  Begin
+    For i:=1 to N do
+      For j:=1 to N do
+      begin
+        C[i,j].R:=A[i,j].R;
+        C[i,j].I:=A[i,j].I
+      end;
+    it:=1; K:=1;
+    While (it=1) and (k<N) do
+    begin
+      P0.R:=C[k,k].R; P0.I:=C[k,k].I;
+      l0:=k; k0:=k;
+      For i:=k to N do
+        For j:=k to N do
+          if CABS(C[i,j]) > CABS(P0) then
+          begin
+            P0.R:=C[i,j].R; P0.I:=C[i,j].I;
+            l0:=i; k0:=j
+          end;
+      LP[k]:=l0; KP[k]:=k0;
+      if CABS(P0) < eps then
+        it:=0
+      else
+      begin
+        if l0<>k then
+          For j:=k to N do CSwap(C[k,j],C[l0,j]);
+        if k0<>k then
+          For i:=1 to N do CSwap(C[i,k],C[i,k0]);
+        For i:=k+1 to N do
+        begin
+          C0.R:=C[i,k].R; C0.I:=C[i,k].I;
+          CDIV(C0,P0,C[i,k]);
+          For j:=k+1 to N do
+          begin
+            C0.R:=C[i,j].R; C0.I:=C[i,j].I;
+            CMUL(C[i,k],C[k,j],C1);
+            CDIF(C0,C1,C[i,j])
+          end
+        end;
+        Inc(k)
+      end
+    end;
+    if (it=1) and (CABS(C[N,N]) < eps) then it:=0
+  End; {TSCGT}
+
+  {*************************************************************
+  * Function BSCGT calculates the solution of upper triangular * 
+  * system [S(n-1)] by the back substitution method and deduces*
+  * from it the solution of system [S]. The call must be made  *
+  * only after a call to TSCGT and the matrix of [S] must be   *
+  * regular.                                                   *
+  * ---------------------------------------------------------- *
+  * INPUTS:                                                    *
+  *         N : size of matrix C                               *
+  *         C:  contains the upper triangular matrix and the   *
+  *             multipliers used during the triangularization  *
+  *             process (in output of TSCGT).     .            *
+  *         W : contains the right-side coefficients           *
+  *         KP: contains the column exchanges.                 *
+  *         LP: contains the line exchanges.                   *
+  * OUTPUT:                                                    *
+  *         Z : system solution complex vector.                *
+  *                                                            *
+  *************************************************************}
+  Procedure BSCGT(N:integer; C:Matc; W:Vecc; KP,LP:Veci; Var Z:Vecc);
+  Var i,j,k,k0,l0: integer;
+      C0,C1,S,Z0: Complex;
+  Begin
+    Z0.R:=0.0; Z0.I:=0.0;
+    For k:=1 to N-1 do
+    begin
+      l0:=LP[k];
+      if l0<>k then CSwap(W[k],W[l0]);
+      For i:=k+1 to N do
+      begin
+        C0.R:=W[i].R; C0.I:=W[i].I;
+        CMUL(C[i,k],W[k],C1); CDIF(C0,C1,W[i])
+      end
+    end;
+    CDIV(W[N],C[N,N],Z[N]);
+    For i:=N-1 Downto 1 do
+    begin
+      S.R:=Z0.R; S.I:=Z0.I;
+      For j:=i+1 to N do
+      begin
+        C0.R:=S.R; C0.I:=S.I;
+        CMUL(C[i,j],Z[j],C1); CADD(C0,C1,S)
+      end;
+      CDIF(W[i],S,C0);
+      CDIV(C0,C[i,i],Z[i])
+    end;
+    For k:=N-1 Downto 1 do
+    begin
+      k0:=KP[k];
+      if k0 <> k then CSwap(Z[k],Z[k0])
+    end
+  End; {BSCGT}
+
+             
+  {***************************************************************
+  * calculate inverse of a complex square matrix by Gauss Method *
+  * with full pivoting.                                          *
+  * ------------------------------------------------------------ *
+  * INPUTS:                                                      *
+  *        eps : required precision                              *
+  *         N  : size of complex matrix A                        *
+  *         A  : input complex matrix (NxN)                      *
+  * OUTPUTS:                                                     *
+  *         it : =0, matrix is singular; =1, matris is regular   *
+  *        AM1 : inverse complex matrix (NxN).                   * 
+  ***************************************************************}
+  Procedure ICGT(eps:Real; N:integer; A:Matc; Var it:integer; Var AM1:Matc);
+  Var i,l:integer; Z0,Z1:Complex;
+      C:Matc; W,Z:Vecc;
+      KP,LP:Veci;
+  Begin
+    Z0.R:=0.0; Z0.I:=0.0;
+    Z1.R:=1.0; Z1.I:=0.0;
+    TSCGT(eps,N,A,it,C,KP,LP);
+    if it=1 then
+      For l:=1 to N do
+      begin
+        For i:=1 to N do
+          if i=l then
+                 begin
+                   W[I].R:=Z1.R; W[I].I:=Z1.I
+                 end
+                 else
+                 begin
+                   W[I].R:=Z0.R; W[I].I:=Z0.I
+                 end;
+        BSCGT(N,C,W,KP,LP,Z);
+        For i:=1 to N do
+        begin
+          AM1[i,l].R:=Z[I].R;
+          AM1[i,l].I:=Z[I].I
+        end
+      end
+  End;     
+
+Procedure MATMUL(A, B:MATC; VAR C: MATC; N: integer);
+{******************************************                                     
+*  MULTIPLICATION OF TWO SQUARE COMPLEX   *                                     
+*  MATRICES                               *
+* --------------------------------------- *                                     
+* INPUTS:    A  MATRIX N*N                *                                     
+*            B  MATRIX N*N                *                                     
+*            N  INTEGER                   *                                     
+* --------------------------------------- *                                     
+* OUTPUTS:   C  MATRIX N*N PRODUCT A*B    *                                     
+*                                         *
+******************************************}
+VAR
+      SUM,PROD: Complex;
+      I,J,K : integer;
+BEGIN                                               
+      for I:=1 to N do                                                                  
+        for J:=1 to N do
+        begin                                                                
+          SUM.R:=0.0; SUM.I:=0.0;
+          for K:=1 to N do
+          begin                                                              
+            {SUM:=SUM+A[I,K]*B[K,J] }
+            CMUL(A[I,K],B[K,J],PROD);
+            CADD(SUM,PROD,SUM)
+          end;                                                 
+          C[I,J]:=SUM                                                            
+        end                                                                   
+END;
+
+
+{main program}
+BEGIN
+
+  N:=3;   {size of complex matrix A}
+
+  A[1,1].R:= 0.0; A[1,1].I:= 1.0;
+  A[1,2].R:= 2.0; A[1,2].I:= 0.0;
+  A[1,3].R:=-1.0; A[1,3].I:=-1.0;
+
+  A[2,1].R:=1.0; A[2,1].I:= 0.0;
+  A[2,2].R:=1.0; A[2,2].I:= 1.0;
+  A[2,3].R:=0.0; A[2,3].I:=-3.0;
+
+  A[3,1].R:= 0.0; A[3,1].I:=-2.0;
+  A[3,2].R:=-1.0; A[3,2].I:= 1.0;
+  A[3,3].R:= 3.0; A[3,3].I:= 0.0;
+
+  eps:=1E-10;
+
+  ICGT(eps,N,A,it,AM1);
+
+  writeln;
+  writeln(' Inverse matrix:');
+  For i:=1 to N do
+  begin
+    For j:=1 to N do
+      write(' (',AM1[i,j].R:8:4,',',AM1[i,j].I:8:4,')');
+    writeln
+  end;
+
+{ Check AM1 * A = I }
+  MATMUL(AM1, A, MI, N);
+
+  writeln;
+  writeln(' Product AM1*A:');
+  For i:=1 to N do
+  begin
+    For j:=1 to N do
+      write(' (',MI[i,j].R:8:4,',',MI[i,j].I:8:4,')');
+    writeln
+  end;
+
+  ReadKey;
+  DoneWinCrt
+
+END.
+
+{end of file ticgt.pas}

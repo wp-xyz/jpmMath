@@ -1,0 +1,173 @@
+
+
+                  EXPLANATION FILE OF PROGRAM INVNORM
+                  =================================== 
+
+
+  Rational Polynomials
+  --------------------
+
+    Our attention th us far has been largely directed at polynomial approxima-
+  tions of the form 
+                                     N     i
+                      f(x) = P(x) = Sum a x                 (2.7.1)
+                                    i=0  i
+
+  This the most popular type of approximation partly because it usuaIly works
+  weIl (after some change of variables perhaps), and partly because very simple
+  and effective techniques exist for determining the ai. However, there are ma-
+  ny cases in which this structure is not appropriate. For example, a function
+  that has an infinity at some value of x, say xo. We might approach this pro-
+  blem by replacing the variable x in equation (2.7.1) with 1/(x - xo), thus
+  creating a Laurent series. However, in some cases, this may also not be
+  appropriate. 
+
+    There is another polynomial approximation form that is often very useful for 
+  dealing with such curve shapes, the rational polynomial: 
+
+                                               M     i
+             R(x) = P(x)/ Q(x)  where  Q(x) = Sum b x       (2.7.2)
+                                              i=0  i
+
+  We will not go into the theory behind the rational polynomial or the ways in
+  which it can be derived. Instead, a few simple rules of thumb along with some
+  examples will be presented. For a good discussion regarding rational polyno-
+  mials, see Ref. 15. We will define the foIlowing four parameters: 
+
+     1) M(P): The lowest degree appearing in P(x). 
+
+              For example, for P(x) = 6x^3 + 7x^4 + 2x^5, M(P) = 3. 
+
+     2) N(P): The highest degree appearing in P(x).
+      
+              For the example above, N(P) = 5. 
+
+     3) M(Q): The lowest degree appearing in Q(x). 
+
+     4) N(Q): The highest degree appearing in Q(x). 
+
+    The relative values of these parameters define the asymptotic behavior of 
+  P(x)/Q(x). By examining the behavior of the function to be approximated at
+  x = 0 and x --> inf., strong clues as to the form of P(x) and Q(x) can be
+  obtained. For example, if f(x) = constant at x = 0, then M(P) = M(Q). If
+  instead, f(x) --> inf. near x = 0, then M(P) < M(Q). If f(x) = 0 at x = 0,
+  then M(P) > M(Q). There are also three general types of behavior that exist as
+  x becomes infinite: f(x) --> 0 [N(P) < N(Q)]; f(x) = constant [N(P) = N(Q)];
+  and f(x) --> inf. [N(P) > N(Q)]. By examining the shape of f(x), we can usual-
+  ly get an idea of wether or not a rational polynomial is caIled for, and we
+  can even determine some of the relative properties of P(x) and Q(x). 
+
+    As a numerical example, we will consider an approximation related to the
+  inverse of the complementary error function. We will define Q(x) as 
+
+                               inf.
+	   Q(x) = (1/sqrt(2pi) Sum  exp(-t^2/2) dt 	    (2.7.3) 
+                                x
+
+  The normal distribution probability density function is 
+
+           p(x) = (1/sqrt(2pi) exp(-t^2/2                   (2.7.4)
+            
+  Therefore, Q(x) is one minus the cumulative normal distribution function:
+
+           Q(x) = 1 - P(x).
+
+  Also. Q(x) is related to the complementary error function:
+
+           Q(x) = 1/2 erfc(x).
+            
+    An approximation to the complementary error function was presented earlier.
+  We will now in effect approximate its inverse.
+   
+    The object is to de termine the value of x that corresponds with given Q.
+  Abramowitz and Stegun give the following rational polynomial approximation for
+  Xo (0 < Q <= 0.5):
+
+                       c0 + c1 t + c2 t^2
+           Xo = t - ------------------------
+                    1 + d1 t + d2 t^2 + d3 t
+
+                    where t = sqrt(ln l/Q^2) 
+                    c0 = 2.515517 
+                    c1 = 0.802853 
+                    c2 = 0.010328 
+                    d1 = 1.432788 
+                    d2 = 0.189269 
+                    d3 = 0.001308
+                     
+    The error in this approximation is |E(Q)| < 0.0005 (Note that the error is
+  referenced to Q, not Xo. The error in Xo is relative to how much Q would have
+  to be altered to give a corresponding change in X). A little ingenuity was
+  applied in choosing the functional form for t. The choice was based on the
+  asymptotic form relating Xo and Q as Q --> O. 
+
+    A program for applying this approximation is shown in INVNORM. The approxi-
+  mation associated with that function also involved a logarithmic change of
+  variables. Other rational polynomial approximations are available From the
+  literature. A few are given below:
+
+  Type I
+
+	cos x for -1 <= x <= 1
+        	   
+                         2      4      6
+	         1 + a2 x + a4 x + a6 x
+        cos x =  ----------------------      (Ref. 15)
+                        2 	4      6	   
+	 	 1 + b2 x + b4 x + b6 x 		   
+
+	|error| <= 2 X 10-11
+         		   
+	a2 = 	- 0.470 595 788 392 		   
+	a4 = 	0.027 388 289 676 		   
+	a6 = 	- 0.000 372 342 269 		   
+	b2 = 	0.029 404 211 608 		   
+	b4 = 	0.000 423 728 814 		   
+	b6 = 	0.000 003 235 543 		   
+
+  Type II 			(Ref. 6) 	 
+
+        erf(x) for 0 <= x < inf.
+         
+                                          1 
+        erf(x) = 1 - ----------------------------------------------- 
+                     1 + b1x + b2x^2 + b3x^3 + b4x^4 + b5x^5 + b6x^6
+ 
+        |error| <= 3 X 10-7 
+
+        b1 = 0.07052 30784 
+        b2 = 0.00927 05272 
+        b3 = 0.00027 65672 
+        b4 = 0.04228 20123 
+        b5 = 0.00015 20143 
+        b6 = 0.00004 30638 
+ 
+  Type III 
+
+       tanh µx for -1 <= x <= 1
+
+       µ = 1/2 ln 3
+                               3
+                    a1 x + a3 x
+       tanh µx = -----------------           (Ref. 15)
+                         2       4
+                 1 + b2 x  + b4 x
+
+       |error| <= 6 X 10-9 
+
+       al = 0.549306 14401 
+       a3 = 0.01574 011995 
+       b2 = 0.12923360954 
+       b4 = 0.00085 891904 
+
+    Although rational polynomials offer an interesting flexibility in functional
+  aproximation, they do not appear to be very popular. This is probably due to
+  the dificulty that exists in generating values for the coefficients.
+
+
+[15] Fike, C.T. Computer Evaluation of Mathematical Functions,Englewood Cliffs,
+     NJ: Prentice-Hall, 1968.
+
+From [BIBLMI 01]
+--------------------------------------------------------
+End of file invnorm.txt

@@ -1,0 +1,85 @@
+
+            EXPLANATION FILE OF PROGRAM STORMER
+            ===================================
+
+
+
+  Solve Y"=f(x,y,y') with initial conditions by Stormer's method
+  --------------------------------------------------------------
+
+    The differential equation of order 2 can be replaced by a system of two
+  equations of order 1:
+
+  Given y"=f(x,y,y') with y(a) and y'(a), by calling u = y', the problem becomes
+
+                    | u'=f(x,y,u)
+                    | y'=u
+                    | with y(a), u(a) given
+
+
+    We start from a particular form of the Taylor's formula, where the remainder
+  is under the form of an integral:
+
+                                     x+h
+           y(x+h) = y(x) + h y'(x) + Sum (x+h-t) y"(t) dt
+                                      x
+
+  In the same way
+
+                                     x-h
+           y(x-h) = y(x) - h y'(x) + Sum (x-h-t) y"(t) dt
+                                      x
+
+  By summing
+
+                                     x+h       x-h
+           y(x+h) - 2y(x) + y(x-h) = Sum ... + Sum ...
+                                      x         x
+
+  For the second integral, we change the variable: u = 2x - t
+
+  So       x-h                      x+h
+           Sum (x-h-t) y"(t) dt = - Sum (x+h-u) y"(u) du
+            x                        x
+
+                                    x+h
+           du=-dt ==>           =   Sum (x+h-t) y"(2x-t) dt
+                                     x
+
+  Finally
+                                     x+h
+           y(x+h) - 2y(x) + y(x-h) = Sum (x+h-t)[y"(t)+y"(2x-t)] dt
+                                      x
+
+  We now use the interpolation polynomial recalling that y"(x)=f(x,y,y'):
+
+                              x
+                               n+1
+           y    - y  + y    = Sum  (x   - t)[P(t)+P(2x - 1)] dt
+            n+1    n    n-1   x      n+1              n
+                               n
+              x
+            2  n+1                 0             1            2
+         = h  Sum (x   - t) [O0 Div (fn) + O1 Div (fn) +O2 Div (fn)] dt
+              x     n+1
+               n
+                       m  1        |(-s)   (m)|
+         with O  = (-1)  Sum (1-s) |(  ) + ( )| ds
+               m          0        |(m )   (s)|
+
+                                 (see file Adambash.txt).  
+
+
+  This leads to Stormer's formulas:
+
+
+    Explicit:  y    - 2 y  + y    = (h²/12)[13f - 2 f    + f   ]
+                n+1      n    n-1              n     n-1    n-2
+
+    Implicit:  y    - 2 y  + y    = (h²/12)[f   + 10 f  + f   ]
+                n+1      n    n-1            n+1      n    n-1
+
+
+  From [BIBLI 04]
+---------------------------------------
+End of file Stormer.txt

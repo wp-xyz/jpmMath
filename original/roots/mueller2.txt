@@ -1,0 +1,78 @@
+                      EXPLANATION FILE OF PROGRAM MUELLER2
+                      ====================================
+
+
+    Two-Dimensional Form of Mueller's Method
+    ----------------------------------------
+
+    In this section, Mueller's method for one dimension is combined with the
+  concept of successive substitution to produce an algorithm that can be called
+  on to find a root of the function µ (x,y). We will construct this algorithm
+  by considering each dimension separately. 
+
+    The starting point is the initial guess and two bounds: B1 for the X direc-
+  tion and B2 for the Y direction. The first of these bounds is used to genera-
+  te three evauation points: 
+
+                             X3 = X0 
+                             X1 = X0 - B1 
+                             X2 = X0 + B1 
+                             Y1, Y2, Y3 = Y0
+
+  Mueller's method for one dimension is then applied to find a better estimate
+  for the X coordinate of the root, Xnew. B1 is replaced with |Xnew - X3|. 
+    For the iteration in the Y direction, the three evaluation points are
+
+                             Y3 = Y0
+                             Y1 = Y0 - B1 
+                             Y2 = Y0 + B1 
+                             X1, X2, X3 = Xnew
+     
+    The one-dimensional form of Mueller's method is again used to find a new es-
+  timate for the Y coordinate of the root, Ynew. As with the X iteration, B2 is
+  replaced with |Ynew - Y3|. If the change in X and Y satisfies the prechosen
+  error criterion, 
+
+                             |B1| + |B2| < E 
+
+  then the iteration is ended. Otherwise, X0 --> Xnew,  Yo --> Ynew, and the
+  procedure is repeated. 
+
+    A program for performing these calculations is shown in MUELLER2. It is ba-
+  sed primarily on the routine given in the previous section (see Mueller.txt).
+  It requires as inputs an initial guess for the location of the root, (X0, Y0);
+  two measures of the bound on the range of the starting two-dimensional parabo-
+  la (B1 for the X direction and B2 for the Y direction); a convergence crite-
+  rion, E; and a bound on the maximum number of iterations to be performed, N.
+  The outputs of the subroutine are the estimate of the location of the root
+  (X, Y), and the actual number of iterations performed, K. 
+
+    To demonstrate the basic operation of MUELLER2, the following function was 
+  examined: 
+                                         5       5
+                        µ (x,y) = (x + 1) (y - 1) 
+
+    As expected from the example in the previous section, convergence occurs,
+  but it is not rapid. The reason for this is that the curvature of the Function
+  is high (quintic) because of the multiple roots. 
+
+    Another function one might inadvertently attempt to solve is 
+
+                        µ (x,y) = x² - y² + 1 
+
+  This is the real part of the complex function f(z) = Z² + 1. MUELLER2 comple-
+  tely fails in this exercise by diverging toward infinity, and eventually rea-
+  ching a numeric overflow. The reason for the failure is that the function has
+  no unique root! Such errors in the key inputs are not guarded against by this
+  subroutine. 
+
+    The precautions regarding the use of MUELLER2 center on the two-dimensional 
+  shape of the function. If the calculation is started in the wrong place, the
+  iteration can diverge. Also, the algorithm is particularly vulnerable to the
+  divergence associated with roots that occur at or near saddle points or local
+  minima, although recovery is possible because of the error checks within the
+  subroutine.
+
+  From [BIBLI 01].
+-------------------------------------------
+End of file Mueller2.txt

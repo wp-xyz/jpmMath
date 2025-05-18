@@ -1,0 +1,33 @@
+Program Description
+
+    Unit to draw a curve 2D with manual scaling
+    Unit with 2D geometry procedures used by Apollo
+    Unit used by program Apollo.pas
+    Program to demonstrate Apollonius circles
+    Program to demonstrate an elliptical billard
+    The bolygons of order n
+    Draw Cycloidal Curves
+    Integration procedures used by program below
+    The eight planets attraction problem
+    Unit to handle a dynamic table greater than 64 Ko
+    Trajectory of a rocket V2
+    View the solutions of a differential equations system having the form: y'=f(x,y,z), z'=g(x,y,z)
+    The Hanoi Towers
+    The Chess Knight NEW
+    The Chess Queens NEW
+    Fractals: the Verhulst diagram
+    Fractals: the Feigenbaum diagram
+    Fractals: the Henon's attractors
+    Fractals: the set of Mandelbrot (complete)
+    Fractals: the set of Mandelbrot (zoom)
+    Fractals: the set of Julia
+    Fractals: the Lorentz attractor
+    Fractals: Mira's aesthetic chaos
+    Fractals: the Roessler attractor
+    Fractals constructed from a base and a generating line derived from Von Koch's Snowflakes, and H Fractals NEW
+    Approximating a function F(x) By Maclaurin's Series NEW
+    Utility program to visualize a monochrome picture file (*.IMG)
+    Ressource file for program WVISU
+    Unit to draw 3D curves (graph_3d)
+    Program to draw 3D surfaces defined by equations Z = F(X,Y) By using unit graph_3d (hidden sections removed)
+    Program to draw 3D surfaces defined by equations x = f(u,v), y = g(u,v) and z = h(u,v) By using unit graph_3d 

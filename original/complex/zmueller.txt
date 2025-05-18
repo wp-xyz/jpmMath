@@ -1,0 +1,71 @@
+
+
+                 EXPLANATION FILE OF PROGRAM ZMUELLER
+                 ====================================
+
+
+  Mueller's Method in the Complex Plane
+  -------------------------------------
+
+    Mueller's one-dimensional parabolic method (see file Mueller.txt) can be 
+  applied directly to complex plane calculations by replacing the real variables 
+  and functions contained in the subroutine by their complex plane counterparts.
+  The difficulty in doing this resides in the large number of complex plane al-
+  gebraic manipulations which must be performed. 
+
+    This problem can be approached in two ways. The first way would be to per- 
+  form aIl the complex plane calculations by calling complex numbers subrouti-
+  nes. However, the resulting program would not be efficient in the total length
+  of code, and it would also execute slowly. The second approach is to algebra- 
+  ically rewrite the basic procedure so that the complex plane calculations are
+  broken down into a series of real-number operations. The result is some com-
+  plicated algebra, but a reasonably short and fast subroutine. The latter ap-
+  proach is preferable. 
+
+    Program Zmueller is a real-number, algebraic implementation of Mueller's me-
+  thod in the complex plane. The subroutine requires as input an initial guess,
+  (xO, yO); two initial bounds (BI for xO; B2 for yO); a convergence criterion,
+  E; and a limit on the number of iterations, N. The subroutine returns the new
+  estimate, (x, y), and the number of iterations actually performed, K. 
+
+    We can use this program to examine the test function f(z) = z^2 + 1. The
+  convergence rate is very impressive. It appears that only two iterations are
+  required no matter what the initial guess isl The reason for this high conver-
+  gence rate is simple: ZMUELLER, in effect, fits a complex-plane parabola to
+  the test funcion. However, f(z) is only of the second degree, and in princi-
+  ple, the fitted parabola coincident with f(z) throughout the complex plane.
+  Therefore, the roots are located on the first pass (again, in principle).
+  Thus, we would expect only one iteration to be necessary, if it were not for
+  round-off error. The second iteration is, in essence, a cleanup operation. 
+
+    f(z) = z^2 + 1 was an ideal function for treatment with ZMUELLER. Functions 
+  that do not have more than two roots close together are usually very amenable
+  to solution by this algorithm. The high curvature associated with functions
+  like f(z) = (z + 1)^5 can slow down convergence, as we saw in other sections,
+  but the root is eventually found. ZMUELLER is a fairly reliable subroutine. 
+
+    The utility of ZMUELLER is not strictly limited to analytic functions of z.
+  This routine can also be employed to search for the roots of other functions
+  of x and y simply by using mu(x,y) to represent the function (in the "Func-
+  tions" subroutine), and setting nu(x,y) = 0. A difficult example of this (dif-
+  ficult because of the high curvature in the functional form) is demonstrated.
+  Again the fifth-degree function, (x + 1)^5, is probed and a root found.
+  This particular example was chosen in part to show that the convergence pro-
+  perties of ZMUELLER for one- and two-dimensional problems are similar to those
+  of the previous two Mueller method subroutines (see file Mueller.txt). Also,
+  this example is actually one-dimensional: f(x,y) = f(x). However, the routine
+  followed a path through the (x,y) plane. The calculated values of y have no
+  significance in this case. 	~ 
+
+    In conclusion, ZMUELLER is a very versatile algorithm that can be used for 
+  finding the roots of one- and two-dimensional functions in the complex plane.
+  The subroutine can also be extended to the solution of simulianeous two-dimen-
+  sional functions. Simply represent one function with mu(x,y), and the other
+  with nu(x,y). 
+  [Note that it is not required that mu(x,y) + i nu(x,y) be an analytic function
+  of z: the Cauchy-Riemann equations need not be satisfied.) This is left as an
+  exercise for you.
+
+  From [BIBLI 01].
+----------------------------------------------
+End of file Zmueller.txt

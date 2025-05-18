@@ -1,0 +1,192 @@
+             EXPLANATION FILE OF PROGRAM TRANSPOR
+              ====================================
+
+
+  The Transport Model
+  -------------------
+
+
+  1. Kinds of problems
+     -----------------
+
+    The transport model, a particular case of linear programming, has for goal
+  to calculate the dispatching, at minimum cost, of a resource from some star-
+  ting points to other destination points.
+
+    For example:
+
+    - dispatch a product, at minimum cost, from different factories to various
+      locations.
+
+    - optimal dispatching of a liquid product through a distribution net.
+
+    - optimal dispatching of electric power from different sources to many cus-
+      tomers, etc.
+
+
+  2. The Model
+     ---------
+
+    Data
+    ----
+
+    To use the transport model, the decision-maker must perfectly know the fol-
+  lowing three kinds of data:
+
+    Destination Total Amount (DTA)
+    ------------------------------
+
+    It is for each destination the required total quantity.
+
+    Origin Available Amount (OAA)
+    -----------------------------
+
+    It is for each starting point the total available quantity of products.
+
+    Unitary Transport Cost (UTC)
+    ----------------------------
+
+    It is for each origin-destination couple the cost of delivery. This cost can
+  be replaced by miles to be minimized or any other useful unit, etc.
+
+    As for any discreet linear programming method, available data are presented
+  in a table such as:
+
+             -------------------------------------------
+             | Destination |  D1  |  D2  | ... |  DAA  |
+             |   Origin    |      |      |     |       |
+             -------------------------------------------
+             |     O1      |  C11 |  C12 | ... |       |
+             |     O2      |  C21 |  C22 | ... |       |
+             |     ...     |  ... |  ... | ... |       |
+             -------------------------------------------
+             |    DTA      |      |      |     |       |
+             -------------------------------------------
+
+             Cij is the delivery cost from Oi to Dj.
+
+
+    Constraints
+    -----------
+
+    It is not obligatory that the number of origins equal the numbers of desti-
+  nations, but the total available amount of origins must equal the total requi-
+  red amount at destinations.
+
+    If this latter condition is not verified, two cases may occur:
+
+    Sum OAA < Sum DTA
+    -----------------
+
+    In this case, demand cannot be satisfied, the transport model cannot be
+  used.
+
+    Sum DTA < Sum DAA
+    -----------------
+
+    In this case, available amount is greater than required amount and a remai-
+  ning stock will exist after the dispatching. To use the transport model, you
+  must create a supplementary request with a UTC = 0 corresponding to the stock
+  to be kept (see table below):
+
+             ----------------------------------------------------
+             | Destination |  D1  |  D2  |  D3  |   D4  |  DAA  |
+             |   Origin    |      |      |      |  sup. |       |
+             ----------------------------------------------------
+             |     O1      | 2.5  | 3.0  | 0.5  |  0 $  |  500  |
+             |             |      |      |      |       |       | 
+             |     O2      | 2.0  | 1.0  | 1.5  |  0 $  |  900  |
+             ----------------------------------------------------
+             |    DTA      | 500  | 300  | 400  |  200  | 1400  |
+             ----------------------------------------------------
+
+  
+  3. The Stepping Stone Algorithm
+     ----------------------------
+
+    We first establish a starting solution by using the "NW Corner", then the
+  transport model uses the "Stepping Stone" algorithm to improve the solution.
+
+    This latter, by successive iterations, seeks to improve the current solu-
+  tion by trying different dispatching schemes. For that, according to the graph
+  theory, each Oi and Dj is associated to a marker and each arc betwwen to mar-
+  kers is associated to a unitary cost, and moving unitary quantities on unused
+  arcs until optimal distribution is obtained.
+
+
+  4. Example
+     -------
+
+    Wording
+    -------
+
+    A papermaker owns three factories respectively producing* monthly 5000,
+  10000 and 6000 tons. He has to deliver the following quantities respectively
+  to four customers in different cities: 2000 T (Paris), 11000 T (Lyon), 4000 T
+  (Marseille) and 4000 T (Grenoble) at the lowest total transportation cost.
+  The transport costs grid is the * following:
+
+         -----------------------------------------------------
+         | Destination | PARIS | LYON | MARSEILLE | GRENOBLE |
+         |  Origin     |       |      |           |          |
+         -----------------------------------------------------            
+         |  FACTORY 1  |  200  | 700  |   800     |very high |           
+         |  FACTORY 2  |  400  | 400  |   500     |  500     |               
+         |  FACTORY 3  |  400  | 500  |   600     |  600     |          
+         -----------------------------------------------------
+
+    Resolution
+    ----------
+
+    Let us first make the table with unitary costs, DAA and DTA:
+
+         -------------------------------------------------------
+         | Destination |   D1  |  D2  |  D3  |   D4    |  DAA  |
+         |  Origin     |       |      |      |         |       |
+         -------------------------------------------------------            
+         |     O 1     |  200  |  700 |  800 |very high|  5000 |          
+         |     O 2     |  400  |  400 |  500 |   500   | 10000 |              
+         |     O 3     |  400  |  500 |  600 |   600   |  6000 |        
+         -------------------------------------------------------
+         |     DTA     | 2000  |11000 | 4000 |  4000   | 21000 |
+         -------------------------------------------------------
+
+  The transport model cannot be used with such a table, some modification is
+  necessary.
+
+    Infinite Cost
+    -------------
+
+    You just have to replace "very high" by 9999 (greater than all other values)
+  to be sure that no transport will occur between O1 and D4.
+
+    Results
+    -------
+
+    Program Transpor with these data gives the following results:
+
+
+                           TRANSPORT MODEL
+
+                 ORIGIN 1  TO  DESTINATION 1 :  2000
+
+                 ORIGIN 1  TO  DESTINATION 2 :  3000
+
+                 ORIGIN 2  TO  DESTINATION 2 :  8000
+
+                 ORIGIN 2  TO  DESTINATION 3 :  2000
+
+                 ORIGIN 3  TO  DESTINATION 3 :  2000
+
+                 ORIGIN 3  TO  DESTINATION 4 :  4000
+
+                        TOTAL TRANSPORT COST : 10300000
+
+
+    Note: other optimal solutions may exist but this program only gives one
+  solution.
+
+  From [Modèles pratiques de décision Tome 2, By Jean-Pierre Blanger,
+        PSI Editions, France, 1982].
+---------------------------------------------
+End of file Transpor.txt

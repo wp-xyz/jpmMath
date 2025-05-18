@@ -1,0 +1,306 @@
+
+
+               EXPLANATION FILE FOR LIMITED DEVELOPMENTS
+               =========================================
+
+
+  1. Introduction
+     ------------
+
+    This file is made of two parts:
+
+    - limited development at order 5 of a real function f(x) in one point;
+
+    - limited developments of f.g, f/g and g o f knowing the limited dev. of
+      functions f(x) and g(x) (3 programs).
+
+
+  2. Limited Development of f(x) at x=x0
+     -----------------------------------
+
+  2.1 Principle
+      ---------
+
+    The limited development at order n of a function f(x) at local point, x0 is
+  given by Taylor's formula:
+
+                             f(x0)         2 f'(x0)         3 f"(x0)
+        f(x) = f(x0) + (x-x0)----- + (x-x0)  ------ + (x-x0)  ------
+                              1!               2!               3!
+                                      (n)
+                                   n f   (x0)           n+1
+                     + ... + (x-x0)  -------- + O((x-x0)   )
+                                        n!
+
+  This can be written as:
+
+                                  2           3                n           n+1
+   f(x) = a0 + a1(x-x0) = a2(x-x0)  + a3(x-x0) + ... + an(x-x0)  + O((x-x0)   )
+
+                      (i)
+                     f   (x0)
+          with  ai = --------
+                       i!
+
+  In the special case when x0 = 0, the formula becomes:
+
+                              2            n      n+1
+          f(x) = a0 + a1x +a2x  + ... + anx  + O(x   )
+
+
+  2.2 Program Ltddev
+      --------------
+
+    The program calculates the limited development of f(x) = 1/(1-x) for x=0 at
+  order 5
+                        2    3    4   5      6
+        f(x) = 1 + x + x  + x  + x + x  + O(x )
+
+  The exact values of a1...a5 equal 1.
+
+  The program Ltddev finds;
+
+              a1 = 1.0000416250
+              a2 = 1.0000416249
+              a3 = 1.0011207937
+              a4 = 1.0011208001
+              a5 = 1.0136468275
+
+  As we can see, the direct method is not very accurate.
+
+
+  3. Limited development of f.g
+     --------------------------
+
+  3.1 Introduction
+      ------------
+
+    The next limited developments will be for x=0.
+
+    Usual functions have well known limited developments. We can use these known
+  limited developments to find the limited dev. of other functions.
+
+    The next three programs will calculate, at high orders and with great accu-
+  racy the limited developments of functions f.g, f/g and g o f, knowing the li-
+  mited dev. of f and g.
+
+
+  3.2 Principle
+      ---------
+
+  Let us begin with the product of two functions, f.g:
+
+                          2            n      n+1              n+1
+      f(x) = a0 + a1x +a2x  + ... + anx  + O(x   )  = P(x) + O(x   )
+
+
+                           2            n      n+1             n+1
+      g(x) = b0 + b1x +b2x  + ... + bnx  + O(x   )  = Q(x= + O(x   )
+
+
+  So the limited development of f.g is:
+
+                               2            n      n+1
+      (f.g) (x) = c0 + c1x +c2x  + ... + cnx  + O(x   )
+
+  The ci coefficients can be easily calculated by multiplying polynomials P(x)
+  and Q(x):
+                              i
+                        ci = Sum a  b
+                             k=0  k  i-k
+
+
+  3.3 Program Ltddev1
+      ---------------
+
+  In the given example, f(x) = exp(x)/(1+x).
+
+                                  2       3             n         n+1
+         f(x) = exp(x) = 1 + x + x /2! + x /3! + ... + x /n! + O(x   )
+
+                 1             2             n n      n+1
+         g(x) = --- = 1 - x + x  + ... + (-1) x  + O(x   )
+                1+x
+
+  Let us take n=5
+
+  We input the following coefficients ai and bi:
+
+         a0 = 1
+         a1 = 1
+         a2 = 0.5
+         a3 = 0.1666667  
+         a4 = 0.0411667
+         a5 = 0.0083333
+
+         b0 = 1
+         b1 = -1
+         b2 = 1
+         b3 = -1  
+         b4 = 1
+         b5 = -1
+
+  The results are:
+
+         c0 =  1.0000000
+         c1 =  0.0000000
+         c2 =  0.5000000
+         c3 = -0.3333333  
+         c4 =  0.3750000
+         c5 = -0.3666667
+
+  Exact values are: 1, 0, 1/2, 3/8 and -11/30.
+
+    We can see that these results are much better than those obtained with the
+  direct method.
+
+  We can still improve these results by taking, for instance, n=15.
+
+
+  4. Limited development of f/g
+     --------------------------
+
+  4.1 Principle
+      ---------
+
+                          2            n      n+1               n+1
+      f(x) = a0 + a1x +a2x  + ... + anx  + O(x   )  = P(x) + O(x   )
+
+
+                          2            n      n+1               n+1
+      g(x) = b0 + b1x +b2x  + ... + bnx  + O(x   )  = Q(x= + O(x   )
+  
+
+    Here, me must have b0 <> 0, else f/g is not defined for x=0.
+
+    So we have to divide P(x) by Q(x) at order n with increasing powers.
+
+    It can be proved that the ci coefficients obey the following recursive
+  formula:
+                                      i
+          c0 = a0/b0       ci = ai - Sum bk.ci-k   
+                                     k=1
+
+  4.2 Program Ltddev2
+      ---------------
+
+  Let us take again the example h(x) = exp(x) / (1+x)
+
+  Let us take n=6
+
+  We input the following coefficients ai and bi:
+
+         a0 = 1
+         a1 = 1
+         a2 = 0.5
+         a3 = 0.1666667  
+         a4 = 0.0411667
+         a5 = 0.0083333
+         a6 = 0.0013889
+
+         b0 = 1
+         b1 = 1
+         b2 = 0
+         b3 = 0  
+         b4 = 0
+         b5 = 0
+         b6 = 0
+
+  The results are:
+
+         c0 =  1.0000000000
+         c1 =  0.0000000000
+         c2 =  0.5000000000
+         c3 = -0.3333333333  
+         c4 =  0.3750000000
+         c5 = -0.3666666667
+         c6 =  0.3680555556
+
+  The results are very good.
+
+
+  5. Limited Development of g o f
+     ----------------------------
+
+  5.1 Principle
+      ---------
+
+                          2            n      n+1              n+1
+      g(x) = a0 + a1x +a2x  + ... + anx  + O(x   )  = P(x) + O(x   )
+
+
+                          2            n      n+1             n+1
+      f(x) = b0 + b1x +b2x  + ... + bnx  + O(x   )  = Q(x= + O(x   )
+  
+
+    Here, me must have b0 = 0, so as f(x) --> 0 when x --> 0.  Else we cannot
+  define the limited dev. of g o f at x=0.
+
+    The limited dev. of g o f  is:
+                                         n+1
+                (gof) (x) = P{Q(x)} + O(x   )
+
+    or under more explicit form:
+                                           2        n
+                (gof) (x) = a0 + a1[b1x+b2x +...+bnx ]
+
+                                           2        n 2
+                               + a2[b1x+b2x +...+bnx ]
+
+                                           2        n 3
+                               + a3[b1x+b2x +...+bnx ]
+
+                               + ---------------------
+                                           2        n n      N+1
+                               + an[b1x+b2x +...+bnx ]  + O(x   )
+
+                                             2
+  This development has terms of degree 0 to n .
+
+  We keep only the terms of degree <= n.
+                                                      2        n i
+  It can be proved that the xm coefficient of [b1x+b2x +...+bnx ]  is given by
+                                                
+                g     =       Sum       b      .b      ...b
+                 i,m     alpha1..alphai  alpha1  alpha2    alphai
+
+  the summation being made for all i-uplets (alpha1..alphai), such as:
+
+                            i
+                           Sum alpha  = m
+                           j=1      j
+
+  By summing up all partial coefficients for each i, we obtain the xm coeffi-
+  cient of the g o f limited development:
+
+                            n
+                      cm = Sum g
+                           i=1  i,m
+
+  5.2 Program Ltddev3
+      ---------------
+
+    The amount of calculation is much greater than in previous two programs. For
+  that reason, n is limited to 30.
+
+  Let us take the example: h(x) = exp(sin(x))  and n=10.
+
+  The results are:
+
+      c0 =  1.0000000000
+      c1 =  1.0000000000
+      c2 =  0.5000000000
+      c3 =  0.0000000000
+      c4 = -0.1250000000
+      c5 = -0.0666666667
+      c6 = -0.0041666667
+      c7 =  0.0111111111
+      c8 =  0.0053819444
+      c9 =  0.0004763668
+      c10 = -0.0008132165
+                                              -9
+  Results are good, accuracy is better than 10  .
+
+From [BIBLI 03].
+-----------------------------------------------
+End of file Ltddev.txt

@@ -1,0 +1,17 @@
+Program Description
+
+    Numerical Base Conversion
+    Operations in any Base between 2 and 36
+    Combinatory analysis (N!, C(n,p), A(n,p))
+    Diophantian equation Ax + By = C
+    Factorization of an integer number
+    Simple operations on fractions
+    GCD and SCM of several integer numbers
+    Compute number of days between two dates
+    Parser accepting variables with several characters
+    Seek if an integer number is a prime number or not
+    Write a table of prime numbers from 1 to N
+    Demo of Pascal's Triangle NEW
+    Find coincidences of letters in two given words of up to 26 letters NEW
+    Unit PCalcFun used by program below NEW
+    Calculator with huge integers NEW 

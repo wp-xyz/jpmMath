@@ -1,0 +1,19 @@
+Program Description
+
+    Program to demonstrate Asymerf subroutine
+    Explanation Filz of Program above (ASYMERF) NEW
+    Program to demonstrate Chebyshev economization
+    Program to demonstrate Chebyser subroutine
+    Program to demonstrate the chi-square cumulative distribution
+    Explanation File of program above (Chi-sq) NEW
+    Program to demonstrate the chi-square subroutine
+    Program to demonstrate complex series evaluation
+    Explanation File of program above (Cmplxser) NEW
+    Program to demonstrate Horner's rule
+    Explanation File of Program above NEW
+    Program to demonstrate inverse normal subroutine
+    Explanation File of program above (Invnorm) NEW
+    Program to demonstrate LN(X!) subroutine
+    Program to demonstrate the series inversion
+    Explanation File of Program above (Recipro) NEW
+    Program to demonstrate the series reversion subroutine 

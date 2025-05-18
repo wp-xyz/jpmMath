@@ -1,0 +1,134 @@
+
+                     EXPLANATION FILE OF PROGRAM CHI-SQ
+                     ==================================
+
+
+  The Chi-Square Distribution Functions
+  -------------------------------------
+
+    This subsection was inspired by an observation that statisticians appear to
+  be repeatedly thwarted in their work by a lack of table values that cover
+  their particular situation. For those who do not have access to a large compu-
+  ter, this can be very frustrating.
+   
+    Statistical tables are numerous (e.g., see Refs. 21 and 22). However, the
+  number of possible different situations is infinite, and the tables cover only
+  a few selected cases. This problem appears to be particularly acute for the
+  Chi-Square statistic. ln this subsection, therefore, asymptotic series expan-
+  sions for both the Chi2 probability density function, p(Chi2), and the Chi2
+  cumulative distribution function, P(chi^2), will be presented.
+   
+    For those not familiar with the subject, the chi2 statistic is used to test
+  the hypothesis that the measured results either support or disprove a precon-
+  ceived distribution function. For example, consider the situation where there
+  are N bins into which the results can fall. If E, is the expected frequency of
+  a result falling into bin i, and 0, is the observed frequency, then the chi^2
+  statistic is defined to be
+
+                         N  (Oi - Ei)²
+                Chi^2 = Sum -----------           (2.3.3)
+                        i=1     Ei
+
+    Associated with this statistic is the number of degrees of freedom, M =
+  N - R, where R is the number of independent relationships between the Oi and
+  Ei. For example, one relation might be
+
+                 N         N
+                Sum O  =  Sum E 
+                i=1  i    i=1  i
+
+    ln the extreme case, if there are N independent relationships. and if the
+  expected Frequency conjecture is correct, then Chi2 = 0 because the O, are
+  totally constrained. 
+
+    The basic relationship we will employ to calcula te p(x) is
+
+                         -x/2  (M/2-1)
+                        e     x
+                p(x) = -----------------          (2.3.4)
+                        (M/2)      (M/2)
+                       2      Gamma
+     
+    ln this notation x = chi^2, and M represents the number of degrees of
+    freedom. 
+
+    The approximation that will be used for P(x) is 
+
+                     2x           inf                x^k
+              P(x) = -- p(x) [1 + Sum --------------------------- ]    (2.3.5)
+                     M            k=1 (M + 2)(M + 4) ... (M + 2k)
+
+    To evaluate equation (2.3.5) we need p(x), and to obtain that function we
+  require Gamma(M/2). Therefore, the starting point involves approximating the
+  Gamma function.
+   
+    One of the problems in evaluating Gamma(M/2) directly is that there is a
+  strong potential for numeric overflow for large values of M. For exarnple, if
+  M = 200, then Gamma(M/2) = Gamma(100) = 99!, which is beyond the range of many
+  BASIC interpreters. Therefore, it would be better to approximate
+  ln[Gamma(M/2)]. This can be implemented in equation (2.3.4) by first approxi-
+  mating ln[p(x)]:
+   
+      ln[p(x)] = -x/2 + (M/2 - 1) ln x - (M/2) ln 2 - ln[Gamma(M/2)]   (2.3.6) 
+
+  The conversion to p(x) then is simply  p(x) = exp{ln[p(x)]}          (2.3.7)
+   
+  We therefore start with an approximation for ln[Gamma(M/2)].
+   
+    The Gamma function is directly related to the generalized factorial 
+
+              Gamma(x + 1) = x!        (2.3.8) 
+
+  The problem now is one of finding an approximation for ln x!. Since we are
+  doing all of this in order to avoid the numeric overflow problems associated
+  with large arguments in the Gamma function, an asymptotic expansion is appro-
+  priate: 
+
+                                            1      1         1         1
+              ln x! = (x + 1/2) ln x - x + --- - ------ + ------- - ------- 
+                                           12x	 360x^3   1260x^5   1680x^7
+                                             
+                       + 0.918938533205             (2.3.9) 
+
+  The derivation of this equation will be discussed in the next subsection. 
+  For the present, we will note that this expansion is accurate to better than
+  12 digits forr x > 10.
+   
+    Equation (2.3.9) can be implemented in BASIC as shown in program chi-sq.bas. 
+  As you can see from the example, LN(X!) is very accute even for low values of
+  chi. 
+
+    We can now use the LN(Xl) subroutine in conjunction with equation (2.3.6) to 
+  proovide an approximation to the Chi-Square probability density function, p(x) 
+  The inputs to CHI-SQR are the number of degrees of freedom (M) and argument
+  (X). The result is returned in Y. The intrinsic limit to the accuracy of the
+  calculation is the approximation associated with obtaining ln(M/2). However,
+  that approximation is very good, and therefore the number of degrees of free-
+  dom may be as low as M = 4 (or even lower).
+   
+    As expected, the calculated distribution peaks close to the number of
+  degrees of freedom. 
+
+    There are a few precautions related to the use of CHI-SQR. Because there are
+  no error checks on the inputs, it is the responsibility of the calling program
+  to ensure that M is a nonnegative integer, and that Chi is positive. Other-
+  wise, CHI-SQR is a very reliable subroutine.
+
+    Now that we have a means for accurately evaluating pix), the cumulative dis- 
+  tribution function can be approximated using equation (2.3.5). Since the se-
+  ries summed in this equation contains terms of the same sign, little round-
+  off error is expected in the final result. 
+
+    The calculations required to evaluate P(x) are performed by the subroutine
+  CHISQ. This subroutine calls CHI-SQR, which in turn calls LN(XI). The inputs
+  to CHISQ are the number of degrees of freedom (M), the argument (chi), and a
+  convergence factor for the series summation (E). The result is returned in Y. 
+
+    The programs presented in this subsection serve two purposes. First, they
+  are very useful routines for statistical studies. Second, they demonstrate how
+  a set of subroutines can be built one block at a time. This is the overall
+  philosophy behind the BASIC Scientific Subroutines series.
+
+  From [BIBLI 01].
+------------------------------------------
+End of file chi-sq.txt.

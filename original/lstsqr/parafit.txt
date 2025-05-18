@@ -1,0 +1,121 @@
+
+
+                 EXPLANATION FILE OF PROGRAM PARAFIT
+                 ===================================
+
+
+  Parametric Least Squares
+  ------------------------
+
+    Sa Far in this chapter, the discussion has been limited ta polynomial least- 
+  squares fits in .which the coefficients appeared in linear form. ln fact, this
+  linearity property was key to the iteration procedure discussed in the pre-
+  vious section. 
+
+    Many problems lend themselves to this form of analysis. For example, the 
+  Weibull cumulative-distribution function is often used to analyze the failure
+  modes in manufactured products: 
+
+                        P(t) = 1 - exp(-(t/to)^w) 
+                        t0 > 0                                  (1.8.1) 
+                        w > O 
+                        t > 0 
+
+  (See References 1 and 13 for further discussion). P(t) is the probability that
+  a failure occur by time t. Often, the procedure is ta record the failure times
+  and to fit a Weibull curve graphically in order to de termine the characteris-
+  tic time t0 and the parameter w (which has implications with respect to the
+  failure mode). This function can be linearized for least-squares fitting as
+  follows: 
+
+                        1 - P(t) = exp(-(t/t0)^w) 
+                        ln [1 - P(t)] = -(t/t0)^w               (1.8.2)
+                        ln {ln [1 - P(t)J} = -w ln t + w ln t0 
+
+  We define the following: 
+
+                        x = ln t 
+                        y = ln {ln [1 - P(t)]} 
+                        A = -w 
+                        B = w ln t0 
+
+  Equation (1.8.2) then becomes 
+
+                        y = AX + B 
+
+  This last equation has the standard linear form that can easily be treated
+  with the routine given in program LSTSQRl. The resulting calculated coef-
+  ficients, A and B, can be employed to estimate t0 and w:
+   
+                        w  = -A 
+                        t0 = exp(-B/A)                          (1.8.3)
+                         
+    The linearization method is interesting, but it should not be relied upon
+  for dealing with nonlinear coefficient situations. One problem with the
+  approach is that not aIl equations can be linearized. Another problem is
+  that the least-squares fit is not with respect to the original equation, but
+  rather with respect to the linearized form. ln the case of the Weibull fit,
+  if P(t) is near unity, 1 - P(t) is near zero and Y can become large. Thus, it
+  is possible for errors in P(t) in this region to unduly influence the fitted
+  parameters. 
+
+    An alternative procedure is to iteratively seek the values of the parameters
+  that best satisfy the original equation. We will calI this method parametric
+  least-squares fitting. 
+
+    In file lstsqr.txt, we found that the values of the parameters that minimi-
+  zed the variance (and thereby the standard deviation) were unbiased estimates.
+  Thus, the minimization of the standard deviation is a good statistical crite-
+  rion on which to base an iterative procedure.
+   
+    We use a heuristic method for finding the value of a parameter that minimi-
+  zes the standard deviation. We will calI this method the shuffle. The basic 
+  assumptions are that the sign of the optimum value of the parame ter is known,
+  and that there is only one minimum. The basic concept behind the method is
+  that if the estimates are getting better, then you take bigger steps; and
+  when the optimum is passed, you turn around and halve the step size.
+
+    This approach can be generalized to several parameters by taking a step in
+  reducing the standard deviation one parameter at a time, and repeatedly pas-
+  sing through the parameter set. 
+
+    Assuming that the equation to be fitted can be written in the Form y(x) = 
+  f(x;A1;A2;A3; ... ), this algorithm has been implemented in program Parafit. 
+
+    The inputs to PARAFIT are the number of data points (N), the number of coef- 
+  ficients (L), the data pairs [X(I), Y(I)], the initial step size (0 < El < 1),
+  and a convergence factor (E). The returned results are the estimated coeffi-
+  cients [A (I)], the standard deviation of the fit using the se coefficients
+  (D), and the number of iterations employed (M). It is assumed that the func-
+  tion Y(X) = f[X;A(I); ... ] is available in the functions subroutine. 
+
+    El and E must be specified very carefully. El is related to the step size,
+  and must be in the range 0 < El < 1. If El = 0, no progress will be made and
+  the algorithm will fail. If El = 1, the procedure may become unstable. A good
+  compromise choice is El = 0.5, and preferably less then 0.8. 
+
+    E determines when the iteration is terminated. If the relative change in the
+  standard deviation between two complete successive passes through the parame-
+  ters is less th an E, then the iteration stops. 
+
+    An example of the use of PARAFIT is shown in the program. ln this case, the 
+  demonstration program generated a set of ten data pairs using the equation
+  y(x) = 2exp(-(x-4.5)^2/3). This equation has the form of a gaussian, which is
+  a function of considerable importance in statistics, communications, optics,
+  physics, and other sciences. The values of the parameters calculated by PARA-
+  FIT are in very good agreement with those used to generate the data set. 
+
+    PARAFIT is a powerful optimization subroutine. lts chief disadvantage is its 
+  slow execution speed. Also, some care is required in the selection of input
+  parameters. PARAFIT does not check on the validity of the inputs. If L > N,
+  the subroutine may never terminate. Also, PARAFlT is not always guaranteed to
+  converge. However, it will usually do weIl if E == 0.1, El == 0.5, and if the
+  initial guesses for the A(I) are at least correct in sign, and are reasonable
+  overestimates. 
+
+    FinaIly, as an exercise, try to apply PARAFlT to the Weibull function dis-
+  cussed earlier in this section.
+
+  From [BIBLI 01].
+  ----------------------------------------
+End of file Parafit.txt

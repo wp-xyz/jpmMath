@@ -1,0 +1,42 @@
+       EXPLANATION FILE OF BUBBLE SORTING
+
+ 
+ Suppose we declare:
+
+   static int a[] = {7, 3, 66, 3, -5, 22, -77, 2};
+  
+ The following table shows the elemnts of a[] after
+ each pass of the i loop:
+
+   unordered data:   7   3   66    3   -5   22   -77    2
+   first pass:	   -77   7    3   66    3   -5    22    2	
+   second pass:    -77  -5    7    3   66    3     2   22
+   third pass:     -77  -5    2    7    3   66     3   22
+   fourth pass:    -77  -5    2    3    7    3    66   22
+   fifth pass      -77  -5    2    3    3    7    22   66
+   sixth pass:     -77  -5    2    3    3    7    22   66
+   seventh pass:   -77  -5    2    3    3    7    22   66
+   
+ At the start of the first pass a[6] is compared to a[7].
+ Since the values are in order they are not exchanged. Then
+ a[5] is compared with a[6], and since these values are out
+ of order they are exchanged. Then a[4] is compared with 
+ a[5], etc. Adjacent out-of-order values are exchanged. The
+ effect of the first pass is to "bubble" the samllest value
+ in the array into the elemnt a[0]. In the second pass a[0]
+ is left unchanged and a[6] is compared with a[7], etc. 
+ After the second pass, the next to the smallest value is in
+ a[1]. Since each pass bubbles the next smallest element to
+ its appropriate array position, the algorithm will, after
+ n - 1 passes, have all the elements ordered. Notice in this
+ example that after the fifth pass all the elements have been
+ ordered. It is possible to modify the algorithm to terminate
+ earlier by adding a variable that detects if no exchanges
+ are made in a given pass. We leave this as an exercise.
+ 
+ A bubble sort is very inefficient. If the size of the array
+ is n, then the number of comparisons performed is proportio-
+ nal to n².
+ 
+ [From BIBLI 09].
+      

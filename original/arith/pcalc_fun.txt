@@ -1,0 +1,456 @@
+{******************************************************************
+* Collection of functions for arithmetical operations on integers *
+* of big size as strings of type PChar.                           *
+*                                                                 *
+* Ref.: "Turbo Pascal for Windows - Techniques and Utilities By   *               
+*        Neil J. Rubenking, PC Magazine & ZD Press, 1992."        *
+******************************************************************}
+Unit PCalcFun;
+
+
+Interface
+
+Uses WinTypes, WinProcs, Strings;
+
+Const
+      cer_Ok = 0;
+      cer_Overflow = 1;
+      cer_LowMemory = 2;
+      cer_DivideBy0 = 3;
+      cer_Quit = 4;
+      cer_Invalid = 5;
+
+      Function add(A,B:PChar; MaxLen:Word; Var Status:Word): PChar;
+      Function sub(A,B:PChar; MaxLen:Word; Var Status:Word): PChar;
+      Function prod(A,B:PChar; MaxLen:Word; Var Status:Word): PChar;
+      Function fact(A:PChar; MaxLen:Word; Var Status:Word): PChar;
+      Function divide(A,B,remainder:PChar; MaxLen:Word; Var Status:Word): PChar;
+      Function Power(B,E:PChar; MaxLen:Word; Var Status:Word): PChar;
+      Function StripComma(WW:PChar): PChar;
+      Function AddComma(WW:PChar; MaxLen:Word): PChar;
+      Function AllNums(P:PChar): Boolean;
+
+Implementation
+
+  Function SubChar(C1,C2:char; Var borrow:boolean): Char; Assembler;
+  {substracts one digit char ('0' to '9') from another and returns
+   the result as a digit. Sets borrow to true if appropriate.}
+  ASM
+    LES DI, Borrow
+    MOV Byte Ptr ES:[DI], FALSE
+    MOV AL, C1
+    SUB AL, C2
+    JGE @NoBorrow
+    MOV Byte Ptr ES:[DI], TRUE
+    ADD AL, 10
+    @NoBorrow:
+    ADD AL, 30h
+  END;
+
+  Function AddChar(C1,C2:char; Var carry:boolean): Char; Assembler;
+  {adds one digit char ('0' to '9') from another and returns
+   the result as a digit. Sets carry to true if appropriate.}
+  ASM
+    LES DI, Carry
+    MOV Byte Ptr ES:[DI], FALSE
+    MOV AL, C1
+    ADD AL, C2
+    SUB AL, 60h  {30h for each digit}
+    CMP AL, 10
+    JL @NoCarry
+    SUB AL, 10
+    MOV Byte Ptr ES:[DI], TRUE
+    @NoCarry:
+    ADD AL, 30h
+  END;
+
+  Procedure TrimLead0(P:PChar; Len:word);
+  {Trims leading zeros from a PChar, up to length Len}
+  Var Psn:word;
+  Begin
+    Psn:=0;
+    While (Psn<=Len) and (P[Psn]='0') do Inc(Psn);
+    if Psn>0 then StrCopy(P,P+Psn);
+    if P[0]=#0 then strcopy(P,'0')
+  End;
+
+  Procedure Gasp;
+  Var Msg:TMsg;
+  Begin
+    While PeekMessage(Msg,0,0,0,pm_Remove) do
+      if Msg.Message = wm_Quit then Halt
+      else
+      begin
+        TranslateMessage(Msg);
+        DispatchMessage(Msg)
+      end
+  End;
+
+
+  Function addWTrail(A,B:PChar; TrailB,MaxLen:word; Var Status:word): PChar;
+  Var
+      LnA, LnB, Len: word;
+      TB: PChar;
+      carry: Boolean;
+      PsnA, PsnB: LongInt;
+      ChA,ChB: Char;
+  Begin
+    addWTrail:=A;
+    if Status<>cer_ok then exit;
+    LnA:=Strlen(A);
+    LnB:=StrLen(B)+TrailB;
+    Len:=LnA;
+    if LnB>Len then Len:=LnB;
+    Inc(Len);
+
+    Status:=cer_Overflow;
+    if (LnA>=Pred(MaxLen)) or (LnB>=Pred(MaxLen))
+      or (LnA=0) or (LnB=0) then exit;
+    Status:=cer_LowMemory;
+    GetMem(TB,succ(LnB));
+    if TB=NIL then exit;
+    Status:=cer_Ok;
+
+    {make copy of parameter B and pad with trailing 0's, if any are required}
+    StrCopy(TB,B);
+    FillChar(TB[StrLen(B)],TrailB,'0');
+    TB[LnB]:=#0;
+    carry:=False;
+
+    {"grow" A to hold result}
+    StrMove(A+Len-LnA, A, Succ(LnA));
+    FillChar(A^, Len-LnA, '0');
+    PsnA:=Len; PsnB:=LnB;
+    {add digits from right to left}
+    While (PsnB>=0) or (PsnA>0) do
+    begin
+      Dec(PsnB); Dec(PsnA);
+      ChA:=A[PsnA];
+      if PsnB>=0 then ChB:=TB[PsnB]
+      else ChB:='0';
+      if carry then
+        A[PsnA]:=AddChar(Succ(ChA), ChB, carry)
+      else
+        A[PsnA]:=AddChar(ChA, ChB, carry)
+    end;
+    if carry then A[PsnA]:='1';
+    TrimLead0(A,MaxLen);
+    FreeMem(TB,Succ(LnB))
+  End; {addWTrail}
+
+  Function add(A, B: PChar; MaxLen: word; Var Status: word): PChar;
+  Begin
+    add:=addWTrail(A,B,0,MaxLen,Status)
+  End;
+
+  Function Compare(X,Y: PChar): ShortInt;
+  {returns -n if X<Y, 0 if equal, +N if X>Y}
+  Var X1,Y1,Xs,Ys: word;
+  Begin
+    X1:=StrLen(X); Xs:=0;
+    While (Xs<=X1) and (X[Xs]='0') do Inc(Xs);
+    Y1:=StrLen(Y); Ys:=0;
+    While (Ys<=Y1) and (Y[Ys]='0') do Inc(Ys);
+    if (X1-Xs) = (Y1-Ys) then
+      Compare:=StrComp(X+Xs,Y+Ys)
+    else if (X1-Xs) > (Y1-Ys) then Compare:=1
+    else Compare:=-1
+  End;
+      
+  Function sub(A, B: PChar; MaxLen: word; Var Status: word): PChar;
+  Var
+      LnA, LnB, Len: word;
+      TB: PChar;
+      borrow,minus: Boolean;
+      PsnA, PsnB: LongInt;
+      ChA,ChB: Char;
+  Begin
+    sub:=A;
+    if Status<>cer_ok then exit;
+    LnA:=StrLen(A); LnB:=StrLen(B);
+    Status:=cer_Overflow;
+    if (LnA>=Pred(MaxLen)) or (LnB>=Pred(MaxLen))
+      or (LnA=0) or (LnB=0) then exit;
+    {substract smaller from larger}
+    if Compare(A, B) < 0 then
+    begin
+      TB := StrNew(A);
+      StrCopy(A, B);
+      Len:=LnA; LnA:=LnB; LnB:=Len;
+      minus:=True
+    end
+    else
+    begin
+      TB := StrNew(B);
+      minus:=False
+    end;
+    Status:=cer_LOwMemory;
+    if TB=NIL then exit;
+     Status:=cer_Ok;
+     borrow:=False;
+     Len:=LnA;
+     if LnB > Len then Len:=LnB;
+     Inc(Len);
+     {"grow" A to hold result}
+     StrMove(A+Len-LnA, A, Succ(LnA));
+     FillChar(A^, Len-LnA, '0');
+     PsnA:=Len; PsnB:=LnB;
+     {substract digits from right to left}
+     While (PsnB>=0) or (PsnA>0) do
+     begin
+       Dec(PsnB); Dec(PsnA);
+       ChA:=A[PsnA];
+       if PsnA>=0 then ChA:=A[PsnA]
+       else ChA:='0';
+       if PsnB>=0 then ChB:=TB[PsnB]
+       else ChB:='0';
+       if borrow then
+         A[PsnA]:=subChar(Pred(ChA), ChB, borrow)
+       else
+         A[PsnA]:=subChar(ChA, ChB, borrow)
+     end;
+     PsnA:=0;
+     While (PsnA<=Len) and (A[PsnA]='0') do Inc(PsnA);
+     if minus then
+     begin
+       Dec(PsnA); A[psnA]:='-'
+     end;
+     StrCopy(A,A+PsnA);
+     if A[0]=#0 then StrCopy(A,'0');
+     StrDispose(TB)
+   End; {sub}
+
+   Function prod(A, B: PChar; MaxLen: word; Var Status: word): PChar;
+   Var TB,TA: PChar;
+   PsnB, N, times, LnA, LnB, Len: word;
+   Begin
+     prod:=A;
+     if Status<>cer_ok then exit;
+     LnA:=StrLen(A); LnB:=StrLen(B);
+     Status:=cer_Overflow;
+     if (LnA+LnB >= MaxLen) or (LnA=0) or (LnB=0) then exit;
+     {multiply larger by smaller}
+     if Compare(A, B) < 0 then
+     begin
+       TB:=StrNew(A);
+       StrCopy(A, B);
+       Len:=LnA; LnA:=LnB; LnB:=Len
+     end
+     else
+       TB:=StrNew(B);
+
+     Status:=cer_LowMemory;
+     if TB=NIL then exit;
+     TA:=StrNew(A);
+     if TA=NIL then
+     begin
+       StrDispose(TB);
+       exit
+     end;
+     Status:=cer_Ok;
+     Len:=LnA+LnB;
+     FillChar(A^, Len, '0');
+     A[Len]:=#0;
+
+     {for each digit of muktiplier, right to left, add together
+      an appropriate number of copies of multiplicand, tack the
+      right number of zeros on the end, and add the result to
+      the running total in T2.}
+     psnB:=LnB;
+     While (psnB>0) and (Status = cer_Ok) do
+     begin
+       Dec(PsnB);
+       times:=Ord(TB[PsnB])-48;
+       for N:=1 to times do
+         AddWTrail(A, TA, Pred(LnB)-PsnB, MaxLen, Status);
+       Gasp
+     end;
+     TrimLead0(A, MaxLen);
+     StrDispose(TA);
+     StrDispose(TB)
+   End; {prod}
+
+   Function divide(A, B, remainder: PChar; MaxLen: word; Var Status: word): PChar;
+   Var
+       T1, T2: PChar;
+       psn1,psn2,LnT1,LnT2: word;
+   Begin
+     divide:=A;
+     Status:=cer_Overflow;   
+     if (A[0]=#0)  or (B[0]=#0) then exit;
+     Status:=cer_DivideBy0;
+     if Compare(B,'0')=0 then exit;
+     Status:=cer_Ok;
+     if Compare(A, B)=0 then
+     begin
+       StrCopy(A, '1');
+       StrCopy(remainder,'0')
+     end
+     else if Compare(A, B)<0 then
+     begin
+       StrCopy(remainder,A);
+       StrCopy(A, '0')
+     end
+     else
+     begin  {A is larger than B}
+       status:=cer_LowMemory;
+       LnT1:=StrLen(A)+3;
+       GetMem(T1,LnT1);
+       if T1=Nil then exit;
+       StrCopy(T1,B);
+       GetMem(T2,LnT1);
+       if T2=Nil then
+       begin
+         FreeMem(T1,LnT1);
+         exit
+       end;
+       StrCopy(T2,'1');
+       StrCopy(remainder,A);
+       Status:=cer_Ok;
+       {while dividend is > T1, add 0s to T1 and to T2}
+       While Compare(A,T1) > 0 do
+       begin
+         StrCat(T1,'0'); StrCat(T2,'0')
+       end;
+
+       StrCopy(A, '0');
+       psn1:=StrLen(T1); psn2:=StrLen(T2);
+       {get individual digits of quotient by repeated sunstraction
+        of T1. T1 is the divisor with a steadily decreasing number
+        of zeros after it.}
+       While Compare(T1,B) <> 0 do
+       begin
+         Dec(psn1); Dec(psn2);
+         T1[psn1]:=#0; T2[psn2]:=#0;
+         While Compare(remainder,T1) >= 0 do
+         begin
+           sub(remainder, T1, MaxLen, Status);
+           if Status<>cer_Ok then exit;
+           add(A, T2, MaxLen, Status);
+           if Status<>cer_Ok then exit
+         end;
+         Gasp
+       end;
+       FreeMem(T1,LnT1); FreeMem(T2,LnT1)
+     end
+   End; {divide}
+
+   Function fact(A: PChar; MaxLen: word; Var Status: word): PChar;
+   Var TA:PChar; LnA:word;
+   Begin
+     fact:=A;
+     if Status<>cer_Ok then exit;
+     Status:=cer_Overflow;
+     if A[0]=#0 then exit;
+     Status:=cer_LowMemory;
+     LnA:=StrLen(A)+3;
+     GetMem(TA,LnA);
+     if TA=Nil then exit;
+     Status:=cer_Ok;
+     StrCopy(TA, A);
+     StrCopy(A, '1');
+     if Compare(TA,'0') <> 0 then
+       While (Compare(TA,'1') <> 0) and (Status=cer_Ok) do
+       begin
+         prod(A, TA, MaxLen, Status);
+         sub(TA, '1', LnA-1, Status);
+         Gasp
+       end;
+     FreeMem(TA, LnA)
+   End; {fact}
+
+   Function Power(B, E: PChar; MaxLen: word; Var Status: word): PChar;
+   Var
+       TH, TS, TR: PChar;
+       LnT: word;
+   Begin
+     Power:=B;
+     Status:=cer_Overflow;
+     if (B[0]=#0) or (E[0]=#0) then exit;
+     Status:=cer_Ok;
+     if (StrComp(B,'0')=0) or (StrComp(E,'0')=0) then
+     begin
+       StrCopy(B, '1');
+       exit
+     end;    
+     Status := cer_LowMemory;
+     LnT:=StrLen(E)+3;
+     GetMem(TH,LnT);
+     if TH=Nil then exit;
+     GetMem(TR,LnT);
+     if TR=Nil then
+     begin
+       FreeMem(TH,LnT);
+       exit
+     end;
+     GetMem(TS,MaxLen+1);
+     if TS=Nil then
+     begin
+       FreeMem(TH,LnT);
+       FreeMem(TR,LnT);
+       exit
+     end;
+     Status:=cer_Ok;
+     StrCopy(TH, E);
+     StrCopy(TS, B);
+     StrCopy(B, '1');
+
+     {calculate power by halving and squaring}
+     While (Compare(TH, '0') > 0) and (Status = cer_Ok) do
+     begin
+       {halve the exponent}
+       divide(TH, '2', TR, LnT-1, Status);
+       {if it was odd, multiply T3 by current value of T1}
+       if Compare(TR,'1') = 0 then prod(B, TS, MaxLen, Status);
+       {square T1}
+       prod(TS,TS,MaxLen,Status);
+       Gasp
+     end;
+     FreeMem(TS, MaxLen+1);
+     FreeMem(TR, Lnt);
+     FreeMem(TH, LnT)
+   End; {Power}
+
+   Function AddComma(WW:PChar; MaxLen:word): PChar;
+   Var posn, MinLoc, newLen: word;
+   Begin
+     AddComma:=WW;
+     NewLen:=StrLen(WW);
+     posn:=NewLen;
+     MinLoc:=3;
+     if WW[1]='-' then Inc(MinLoc);
+     While (posn>MinLoc) and (NewLen<MaxLen) do
+     begin
+       Dec(posn,3);
+       StrMove(WW+Succ(posn), WW+posn, Succ(NewLen-posn));
+       WW[posn]:=',';
+       Inc(NewLen)
+     end
+   End;
+
+   Function StripComma(WW:PChar): PChar;
+   Var
+       P: PChar; Len: word;
+   Begin
+     StripComma:=WW;
+     Len:=StrLen(WW);
+     P:=StrScan(WW, ',');
+     While P<>Nil do
+     begin
+       StrMove(P, P+1, Len - (P-WW));
+       Dec(Len);
+       P:=StrScan(P,',')
+     end
+   End;
+
+   Function AllNums(P: PChar): Boolean;
+   Var N: word;
+   Begin
+     AllNums:=False;
+     For N:=0 to Pred(StrLen(P)) do
+       if (P[N]<'0') or (P[N]>'9') then exit;
+     AllNums:=True
+   End;
+
+
+END.

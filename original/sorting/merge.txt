@@ -1,0 +1,59 @@
+               EXPLANATION FILE OF PROGRAM MERGE
+               =================================
+
+
+    Merge Sort
+    ----------
+
+    Suppose that we have two ordered arrays of integers, say a() and b(). If we
+  want to merge them inti another ordered array, say c(), we can use a simple
+  algorithm. First compare a(0) and b(0). Whichever is smaller, say b(0), put
+  into c(0). Next compare a(0) and b(1). Whichever is smaller, say b(1), put
+  into c(1). Next compare a (1) and b(2). Whichever is smaller, say a(0), put
+  into c(3). Next compare a[1] and b [2] , and so on. Eventually one of the
+  arrays a() or b() will be exhausted. At this point, the remainder of the ele-
+  ments in the other array must be copied into c(). This is done by program
+  Merge.
+ 
+    The array c() is assumed to contain enough space to hold both a() and b().
+  The programmer must make certain that the bounds on c() are not overrun. 
+
+    In contrast to a bubble sort, a merge sort is very efficient. We will write
+  a function called mergesort() to act on an array key[] , which has a size that
+  is a power of 2. The "power of 2" requirement will help to make the explana-
+  tion simpler. ln the exercises, we indicate how this restriction is removed.
+  To understand how merge sort works, let us suppose that key[] contains the
+  following 16 integers: 
+
+               4 3 1 67 55 8 0 4 -5 37 7 4 2 9 1 -1 
+
+    The algorithm will work on the data in a number of passes. The following ta-
+  ble shows how we want the data to look after each pass: 
+ 
+    unordered data:  4     3 	1 	67 	55 	8 	0       4
+                    -5    37  	7 	 4 	2 	9 	1      -1 	   
+    first pass:      3     4    1       67 	8 	55 	0 	4
+     	            -5 	  37 	4 	7 	2 	9      -1       1 		   
+    second pass:     1     3 	4 	67 	0 	4 	8      55
+                    -5 	   4 	7 	37 	-1 	1 	2       9 		   
+    third pass:      0 	   1 	3 	4 	4 	8 	55     67
+                    -5 	  -1 	1 	2 	4 	7 	9      37	   
+    fourth pass:    -5 	  -1 	0 	1 	1 	2 	3 	4
+                     4 	   4 	7 	8 	9 	37 	55     67
+                       		   
+    After the first pass we want each successive pair of integers to be in
+  order. After the second pass we want each successive quartet of integers to be
+  in order. After the third pass we want each successive octet of integers to be
+  in order. Finally, after the fourth pass we want all 16 of the integers to be
+  in order. At each stage merge() is used to accomplish the desired ordering.
+  For example, after the third pass, we have the two subarrays:
+
+    0  1  3  4  4  8  55  67  and  -5  -1  1  2  4  7  9  37
+
+  which are both in order. When we merge these two subarrays, we obtain the com-
+  pletely ordered array given above. Surprisingly, the code that accomplishes
+  this is quite short.
+
+  From [BIBLI 09]
+---------------------------------------
+End of file merge.txt
