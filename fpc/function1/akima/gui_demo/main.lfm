@@ -1,0 +1,93 @@
+object MainForm: TMainForm
+  Left = 316
+  Height = 424
+  Top = 121
+  Width = 634
+  Caption = 'Akima Interpolation'
+  ClientHeight = 424
+  ClientWidth = 634
+  LCLVersion = '4.99.0.0'
+  OnCreate = FormCreate
+  object Chart1: TChart
+    Left = 0
+    Height = 383
+    Top = 0
+    Width = 634
+    AxisList = <    
+      item
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Range.Max = 110
+        Range.Min = -10
+        Range.UseMax = True
+        Range.UseMin = True
+        Title.LabelFont.Orientation = 900
+        Title.LabelBrush.Style = bsClear
+      end    
+      item
+        Alignment = calBottom
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelBrush.Style = bsClear
+      end>
+    Legend.Visible = True
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    Align = alClient
+    object DataSeries: TLineSeries
+      Title = 'Original data'
+      LineType = ltNone
+      Pointer.Brush.Color = clNavy
+      Pointer.Brush.Style = bsClear
+      Pointer.HorizSize = 5
+      Pointer.Pen.Color = clRed
+      Pointer.Style = psCircle
+      Pointer.VertSize = 5
+      Pointer.Visible = True
+      ShowPoints = True
+    end
+    object AkimaSeries: TLineSeries
+      Title = 'Akima interpolation'
+      LinePen.Color = clRed
+    end
+  end
+  object Panel1: TPanel
+    Left = 0
+    Height = 41
+    Top = 383
+    Width = 634
+    Align = alBottom
+    AutoSize = True
+    BevelOuter = bvNone
+    ClientHeight = 41
+    ClientWidth = 634
+    TabOrder = 1
+    object Button1: TButton
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = Panel1
+      Left = 8
+      Height = 25
+      Top = 8
+      Width = 75
+      BorderSpacing.Around = 8
+      Caption = 'New data'
+      TabOrder = 0
+      OnClick = Button1Click
+    end
+    object CheckBox1: TCheckBox
+      AnchorSideLeft.Control = Button1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = Button1
+      AnchorSideTop.Side = asrCenter
+      Left = 99
+      Height = 19
+      Top = 11
+      Width = 483
+      BorderSpacing.Left = 16
+      Caption = 'Extend data to have one point at the left and three at the right of the interpolation range.'
+      TabOrder = 1
+      OnChange = CheckBox1Change
+    end
+  end
+end
