@@ -81,7 +81,7 @@ begin
     exit;
   end;
 
-  X[0] := 1000; //2.0*X[1]-X[2];
+  X[0] := 2.0*X[1]-X[2];
 
   {Calculate Akima coefficients, a and b}
   for i:=1 to iv-1 do
