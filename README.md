@@ -25,3 +25,17 @@ This repository is intended to preserve the mathematics library by Jean-Pierre M
 * Utility procedures for graphics
 
 The original Pascal library was written for Turbo Pascal and Turbo Pascal for Windows (folder "original"). It is attempted here to port the sources to FreePascal/Lazarus and modernize them where needed (folder "fpc").
+
+## License ##
+The original author does not specify any conditions how his code can be used. After inquiry about this (https://www.lazarusforum.de/viewtopic.php?p=150255#p150255), his son responded in a mail:
+
+```
+Hello,
+
+My father, now very old, who created this website to capitalize and share his passion for
+developing numerical computing algorithms, would be very happy if his work could benefit other people.
+
+You can recover and reuse his work with great pleasure.
+
+Kind regards,
+François-Xavier Moreau ```
