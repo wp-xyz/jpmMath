@@ -24,4 +24,4 @@ This repository is intended to preserve the mathematics library by Jean-Pierre M
 * Statistics
 * Utility procedures for graphics
 
-The original Pascal library was written for Turbo Pascal and Turbo Pascal for Windows. It is attempted here to port the sources to FreePascal/Lazarus and modernize them where needed.
+The original Pascal library was written for Turbo Pascal and Turbo Pascal for Windows (folder "original"). It is attempted here to port the sources to FreePascal/Lazarus and modernize them where needed (folder "fpc").
