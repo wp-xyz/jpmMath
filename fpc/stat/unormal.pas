@@ -5,28 +5,30 @@ unit uNormal;
 interface
 
 uses
-  Classes, SysUtils, Math;
+  jpmTypes;
+//  Classes, SysUtils, Math;
 
-function phi(u: Double): Double;
-function Normal(P: Double): Double;
+function phi(u: Float): Float;
+function Normal(P: Float): Float;
 
 implementation
 
 {Standard Normal Probability Function}
-function phi(u: Double): Double;
+function phi(u: Double): Float;
 begin
   Result := (1.0/Sqrt(2.0 * PI)) * Exp(-0.5*u*u)
 end;
 
 {Inverse Standard Normal Function}
-function Normal(P: Double): Double;
+function Normal(P: Float): Float;
 var
-  chimax, chisqval, epsilon, minchisq, maxchisq: Double;
+  chimax, chisqval, epsilon, minchisq, maxchisq: Float;
 begin
   epsilon := 1e-6;
   chimax := 1e6;
   minchisq := 0.0;
   maxchisq := chimax;
+
   if P <= 0.0 then
   begin
     Result := maxchisq;

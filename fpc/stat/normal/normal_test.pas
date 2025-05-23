@@ -16,24 +16,26 @@
 program normal_test;
 
 uses
-  uNormal;
+  jpmTypes, jpmNormal;
 
 var
-  P, X, Y: Double;
-
+  P, X, Y: Float;
+  s: String;
+  res: Integer;
 begin
-  Writeln;
-  Write(' Value of variable: ');
-  Readln(X);
-  Writeln;
-  P := phi(X);
-  Writeln(' Probability = ', P);
-  Writeln;
-  Writeln(' Verify:');
-  Y := Normal(P);
-  Writeln('   X = ', Y);
-  Writeln;
-  Write('Press ENTER to close...');
-  ReadLn;
+  repeat
+    Writeln;
+    Write(' Value of variable (or ENTER to close): ');
+    Readln(s);
+    val(s, X, res);
+    if res <> 0 then
+      break;
+    Writeln;
+    P := phi(X);
+    Writeln(' Probability = ', P, ' (', P:0:3, ')');
+//    Writeln;
+    Y := Normal(P);
+    Writeln(' Verify:   X = ', Y, ' (', Y:0:3, ')');
+  until false;
 end.
 
