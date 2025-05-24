@@ -1,0 +1,1264 @@
+
+# jpmMath Library: Bessel Functions
+
+Bessel functions are indispensable tools across various scientific and engineering disciplines. Understanding their properties and having robust computational implementations is crucial for solving real-world problems.
+
+*   **Wave Propagation:** Bessel functions describe the radial component of wave solutions in cylindrical geometries. This includes:
+    *   **Acoustics:** Modeling sound waves in pipes or cylindrical enclosures.
+    *   **Electromagnetics:** Analyzing electromagnetic waves in coaxial cables, waveguides, and optical fibers.
+    *   **Optics:** Describing the diffraction patterns of a circular aperture (Airy disk).
+*   **Heat Conduction:** They appear in solutions to heat conduction problems in cylindrical and spherical systems, such as heat transfer through pipes or cooling of spherical objects.
+*   **Vibrations:** Analyzing the vibrations of circular membranes (e.g., drumheads).
+*   **Signal Processing:** Used in filter design (e.g., Bessel filters known for their maximally flat group delay) and in the analysis of frequency modulation (FM) signals.
+*   **Fluid Dynamics:** Describing fluid flow in pipes and other cylindrical geometries.
+*   **Quantum Mechanics:** Solutions to the Schrödinger equation for particles in cylindrical potential wells.
+*   **Statistics:** Modified Bessel functions of the first kind are used in the von Mises distribution, which is a probability distribution on a circle.
+
+The Bessel functions folder is organized into several Pascal units and programs:
+
+*   **Core Mathematical Functions (Units):**
+    *   `complex.pas`: Provides fundamental complex number arithmetic operations (`ZABS`, `ZSQRT`, `ZEXP`, `ZMLT`, `ZDIV`, `ZLOG`) and machine-dependent constants (`D1MACH`, `I1MACH`). This unit is a prerequisite for all complex-valued Bessel function calculations.
+    *   `cbess0.pas`, `cbess00.pas`, `cbess1.pas`, `cbess2.pas`, `cbess3.pas`: These interconnected units form the backbone for complex Bessel function computations, implementing advanced algorithms like uniform asymptotic expansions, Miller's algorithm, and analytic continuation. They contain procedures such as `ZUCHK`, `DGAMLN`, `ZUNIK`, `ZUNHJ`, `ZUOIK`, `ZS1S2`, `ZSERI`, `ZASYI`, `ZMLRI`, `ZSHCH`, `ZRATI`, `ZAIRY`, `ZACAI`, `ZBKNU`, `ZKSCL`, `ZBINU`, `ZWRSK`, `ZBUNI`, `ZUNI1`, `ZUNI2`, `ZBUNK`, `ZUNK1`, `ZUNK2`, `ZACON`. These are generally not called directly by end-users but are internal to the complex Bessel function programs.
+
+*   **Real-Valued Bessel Functions (Programs):**
+    *   `tbessj.pas`: Program to calculate the first kind Bessel function of integer order N, for any real X, using the `BESSJ` function. It includes `BESSJ0` and `BESSJ1` for orders 0 and 1, respectively, which are used as base cases for recurrence relations or series approximations.
+    *   `tbessi.pas`: Program to calculate the first kind modified Bessel function of integer order N, for any real X, using the `BESSI` function. Similar to `tbessj.pas`, it provides `BESSI0` and `BESSI1` for base cases.
+    *   `tbessy.pas`: Program to calculate the second kind Bessel function of integer order N, for any real X, using the `BESSY` function. It also includes `BESSY0`, `BESSY1`, and `BESSJP` (for derivatives).
+    *   `tbessk.pas`: Program to calculate the modified Bessel function of the third kind of order N for any real positive argument X, using the `BESSK` function. It includes `BESSK0` and `BESSK1` for base cases.
+    *   `intbessl.pas`: Demonstrates the integer order Bessel function subroutine `Int_Bessel` for orders 0 to 4. It uses Miller's method for improved accuracy, especially when X < N.
+    *   `bessel.pas`: Demonstrates Bessel Coefficients evaluation and series summation. This program is useful for understanding the series expansion of Bessel functions.
+    *   `bessel1.pas`: Demonstrates the Bessel function asymptotic series calculation for J0(X) and J1(X) for large X.
+    *   `besslser.pas`: Demonstrates a general Bessel series summation subroutine.
+
+*   **Spherical Bessel Functions (Programs):**
+    *   `msphj.pas`: Computes the spherical Bessel functions of the first kind, jn(x), and their derivatives, jn'(x), using the `SPHJ` subroutine.
+    *   `msphy.pas`: Computes the spherical Bessel functions of the second kind, yn(x), and their derivatives, yn'(x), using the `SPHY` subroutine.
+    *   `msphi.pas`: Computes the modified spherical Bessel functions of the first kind, in(x), and their derivatives, in'(x), using the `SPHI` subroutine.
+    *   `msphk.pas`: Computes the modified spherical Bessel functions of the second kind, kn(x), and their derivatives, kn'(x), using the `SPHK` subroutine.
+    *   These spherical Bessel function implementations internally use helper functions like `ENVJ`, `MSTA1`, and `MSTA2` to determine optimal starting points for backward recurrence relations, ensuring numerical stability.
+
+*   **Complex-Valued Bessel Functions (Programs):**
+    *   `cbessj.pas`: Program to compute the Complex Bessel Function of the 1st Kind of integer order using `CBESSJ`. This program provides an example of how to interact with the complex number arithmetic provided by `complex.pas`.
+    *   `tzbesi.pas`: Program to evaluate the I-Bessel function (modified first kind) for complex arguments using the `ZBESI` procedure.
+    *   `tzbesj.pas`: Program to evaluate the J-Bessel function (first kind) for complex arguments using the `ZBESJ` procedure.
+    *   `tzbesk.pas`: Program to evaluate the K-Bessel function (modified third kind) for complex arguments using the `ZBESK` procedure.
+    *   `tzbesy.pas`: Program to evaluate the Y-Bessel function (second kind) for complex arguments using the `ZBESY` procedure. These `TZBES*` programs primarily serve as test harnesses and examples for the `ZBES*` procedures implemented in the `cbess*` units.
+
+*   **Roots and Derivatives of Bessel Functions (Programs):**
+    *   `mjyzo.pas`: Computes the zeros of Bessel functions Jn(x), Yn(x), and their first derivatives using the `JYZO` subroutine. This is critical for resonant cavity analysis and mode determination.
+    *   `trootj.pas`: Calculates the first K zeroes (root abscissas) of the first kind Bessel function of integer order N using the `ROOTJ` subroutine, which employs the `SECANT` method for root refinement.
+    *   `tzerojp.pas`: Calculates the K-th zero of the derivative of Bessel function of order N, J(N,X), using the `ZEROJP` function. This is useful for optimization problems involving Bessel functions.
+
+While many units (`cbess*.pas`, `complex.pas`) contain internal helper procedures, the following are the primary entry points for calculating Bessel functions:
+
+*   **Real Bessel Functions:**
+    *   `BESSJ(N, X)`: First kind Bessel function, `Jn(x)`. (in `tbessj.pas`)
+    *   `BESSI(N, X)`: First kind modified Bessel function, `In(x)`. (in `tbessi.pas`)
+    *   `BESSY(N, X)`: Second kind Bessel function, `Yn(x)`. (in `tbessy.pas`)
+    *   `BESSK(N, X)`: Third kind modified Bessel function, `Kn(x)`. (in `tbessk.pas`)
+    *   `Int_Bessel(x, m, Y)`: Calculates `Jn(x)` for `n=0..4`. (in `intbessl.pas`)
+
+*   **Spherical Bessel Functions:**
+    *   `SPHJ(N, X, nm, SJ, DJ)`: Calculates `jn(x)` and `jn'(x)`. (in `msphj.pas`)
+    *   `SPHY(N, X, nm, SY, DY)`: Calculates `yn(x)` and `yn'(x)`. (in `msphy.pas`)
+    *   `SPHI(N, X, nm, SI, DI)`: Calculates `in(x)` and `in'(x)`. (in `msphi.pas`)
+    *   `SPHK(N, X, nm, SK, DK)`: Calculates `kn(x)` and `kn'(x)`. (in `msphk.pas`)
+
+*   **Complex Bessel Functions:**
+    *   `ZBESJ(ZR, ZI, FNU, KODE, N, CYR, CYI, NZ, IERR)`: Calculates `Jn(z)` for complex `z=ZR+i*ZI`. (in `tzbesj.pas`, relies on `ZBINU` from `cbess1.pas`)
+    *   `ZBESI(ZR, ZI, FNU, KODE, N, CYR, CYI, NZ, IERR)`: Calculates `In(z)` for complex `z=ZR+i*ZI`. (in `tzbesi.pas`, relies on `ZBINU` from `cbess1.pas`)
+    *   `ZBESK(ZR, ZI, FNU, KODE, N, CYR, CYI, NZ, IERR)`: Calculates `Kn(z)` for complex `z=ZR+i*ZI`. (in `tzbesk.pas`, relies on `ZBUNK` from `cbess3.pas`)
+    *   `ZBESY(ZR, ZI, FNU, KODE, N, CYR, CYI, NZ, CWRKR, CWRKI, IERR)`: Calculates `Yn(z)` for complex `z=ZR+i*ZI`. (in `tzbesy.pas`, relies on `ZBESH` from `cbess3.pas`)
+    *   `CBESSJ(z, nu, z1)`: Calculates `Jn(z)` for complex `z` and integer order `nu`. (in `cbessj.pas`)
+
+*   **Roots and Derivatives:**
+    *   `JYZO(N, NT, RJ0, RJ1, RY0, RY1)`: Computes `NT` zeros of `Jn(x)`, `Jn'(x)`, `Yn(x)`, and `Yn'(x)`. (in `mjyzo.pas`)
+    *   `ROOTJ(N, NK, JZERO, IER)`: Calculates the first `NK` zeroes of `Jn(x)`. (in `trootj.pas`)
+    *   `ZEROJP(N, K)`: Calculates the `K`-th zero of the derivative of `Jn(x)`. (in `tzerojp.pas`)
+
+## Structure of this README
+
+This documentation is organized into the following sections:
+
+1.  **Overview of Bessel Functions:** A brief introduction to Bessel functions and their types.
+2.  **Core Utilities:** Documentation of the fundamental `Complex` unit, which underpins several complex-valued Bessel function implementations.
+3.  **Real-Valued Bessel Functions:**
+    *   Bessel Coefficients (`bessel.pas`)
+    *   Bessel Function Asymptotic Series (`bessel1.pas`)
+    *   Bessel Series Summation (`besslser.pas`)
+    *   Integer Order Bessel Function (`intbessl.pas`)
+    *   Modified Bessel Function of the First Kind (I_n(x)) (`tbessi.pas`)
+    *   First Kind Bessel Function (J_n(x)) (`tbessj.pas`)
+    *   Modified Bessel Function of the Third Kind (K_n(x)) (`tbessk.pas`)
+    *   Second Kind Bessel Function (Y_n(x)) (`tbessy.pas`)
+    *   Roots of First Kind Bessel Functions (`trootj.pas`)
+    *   Zeros of the Derivative of Bessel Functions (`tzerojp.pas`)
+4.  **Spherical Bessel Functions:**
+    *   Modified Spherical Bessel Functions of the First Kind (i_n(x)) (`msphi.pas`)
+    *   Spherical Bessel Functions of the First Kind (j_n(x)) (`msphj.pas`)
+    *   Modified Spherical Bessel Functions of the Second Kind (k_n(x)) (`msphk.pas`)
+    *   Spherical Bessel Functions of the Second Kind (y_n(x)) (`msphy.pas`)
+5.  **Complex-Valued Bessel Functions:**
+    *   Support Units: `CBess0`, `CBess00`, `CBess1`, `CBess2`, `CBess3`
+    *   Complex Bessel Function of the 1st Kind (J_n(z)) (`cbessj.pas`)
+    *   Complex Modified Bessel Function of the 1st Kind (I_n(z)) (`tzbesi.pas`)
+    *   Complex Modified Bessel Function of the 2nd Kind (K_n(z)) (`tzbesk.pas`)
+    *   Complex Bessel Function of the 2nd Kind (Y_n(z)) (`tzbesy.pas`)
+6.  **Real-World Applications and Problem Solving Ideas:** Discuss how these Bessel functions can be applied in various scientific and engineering fields.
+
+## 1. Overview of Bessel Functions
+
+Bessel functions are a family of solutions to Bessel's differential equation, a second-order linear ordinary differential equation that arises in many problems in physics and engineering, particularly those involving cylindrical symmetry.
+
+The general form of Bessel's differential equation is:
+$x^2 \frac{d^2y}{dx^2} + x \frac{dy}{dx} + (x^2 - \alpha^2)y = 0$
+
+where $\alpha$ is an arbitrary complex number (the order of the Bessel function). The most common types encountered in applications are those where $\alpha$ is an integer or half-integer.
+
+There are several types of Bessel functions:
+
+*   **Bessel Functions of the First Kind (J_α(x)):** These are finite at the origin (x = 0) if $\alpha \geq 0$. They are oscillatory but not periodic.
+*   **Bessel Functions of the Second Kind (Y_α(x) or N_α(x)):** Also known as Neumann functions, these are singular at the origin. They are linearly independent of the first kind Bessel functions.
+*   **Modified Bessel Functions of the First Kind (I_α(x)):** These are solutions to the modified Bessel equation, which is Bessel's equation with 'x' replaced by 'ix'. They are not oscillatory but grow exponentially.
+*   **Modified Bessel Functions of the Second Kind (K_α(x)):** Also known as Basset functions or Macdonald functions, these are linearly independent of the modified Bessel functions of the first kind and decay exponentially for large x.
+*   **Hankel Functions (H_α^(1)(x), H_α^(2)(x)):** Also known as Bessel functions of the third kind, these are linear combinations of J_α(x) and Y_α(x) and are used in wave propagation problems.
+*   **Spherical Bessel Functions (j_α(x), y_α(x), i_α(x), k_α(x)):** These are related to the standard Bessel functions but arise in problems involving spherical symmetry.
+
+These functions play a crucial role in areas such as wave propagation, heat conduction, fluid flow, signal processing, and quantum mechanics.
+
+## 2. Core Utilities
+
+### 2.1 `complex.pas` - Complex Number Arithmetic and Machine Constants
+
+The `complex.pas` unit provides fundamental operations for complex numbers and functions to retrieve machine-dependent constants. It is a foundational unit for all complex-valued Bessel function implementations in this library.
+
+**Constants:**
+*   `NMAX = 10`: Defines the maximum dimension for `VEC` arrays. This limits the number of Bessel function orders that can be computed in a single call for some functions.
+
+**Types:**
+*   `VEC = Array[1..NMAX] of double;`: A one-dimensional array type for storing sequences of real or imaginary parts of complex numbers.
+*   `VEC16 = Array[1..16] of double;`: A one-dimensional array type, similar to `VEC`, but specifically sized for 16 elements, used in some internal calculations (e.g., in `ZUNIK`).
+
+**Procedures and Functions:**
+
+#### `FUNCTION ZABS(ZR, ZI:double): double;`
+*   **Purpose:** Computes the absolute value (magnitude) of a double-precision complex number `CMPLX(ZR, ZI)`.
+*   **Arguments:**
+    *   `ZR`: Real part of the complex number.
+    *   `ZI`: Imaginary part of the complex number.
+*   **Returns:** A `double` representing the magnitude `sqrt(ZR^2 + ZI^2)`.
+
+#### `Procedure ZSQRT(AR, AI:double; var BR, BI:double);`
+*   **Purpose:** Computes the square root of a double-precision complex number `A = CMPLX(AR, AI)`.
+*   **Arguments:**
+    *   `AR`: Real part of the input complex number `A`.
+    *   `AI`: Imaginary part of the input complex number `A`.
+    *   `BR`: (Output) Real part of the result `B`.
+    *   `BI`: (Output) Imaginary part of the result `B`.
+
+#### `Procedure ZEXP(AR, AI:double; var BR, BI:double);`
+*   **Purpose:** Computes the complex exponential `B = EXP(A)`, where `A = CMPLX(AR, AI)`.
+*   **Arguments:**
+    *   `AR`: Real part of the input complex number `A`.
+    *   `AI`: Imaginary part of the input complex number `A`.
+    *   `BR`: (Output) Real part of the result `B`.
+    *   `BI`: (Output) Imaginary part of the result `B`.
+*   **Mathematical Formula:** `EXP(A) = EXP(AR) * COS(AI) + i * EXP(AR) * SIN(AI)`
+
+#### `Procedure ZMLT(AR, AI, BR, BI:double; var CR, CI:double);`
+*   **Purpose:** Multiplies two double-precision complex numbers `A = CMPLX(AR, AI)` and `B = CMPLX(BR, BI)`, storing the result in `C = CMPLX(CR, CI)`.
+*   **Arguments:**
+    *   `AR`: Real part of the first complex number `A`.
+    *   `AI`: Imaginary part of the first complex number `A`.
+    *   `BR`: Real part of the second complex number `B`.
+    *   `BI`: Imaginary part of the second complex number `B`.
+    *   `CR`: (Output) Real part of the result `C`.
+    *   `CI`: (Output) Imaginary part of the result `C`.
+*   **Mathematical Formula:** `(AR + i*AI) * (BR + i*BI) = (AR*BR - AI*BI) + i*(AR*BI + AI*BR)`
+
+#### `Procedure ZDIV(AR, AI, BR, BI:double; var CR, CI:double);`
+*   **Purpose:** Divides two double-precision complex numbers `A = CMPLX(AR, AI)` by `B = CMPLX(BR, BI)`, storing the result in `C = CMPLX(CR, CI)`.
+*   **Arguments:**
+    *   `AR`: Real part of the numerator `A`.
+    *   `AI`: Imaginary part of the numerator `A`.
+    *   `BR`: Real part of the denominator `B`.
+    *   `BI`: Imaginary part of the denominator `B`.
+    *   `CR`: (Output) Real part of the result `C`.
+    *   `CI`: (Output) Imaginary part of the result `C`.
+*   **Error Handling:** If `B` is `CMPLX(0.0, 0.0)`, the function may produce an error or return undefined values, as `ZABS` will return 0, leading to division by zero.
+
+#### `Procedure ZLOG(AR, AI:double; var BR, BI:double; var IERR:integer);`
+*   **Purpose:** Computes the natural logarithm of a double-precision complex number `A = CMPLX(AR, AI)`, storing the result in `B = CMPLX(BR, BI)`.
+*   **Arguments:**
+    *   `AR`: Real part of the input complex number `A`.
+    *   `AI`: Imaginary part of the input complex number `A`.
+    *   `BR`: (Output) Real part of the result `B`.
+    *   `BI`: (Output) Imaginary part of the result `B`.
+    *   `IERR`: (Output) Error flag. `IERR=0` for normal return; `IERR=1` if `A = CMPLX(0.0, 0.0)`.
+*   **Mathematical Formula:** `LOG(A) = LN(ABS(A)) + i * ARG(A)` where `ARG(A)` is the principal argument.
+
+#### `FUNCTION D1MACH(I:Integer): double;`
+*   **Purpose:** Returns various double-precision machine-dependent constants.
+*   **Argument:**
+    *   `I`: An integer (1 to 5) specifying which constant to return.
+        *   `I=1`: `B**(EMIN-1)`, the smallest positive magnitude.
+        *   `I=2`: `B**EMAX*(1 - B**(-T))`, the largest magnitude.
+        *   `I=3`: `B**(-T)`, the smallest relative spacing (machine epsilon).
+        *   `I=4`: `B**(1-T)`, the largest relative spacing.
+        *   `I=5`: `LOG10(B)`, where B is the base of the floating-point numbers.
+*   **Returns:** A `double` representing the requested machine constant.
+*   **Note:** The provided implementation specifies values for "IBM PC or APOLLO" which may not be universally accurate for all environments.
+
+#### `FUNCTION I1MACH(I:Integer):LongInt;`
+*   **Purpose:** Returns various integer machine-dependent constants.
+*   **Argument:**
+    *   `I`: An integer (1 to 16) specifying which constant to return.
+        *   `I=1`: Standard input unit.
+        *   `I=2`: Standard output unit.
+        *   `I=3`: Standard punch unit.
+        *   `I=4`: Standard error message unit.
+        *   `I=5`: Number of bits per integer storage unit.
+        *   `I=6`: Number of characters per integer storage unit.
+        *   `I=7`: `A`, the base of integer representation.
+        *   `I=8`: `S`, the number of base-A digits for integers.
+        *   `I=9`: `A**S - 1`, the largest integer magnitude.
+        *   `I=10`: `B`, the base of floating-point representation.
+        *   `I=11`: `T`, number of base-B digits for single-precision.
+        *   `I=12`: `EMIN`, smallest exponent for single-precision.
+        *   `I=13`: `EMAX`, largest exponent for single-precision.
+        *   `I=14`: `T`, number of base-B digits for double-precision.
+        *   `I=15`: `EMIN`, smallest exponent for double-precision.
+        *   `I=16`: `EMAX`, largest exponent for double-precision.
+*   **Returns:** A `LongInt` representing the requested machine constant.
+*   **Note:** The provided implementation specifies values for "IBM PC or APOLLO" which may not be universally accurate for all environments.
+
+#### `Function DMAX(a,b:Double):Double;`
+*   **Purpose:** Returns the maximum of two double-precision numbers.
+
+#### `Function DMIN(a,b:Double):Double;`
+*   **Purpose:** Returns the minimum of two double-precision numbers.
+
+#### `Function IMAX(a,b:integer):integer;`
+*   **Purpose:** Returns the maximum of two integers.
+
+#### `Function IMIN(a,b:integer):integer;`
+*   **Purpose:** Returns the minimum of two integers.
+
+
+## 3. Real-Valued Bessel Functions
+
+This section details the implementations of Bessel functions for real arguments.
+
+### 3.1 `bessel.pas` - Bessel Coefficients and Series Summation
+
+This program demonstrates the calculation of Bessel function series coefficients and then uses these coefficients to sum the series for a given argument `X`. It's particularly useful for understanding the series representation of Bessel functions.
+
+**Program Description:**
+The `bessel.pas` program prompts the user for the order of the Bessel function `N` and the desired degree `M` for the series expansion. It then computes and displays the coefficients `A(i)` for `i` from 0 to `M`. Finally, it asks for an argument `X` and calculates the Bessel function value `Y` by summing the series up to the specified degree.
+
+**Core Procedure:**
+
+#### `PROCEDURE Bessel_coeff;`
+*   **Purpose:** Calculates the series coefficients for a Bessel function of order `n`.
+*   **Input (via global variables):**
+    *   `n`: The order of the Bessel function.
+    *   `m`: The maximum degree of the series expansion (number of coefficients `m+1`).
+*   **Output (via global array):**
+    *   `A`: An array `A[0..M]` containing the calculated coefficients.
+*   **Algorithm:** Implements a recurrence relation to compute the coefficients, based on the reference "BASIC Scientific Subroutines, Vol. II By F.R. Ruckdeschel".
+
+**Example Usage (from sample run):**
+```
+BESSEL COEFFICIENTS
+
+What is the order of the Bessel function ? 0
+What degree is desired ? 41
+
+The coefficients are:
+A( 0) =  0.100000E+01  A( 1) =  0.000000E+00  A( 2) = -0.250000E+00
+... (coefficients continue) ...
+A(40) =  0.153657E-48  A(41) =  0.000000E+00
+
+Argument ? 1
+Y=  0.765198
+```
+This output for `N=0` and `X=1` should correspond to `J0(1)`.
+
+### 3.2 `bessel1.pas` - Bessel Function Asymptotic Series
+
+This program demonstrates the asymptotic series expansion for Bessel functions of the zeroth (`J0(X)`) and first (`J1(X)`) orders for large arguments `X`.
+
+**Program Description:**
+The `bessel1.pas` program calculates and displays `J0(X)` and `J1(X)` for `X` ranging from 1 to 15. It also shows the number of terms `N` used for convergence and the convergence factor `E`.
+
+**Core Procedure:**
+
+#### `PROCEDURE Calcul_Bessel;`
+*   **Purpose:** Computes the zeroth and first-order Bessel functions `J0(X)` and `J1(X)` using an asymptotic series expansion.
+*   **Input (via global variables):**
+    *   `x`: The argument for the Bessel functions.
+    *   `e3`: A convergence criterion (e.g., `1e-10`).
+*   **Output (via global variables):**
+    *   `J0`: Value of `J0(X)`.
+    *   `J1`: Value of `J1(X)`.
+    *   `n`: Number of terms used for convergence.
+    *   `e`: The last term added to the series (convergence factor).
+*   **Algorithm:** Implements the asymptotic series expansion based on "Algorithms for RPN calculators, by Ball, L.A. Wiley and sons." It calculates P and Q polynomials and tests for divergence and convergence.
+
+**Example Usage (from sample run):**
+```
+  X            J0(X)            J1(X)        N            E
+------------------------------------------------------------------
+  1           0.733562         0.402234      1       0.1121521
+  2           0.221488         0.578634      1       0.0070095
+... (results for X up to 15) ...
+```
+
+### 3.3 `besslser.pas` - Bessel Series Summation
+
+This program demonstrates the summation of the Bessel series for a given order `N` and argument `X`, based on a user-defined convergence criterion.
+
+**Program Description:**
+The `besslser.pas` program prompts the user for the Bessel function order `N`, the argument `X`, and a convergence criterion `e`. It then calculates and displays the Bessel function value `J(X)` and the number of terms used for summation.
+
+**Core Procedure:**
+
+#### `PROCEDURE Bessel_Series;`
+*   **Purpose:** Computes the Bessel function of order `n` for argument `x` using a series summation.
+*   **Input (via global variables):**
+    *   `n`: The order of the Bessel function.
+    *   `x`: The argument.
+    *   `e`: The convergence criterion (e.g., `1e-6`).
+*   **Output (via global variables):**
+    *   `y`: The calculated Bessel function value.
+    *   `m`: The number of terms used in the summation.
+*   **Algorithm:** Uses a series expansion (likely a Taylor or power series for Bessel functions) and sums terms until the absolute value of the current term falls below the convergence criterion `e`.
+
+**Example Usage (from sample run):**
+```
+ BESSEL SERIES SUMMATION
+
+ What is the order of the Bessel function ? 2
+ Argument ? 1
+ Convergence criterion ? 1e-6
+
+
+ J(   1.000) of order  2 =  0.114903
+
+ Number of terms used:  4
+```
+
+### 3.4 `intbessl.pas` - Integer Order Bessel Function
+
+This program calculates Bessel functions of integer orders (0 to 4) for positive arguments using Miller's method, which is robust against overflows for `X < N`.
+
+**Program Description:**
+The `intbessl.pas` program generates a table of Bessel function values `J0(X)` to `J4(X)` for `X` ranging from 0.1 to 3.0 in steps of 0.1.
+
+**Core Procedure:**
+
+#### `PROCEDURE Int_Bessel;`
+*   **Purpose:** Calculates Bessel functions `J0(X)` to `J4(X)` for `x > 0`.
+*   **Input (via global variables):**
+    *   `x`: The argument.
+    *   `m`: Number of steps (used internally for recursion, likely related to the maximum order or terms).
+*   **Output (via global array):**
+    *   `Y[0..4]`: An array containing the Bessel function values `J0(X)` to `J4(X)`.
+*   **Algorithm:** Implements Miller's method, a backward recurrence algorithm, to compute the Bessel function values. This method is known for its stability for arguments smaller than the order.
+
+**Example Usage (from sample run):**
+```
+ X       J0(X)       J1(X)       J2(X)       J3(X)       J4(X)
+-----------------------------------------------------------------
+ 0.1    0.9975016   0.0499375   0.0012490   0.0000208   0.0000003
+ 0.2    0.9900250   0.0995008   0.0049834   0.0001663   0.0000042
+... (results for X up to 3.0) ...
+```
+
+### 3.5 `tbessi.pas` - First Kind Modified Bessel Function of Integer Order I_n(x)
+
+This program calculates the modified Bessel function of the first kind, `I_N(X)`, for integer orders `N` and any real argument `X`.
+
+**Program Description:**
+The `tbessi.pas` program calculates `I_N(X)` for a predefined `N` and `X` (e.g., `N=2`, `X=0.75`) and displays the result.
+
+**Core Function:**
+
+#### `FUNCTION BESSI(N:Integer; X:Double): Double;`
+*   **Purpose:** Calculates the first kind modified Bessel function `I_N(X)`.
+*   **Arguments:**
+    *   `N`: Integer order of the Bessel function (`N >= 0`).
+    *   `X`: Real argument.
+*   **Returns:** A `Double` representing `I_N(X)`.
+*   **Algorithm:** Uses the classical recursion formula when `X > N`. For `X < N`, it employs Miller's algorithm to avoid overflows, referencing "C.W.CLENSHAW, CHEBYSHEV SERIES FOR MATHEMATICAL FUNCTIONS."
+
+#### `FUNCTION BESSI0(X:Double): Double;`
+*   **Purpose:** Calculates `I0(X)`.
+*   **Algorithm:** Uses a polynomial approximation based on series of Chebyshev polynomials for `ABS(X) < 3.75` and an asymptotic expansion for `ABS(X) >= 3.75`.
+
+#### `FUNCTION BESSI1(X:Double): Double;`
+*   **Purpose:** Calculates `I1(X)`.
+*   **Algorithm:** Similar to `BESSI0`, uses polynomial approximation for `ABS(X) < 3.75` and an asymptotic expansion for `ABS(X) >= 3.75`.
+
+**Example Usage (from sample run):**
+```
+ Bessel function of order  2 for X=   0.7500:
+
+      Y =  7.36668780479450E-0002
+```
+
+### 3.6 `tbessj.pas` - First Kind Bessel Function of Integer Order J_n(x)
+
+This program calculates the first kind Bessel function, `J_N(X)`, for integer orders `N` and any real argument `X`.
+
+**Program Description:**
+The `tbessj.pas` program calculates `J_N(X)` for a predefined `N` and `X` (e.g., `N=2`, `X=0.75`) and displays the result.
+
+**Core Function:**
+
+#### `FUNCTION BESSJ(N:Integer; X:Double): Double;`
+*   **Purpose:** Calculates the first kind Bessel function `J_N(X)`.
+*   **Arguments:**
+    *   `N`: Integer order of the Bessel function (`N >= 0`).
+    *   `X`: Real argument.
+*   **Returns:** A `Double` representing `J_N(X)`.
+*   **Algorithm:** Uses the classical recursion formula when `X > N`. For `X < N`, it employs Miller's algorithm to avoid overflows, referencing "C.W.CLENSHAW, CHEBYSHEV SERIES FOR MATHEMATICAL FUNCTIONS."
+
+#### `FUNCTION BESSJ0(X:Double): Double;`
+*   **Purpose:** Calculates `J0(X)`.
+*   **Algorithm:** Uses polynomial approximation by series of Chebyshev polynomials for `0 < X < 8` and an asymptotic expansion for `X >= 8`.
+
+#### `FUNCTION BESSJ1(X:Double): Double;`
+*   **Purpose:** Calculates `J1(X)`.
+*   **Algorithm:** Similar to `BESSJ0`, uses polynomial approximation for `0 < X < 8` and an asymptotic expansion for `X >= 8`.
+
+**Example Usage (from sample run):**
+```
+ Bessel function of order  2 for X=   0.7500:
+
+      Y =  6.70739973016599E-0002
+```
+
+### 3.7 `tbessk.pas` - Third Kind Modified Bessel Function of Order K_n(x)
+
+This program calculates the modified Bessel function of the third kind, `K_N(X)`, for integer orders `N` and any positive real argument `X`.
+
+**Program Description:**
+The `tbessk.pas` program calculates `K_N(X)` for a given `X` (e.g., `X=1.2097`) and `N` ranging from 0 to `N-1` (e.g., `N=5`), displaying each result.
+
+**Core Function:**
+
+#### `FUNCTION BESSK(N:Integer; X:Double): Double;`
+*   **Purpose:** Calculates the modified Bessel function of the third kind `K_N(X)`.
+*   **Arguments:**
+    *   `N`: Integer order of the Bessel function (`N >= 0`).
+    *   `X`: Positive real argument (`X > 0`).
+*   **Returns:** A `Double` representing `K_N(X)`.
+*   **Algorithm:** Uses the classical recursion formula, starting from `BESSK0` and `BESSK1`, referencing "C.W.CLENSHAW, CHEBYSHEV SERIES FOR MATHEMATICAL FUNCTIONS." Handles `X=0.0` by returning an arbitrary large value.
+
+#### `FUNCTION BESSK0(X:Double): Double;`
+*   **Purpose:** Calculates `K0(X)`.
+*   **Algorithm:** Uses a polynomial approximation and `BESSI0(X)` for `X <= 2.0`, and an asymptotic expansion for `X > 2.0`. Handles `X=0.0` by returning an arbitrary large value.
+
+#### `FUNCTION BESSK1(X:Double): Double;`
+*   **Purpose:** Calculates `K1(X)`.
+*   **Algorithm:** Similar to `BESSK0`, uses a polynomial approximation and `BESSI1(X)` for `X <= 2.0`, and an asymptotic expansion for `X > 2.0`. Handles `X=0.0` by returning an arbitrary large value.
+
+**Example Usage (from sample run):**
+```
+ X = 1.20970000000000E+0000
+
+ N = 0
+ Y = 3.14324491956902E-0001
+
+ N = 1
+ Y = 4.28050751380124E-0001
+... (results for N up to 4) ...
+```
+
+### 3.8 `tbessy.pas` - Second Kind Bessel Function of Integer Order Y_n(x)
+
+This program calculates the second kind Bessel function, `Y_N(X)`, for integer orders `N` and any real argument `X`.
+
+**Program Description:**
+The `tbessy.pas` program calculates `Y_N(X)` for a predefined `N` and `X` (e.g., `N=2`, `X=0.75`) and displays the result.
+
+**Core Function:**
+
+#### `FUNCTION BESSY(N:Integer; X:Double): Double;`
+*   **Purpose:** Calculates the second kind Bessel function `Y_N(X)`.
+*   **Arguments:**
+    *   `N`: Integer order of the Bessel function (`N >= 0`).
+    *   `X`: Real argument.
+*   **Returns:** A `Double` representing `Y_N(X)`.
+*   **Algorithm:** Uses the classical recursive formula, starting from `BESSY0` and `BESSY1`. Handles `X=0.0` by returning a large negative value.
+
+#### `FUNCTION BESSY0(X:Double): Double;`
+*   **Purpose:** Calculates `Y0(X)`.
+*   **Algorithm:** Uses polynomial approximation for `X < 8.0` and an asymptotic expansion for `X >= 8.0`. It also incorporates `BESSJ0(X)` and `LN(X)`. Handles `X=0.0` by returning a large negative value.
+
+#### `FUNCTION BESSY1(X:Double): Double;`
+*   **Purpose:** Calculates `Y1(X)`.
+*   **Algorithm:** Similar to `BESSY0`, uses polynomial approximation for `X < 8.0` and an asymptotic expansion for `X >= 8.0`. It incorporates `BESSJ1(X)` and `1/X`. Handles `X=0.0` by returning a large negative value.
+
+#### `FUNCTION BESSYP(N:integer; X:double): Double;`
+*   **Purpose:** Calculates the first derivative of `Y_N(X)`.
+*   **Algorithm:** Uses the recurrence relation `Y_N'(X) = Y_{N-1}(X) - (N/X)Y_N(X)`. For `N=0`, it uses `Y0'(X) = -Y1(X)`.
+
+**Example Usage (from sample run):**
+```
+ Second kind Bessel function of order  2 for X=   0.7500:
+
+      Y = -2.62974603632139E+0000
+```
+
+### 3.9 `mjyzo.pas` - Zeros of Bessel Functions and their Derivatives
+
+This program computes the zeros of Bessel functions `J_n(x)`, `Y_n(x)`, and their derivatives `J_n'(x)`, `Y_n'(x)`.
+
+**Program Description:**
+The `mjyzo.pas` program prompts the user for the Bessel function order `n` and the number of zeros `NT` to compute. It then displays a table of the first `NT` zeros for `J_n(x)`, `J_n'(x)`, `Y_n(x)`, and `Y_n'(x)`.
+
+**Core Procedure:**
+
+#### `Procedure JYZO(N,NT: integer; Var RJ0,RJ1,RY0,RY1:VEC);`
+*   **Purpose:** Computes the zeros of `J_n(x)`, `J_n'(x)`, `Y_n(x)`, and `Y_n'(x)`.
+*   **Arguments:**
+    *   `N`: Order of Bessel functions (0 to 100).
+    *   `NT`: Number of zeros (roots) to compute.
+    *   `RJ0`: (Output) Array for the L-th zero of `J_n(x)`.
+    *   `RJ1`: (Output) Array for the L-th zero of `J_n'(x)`.
+    *   `RY0`: (Output) Array for the L-th zero of `Y_n(x)`.
+    *   `RY1`: (Output) Array for the L-th zero of `Y_n'(x)`.
+*   **Algorithm:** Uses an initial guess for the zeros (based on the order `N`) and then refines these guesses using Newton-Raphson iteration. It calls `JYNDD` to evaluate the Bessel functions and their derivatives.
+*   **Reference:** `www.esrf.fr/computing/expg/libraries/smf/PROGRAMS/MJYZO.FOR`
+
+#### `Procedure JYNDD(N:Integer; X: Double; Var BJN,DJN,FJN,BYN,DYN,FYN:Double);`
+*   **Purpose:** Computes Bessel functions `J_n(x)`, `Y_n(x)`, and their first and second derivatives.
+*   **Arguments:**
+    *   `N`: Order of the Bessel functions.
+    *   `X`: Argument of the Bessel functions.
+    *   `BJN`: (Output) `J_n(x)`.
+    *   `DJN`: (Output) `J_n'(x)`.
+    *   `FJN`: (Output) `J_n''(x)`.
+    *   `BYN`: (Output) `Y_n(x)`.
+    *   `DYN`: (Output) `Y_n'(x)`.
+    *   `FYN`: (Output) `Y_n''(x)`.
+*   **Algorithm:** Uses backward recurrence to compute the Bessel function values and then applies differentiation formulas. It determines a starting point for backward recurrence to ensure accuracy.
+
+**Example Usage (from sample run):**
+```
+ Please enter order n and number of zeroes: 1 10
+
+ Zeros of Bessel functions Jn(x), Yn(x) and their derivatives
+                      ( n = 1 )
+  m       jnm           j'nm          ynm           y'nm
+ -----------------------------------------------------------
+  1     3.8317060     1.8411838     2.1971413     3.6830229
+... (results for 10 zeroes) ...
+```
+
+### 3.10 `trootj.pas` - Roots of First Kind Bessel Functions
+
+This program calculates the first `NK` zeroes (roots) of the first kind Bessel function of integer order `N`, `J_N(X)`.
+
+**Program Description:**
+The `trootj.pas` program calculates the first `NR` zeroes of `J_N(X)` for a predefined `N` and `NR` (e.g., `N=2`, `NR=10`). It displays a table of the root abscissas and corresponding error codes.
+
+**Core Procedure:**
+
+#### `PROCEDURE ROOTJ(N,NK:Integer; Var JZERO:Tab10; Var IER:ITab10);`
+*   **Purpose:** Calculates the first `NK` zeroes of the Bessel function `J_N(X)`.
+*   **Arguments:**
+    *   `N`: Order of the Bessel function (`INTEGER >= 0`).
+    *   `NK`: Number of first zeroes (`INTEGER > 0`).
+    *   `JZERO`: (Output) Array to store the zeroes (abscissas).
+    *   `IER`: (Output) Array to store error codes (should be zeroes for success).
+*   **Algorithm:** For the first zero, it uses an initial guess (based on N and a series) and refines it with the `SECANT` method. For subsequent zeroes, it uses MacMahon's series for an initial guess and then improves the solution using `SECANT` if the initial error is too high.
+*   **Reference:** ABRAMOWITZ M. & STEGUN IRENE A., HANDBOOK OF MATHEMATICAL FUNCTIONS.
+
+#### `PROCEDURE SECANT(N,NITMX:Integer;TOL:Double;Var ZEROJ:Double;Var IER:Integer);`
+*   **Purpose:** Implements the secant method to find a zero of `J_N(X)`.
+*   **Arguments:**
+    *   `N`: Order of the Bessel function.
+    *   `NITMX`: Maximum number of iterations.
+    *   `TOL`: Tolerance for convergence.
+    *   `ZEROJ`: (Input/Output) Initial guess; on output, the found zero.
+    *   `IER`: (Output) Error flag (`0` for success, `1` if `NITMX` exceeded).
+*   **Algorithm:** Iteratively refines the zero using the secant method, requiring two initial points and function evaluations at each step.
+
+#### `FUNCTION BESSJ(N:Integer;X:Double): Double;`
+*   **Purpose:** Auxiliary function to calculate `J_N(X)`, similar to the one in `tbessj.pas`.
+
+#### `FUNCTION BESSJ0(X:Double): Double;`
+*   **Purpose:** Auxiliary function to calculate `J0(X)`, similar to the one in `tbessj.pas`.
+
+#### `FUNCTION BESSJ1(X:Double): Double;`
+*   **Purpose:** Auxiliary function to calculate `J1(X)`, similar to the one in `tbessj.pas`.
+
+**Example Usage (from sample run):**
+```
+ Zeroes of Bessel Function of order:  2
+
+ Number of calculated zeroes: 10
+
+ Table of root abcissas (4 items per line)
+  5.1356223E+0000  8.4172442E+0000  1.1619841E+0001  1.4795952E+0001
+  1.7959819E+0001  2.1116997E+0001  2.4270112E+0001  2.7420574E+0001
+  3.0569204E+0001  3.3716520E+0001
+
+ Table of error codes (4 items per line)
+   0   0   0   0
+   0   0   0   0
+   0   0
+```
+
+### 3.11 `tzerojp.pas` - Zeros of the Derivative of Bessel Functions
+
+This program calculates the `K`-th zero of the derivative of the Bessel function of order `N`, `J_N'(X)`.
+
+**Program Description:**
+The `tzerojp.pas` program calculates the `K`-th zero of `J_N'(X)` for predefined `N` and `K` (e.g., `N=1`, `K=10`). It then displays the calculated zero and the value of `J_N'(X)` at that zero (which should be very close to zero).
+
+**Core Function:**
+
+#### `FUNCTION ZEROJP(N,K:Integer): Double;`
+*   **Purpose:** Calculates the `K`-th zero of the derivative of the Bessel function of order `N`, `J_N'(X)`.
+*   **Arguments:**
+    *   `N`: Order of the Bessel function (`INTEGER >= 0`).
+    *   `K`: Rank of zero (`INTEGER > 0`).
+*   **Returns:** A `Double` representing the `K`-th zero.
+*   **Algorithm:** Uses different series expansions for initial guesses depending on whether `K` is 1 or `K > 1` (MacMahon's series for `K >> N`). It then refines the solution using the secant method, calling `BESSJP` for function evaluations.
+*   **Reference:** ABRAMOWITZ M. & STEGUN IRENE A., HANDBOOK OF MATHEMATICAL FUNCTIONS.
+
+#### `FUNCTION BESSJP(N:Integer; X:Double): Double;`
+*   **Purpose:** Calculates the first derivative of the first kind Bessel function of order `N`, `J_N'(X)`.
+*   **Algorithm:** Uses the recurrence relation `J_N'(X) = J_{N-1}(X) - (N/X)J_N(X)`. For `N=0`, it uses `J0'(X) = -J1(X)`.
+
+#### `FUNCTION BESSJ(N:Integer; X:Double): Double;`
+*   **Purpose:** Auxiliary function to calculate `J_N(X)`, similar to the one in `tbessj.pas`.
+
+#### `FUNCTION BESSJ0(X:Double): Double;`
+*   **Purpose:** Auxiliary function to calculate `J0(X)`, similar to the one in `tbessj.pas`.
+
+#### `FUNCTION BESSJ1(X:Double): Double;`
+*   **Purpose:** Auxiliary function to calculate `J1(X)`, similar to the one in `tbessj.pas`.
+
+**Example Usage (from sample run):**
+```
+  X=  3.06019229735146E+0001
+
+  BESSJP(X)= -1.75243069973916E-0016
+```
+
+## 4. Spherical Bessel Functions
+
+This section documents programs for computing spherical Bessel functions and their derivatives. Spherical Bessel functions arise in solving the Helmholtz equation in spherical coordinates and are common in problems involving wave scattering, acoustics, and quantum mechanics.
+
+### 4.1 `msphi.pas` - Modified Spherical Bessel Functions of the First Kind i_n(x)
+
+This program computes the modified spherical Bessel functions of the first kind, `i_n(x)`, and their derivatives `i_n'(x)`.
+
+**Program Description:**
+The `msphi.pas` program prompts the user for the order `n` and argument `x`. It then calculates and displays `i_n(x)` and `i_n'(x)` for orders from 0 up to `n` (or `nm`, the highest computed order), with an optional step `ns`.
+
+**Core Procedure:**
+
+#### `Procedure SPHI(N:integer; X:double; Var NM:integer; Var SI, DI: VEC);`
+*   **Purpose:** Computes modified spherical Bessel functions of the first kind, `i_n(x)`, and their derivatives `i_n'(x)`.
+*   **Arguments:**
+    *   `N`: Order of `i_n(x)` (0 to 250).
+    *   `X`: Argument of `i_n(x)`.
+    *   `NM`: (Output) Highest order successfully computed.
+    *   `SI`: (Output) Array to store `i_n(x)` values.
+    *   `DI`: (Output) Array to store `i_n'(x)` values.
+*   **Algorithm:**
+    *   Handles `abs(X)` very close to zero as a special case.
+    *   Calculates `i_0(x) = sinh(x)/x` and `i_1(x) = (sinh(x)/x - cosh(x))/x`.
+    *   For `N >= 2`, it uses backward recurrence to compute higher orders, starting from a determined point `M`.
+    *   `MSTA1` and `MSTA2` functions are used to determine the optimal starting point for backward recurrence to ensure accuracy and prevent overflow/underflow, aiming for a certain magnitude (`10^(-MP)`) or significant digits.
+    *   Derivatives `i_n'(x)` are computed using the recurrence relation `i_n'(x) = i_{n-1}(x) - (n+1)/x * i_n(x)`.
+*   **Reference:** "Fortran Routines for Computation of Special Functions, jin.ece.uiuc.edu/routines/routines.html".
+
+#### `Function ENVJ(N:integer; X:double): double;`
+*   **Purpose:** Auxiliary function used by `MSTA1` and `MSTA2` to estimate the magnitude of Bessel functions.
+
+#### `Function MSTA1(X: double; MP: integer): Integer;`
+*   **Purpose:** Determines the starting point for backward recurrence such that the magnitude of `J_n(x)` (used for estimation) at that point is about `10^(-MP)`.
+
+#### `Function MSTA2(X:double; N, MP: integer): Integer;`
+*   **Purpose:** Determines the starting point for backward recurrence such that all `J_n(x)` (used for estimation) have `MP` significant digits.
+
+**Example Usage (from sample run):**
+```
+ Please enter n and x: 5 10.0
+
+  n          in(x)             in'(x)
+--------------------------------------------
+  0   1.101323E+0003    9.911910E+0002
+  1   9.911910E+0002    9.030851E+0002
+  2   8.039660E+0002    7.500012E+0002
+  3   5.892080E+0002    5.682828E+0002
+  4   3.915204E+0002    3.934478E+0002
+  5   2.368396E+0002    2.494167E+0002
+```
+
+### 4.2 `msphj.pas` - Spherical Bessel Functions of the First Kind j_n(x)
+
+This program computes the spherical Bessel functions of the first kind, `j_n(x)`, and their derivatives `j_n'(x)`.
+
+**Program Description:**
+The `msphj.pas` program prompts the user for the order `n` and argument `x`. It then calculates and displays `j_n(x)` and `j_n'(x)` for orders from 0 up to `n` (or `nm`, the highest computed order), with an optional step `ns`.
+
+**Core Procedure:**
+
+#### `Procedure SPHJ(N:integer; X:double; Var NM:integer; Var SJ, DJ: VEC);`
+*   **Purpose:** Computes spherical Bessel functions of the first kind, `j_n(x)`, and their derivatives `j_n'(x)`.
+*   **Arguments:**
+    *   `N`: Order of `j_n(x)` (0 to 250).
+    *   `X`: Argument of `j_n(x)`.
+    *   `NM`: (Output) Highest order successfully computed.
+    *   `SJ`: (Output) Array to store `j_n(x)` values.
+    *   `DJ`: (Output) Array to store `j_n'(x)` values.
+*   **Algorithm:**
+    *   Handles `abs(X)` very close to zero as a special case.
+    *   Calculates `j_0(x) = sin(x)/x` and `j_1(x) = (sin(x)/x - cos(x))/x`.
+    *   For `N >= 2`, it uses backward recurrence, similar to `SPHI`, leveraging `MSTA1` and `MSTA2` for starting point determination.
+    *   Derivatives `j_n'(x)` are computed using the recurrence relation `j_n'(x) = j_{n-1}(x) - (n+1)/x * j_n(x)`.
+*   **Reference:** "Fortran Routines for Computation of Special Functions, jin.ece.uiuc.edu/routines/routines.html".
+
+#### `Function ENVJ(N:integer; X:double): double;`
+*   **Purpose:** Auxiliary function used by `MSTA1` and `MSTA2` to estimate the magnitude of Bessel functions.
+
+#### `Function MSTA1(X: double; MP: integer): Integer;`
+*   **Purpose:** Determines the starting point for backward recurrence based on magnitude, similar to `msphi.pas`.
+
+#### `Function MSTA2(X:double; N, MP: integer): Integer;`
+*   **Purpose:** Determines the starting point for backward recurrence based on significant digits, similar to `msphi.pas`.
+
+**Example Usage (from sample run):**
+```
+ Please enter n and x: 5 10.0
+
+  n          jn(x)              jn'(x)
+--------------------------------------------
+  0  -5.440211E-002    -7.846694E-002
+  1   7.846694E-002    -7.009550E-002
+  2   7.794219E-002     5.508428E-002
+  3  -3.949584E-002     9.374053E-002
+  4  -1.055893E-001     1.329880E-002
+  5  -5.553451E-002    -7.226858E-002
+```
+
+### 4.3 `msphk.pas` - Modified Spherical Bessel Functions of the Second Kind k_n(x)
+
+This program computes the modified spherical Bessel functions of the second kind, `k_n(x)`, and their derivatives `k_n'(x)`.
+
+**Program Description:**
+The `msphk.pas` program prompts the user for the order `n` and argument `x`. It then calculates and displays `k_n(x)` and `k_n'(x)` for orders from 0 up to `n` (or `nm`, the highest computed order), with an optional step `ns`.
+
+**Core Procedure:**
+
+#### `Procedure SPHK(N:integer; X:double; Var NM:integer; Var SK, DK: VEC);`
+*   **Purpose:** Computes modified spherical Bessel functions of the second kind, `k_n(x)`, and their derivatives `k_n'(x)`.
+*   **Arguments:**
+    *   `N`: Order of `k_n(x)` (0 to 250).
+    *   `X`: Argument of `k_n(x)` (`X > 0`).
+    *   `NM`: (Output) Highest order successfully computed.
+    *   `SK`: (Output) Array to store `k_n(x)` values.
+    *   `DK`: (Output) Array to store `k_n'(x)` values.
+*   **Algorithm:**
+    *   Handles very small `X` values (near zero) by returning large values, indicating singularity.
+    *   Calculates `k_0(x) = 0.5 * PI / x * exp(-x)` and `k_1(x) = k_0(x) * (1.0 + 1.0/x)`.
+    *   For `N >= 2`, it uses forward recurrence to compute higher orders: `k_n(x) = (2n-1)/x * k_{n-1}(x) + k_{n-2}(x)`. It includes a check for large values to prevent overflow.
+    *   Derivatives `k_n'(x)` are computed using the recurrence relation `k_n'(x) = -k_{n-1}(x) - (n+1)/x * k_n(x)`.
+*   **Reference:** "Fortran Routines for Computation of Special Functions, jin.ece.uiuc.edu/routines/routines.html".
+
+**Example Usage (from sample run):**
+```
+ Please enter n and x: 5 10.0
+
+  n          jn(x)                 jn''(x)
+----------------------------------------------------
+  0  7.13140429100000E-0006 -7.84454472000000E-0006
+  1  7.84454472000000E-0006 -8.70031323500000E-0006
+  2  9.48476770700000E-0006 -1.06899750300000E-0005
+  3  1.25869285700000E-0005 -1.45195391400000E-0005
+  4  1.82956177100000E-0005 -2.17347374300000E-0005
+  5  2.90529845100000E-0005 -3.57274084100000E-0005
+```
+*Note: The sample run output headers incorrectly show "jn(x)" and "jn''(x)" instead of "kn(x)" and "kn'(x)".*
+
+### 4.4 `msphy.pas` - Spherical Bessel Functions of the Second Kind y_n(x)
+
+This program computes the spherical Bessel functions of the second kind, `y_n(x)`, and their derivatives `y_n'(x)`.
+
+**Program Description:**
+The `msphy.pas` program prompts the user for the order `n` and argument `x`. It then calculates and displays `y_n(x)` and `y_n'(x)` for orders from 0 up to `n` (or `nm`, the highest computed order), with an optional step `ns`.
+
+**Core Procedure:**
+
+#### `Procedure SPHY(N:integer; X:double; Var NM:integer; Var SY, DY: VEC);`
+*   **Purpose:** Computes spherical Bessel functions of the second kind, `y_n(x)`, and their derivatives `y_n'(x)`.
+*   **Arguments:**
+    *   `N`: Order of `y_n(x)` (0 to 250).
+    *   `X`: Argument of `y_n(x)` (`X > 0`).
+    *   `NM`: (Output) Highest order successfully computed.
+    *   `SY`: (Output) Array to store `y_n(x)` values.
+    *   `DY`: (Output) Array to store `y_n'(x)` values.
+*   **Algorithm:**
+    *   Handles very small `X` values (near zero) by returning large negative values, indicating singularity.
+    *   Calculates `y_0(x) = -cos(x)/x` and `y_1(x) = (y_0(x) - sin(x))/x`.
+    *   For `N >= 2`, it uses forward recurrence to compute higher orders: `y_n(x) = (2n-1)/x * y_{n-1}(x) - y_{n-2}(x)`. It includes a check for large values to prevent overflow.
+    *   Derivatives `y_n'(x)` are computed using the recurrence relation `y_n'(x) = y_{n-1}(x) - (n+1)/x * y_n(x)`.
+*   **Reference:** "Fortran Routines for Computation of Special Functions, jin.ece.uiuc.edu/routines/routines.html".
+
+**Example Usage (from sample run):**
+```
+ Please enter n and x: 5 10.0
+
+  n          yn(x)             yn''(x)
+--------------------------------------------
+  0   8.390715E-002    -6.279283E-002
+  1   6.279283E-002     7.134859E-002
+  2  -6.506930E-002     8.231362E-002
+  3  -9.532748E-002    -2.693831E-002
+  4  -1.659930E-003    -9.449751E-002
+  5   9.383354E-002    -5.796006E-002
+```
+*Note: The sample run output headers incorrectly show "yn''(x)" instead of "yn'(x)".*
+
+## 5. Complex-Valued Bessel Functions
+
+This section covers the implementation of Bessel functions for complex arguments. These functions are often more intricate due to the need to handle the complex plane, including branch cuts and asymptotic behaviors across different quadrants. The implementations are heavily reliant on the `Complex` unit (documented previously) and several other support units (`CBess0`, `CBess00`, `CBess1`, `CBess2`, `CBess3`).
+
+### 5.1 Support Units for Complex Bessel Functions
+
+The complex Bessel functions provided in this library are built upon a modular structure of support units. These units contain core algorithms for specific mathematical transformations and asymptotic expansions.
+
+#### 5.1.1 `cbess0.pas` - Basic Complex Bessel Operations and Gamma Function
+
+This unit provides fundamental complex arithmetic operations beyond those in `complex.pas`, along with specialized functions for Bessel function asymptotic expansions and the logarithm of the Gamma function.
+
+**Procedures and Functions:**
+
+*   **`Function Power(y,x:Double): Double;`**
+    *   **Purpose:** Computes `y^x` for real `y` and `x`. Primarily for real-valued power used within complex calculations.
+    *   **Note:** Returns `EXP(x * LN(y))`. If `x < 0`, it exits without a meaningful return, indicating it's not designed for negative bases, but it receives a `Double` argument so there might be a problem for negative `y`.
+
+*   **`Function Sign(a,b : Double) : Double;`**
+    *   **Purpose:** Returns the absolute value of `a` with the sign of `b`.
+
+*   **`Procedure ZUCHK(YR, YI:double; var NZ:integer; ASCLE, TOL:double);`**
+    *   **Purpose:** Checks for potential underflow when scaling a complex number `Y = (YR, YI)`.
+    *   **Input:** `YR, YI` (components of `Y`), `ASCLE` (scaling factor related to smallest machine number), `TOL` (tolerance).
+    *   **Output:** `NZ` (underflow flag: `0` for normal, `1` if underflow is likely).
+    *   **Context:** Used internally by functions like `ZSERI`, `ZUOIK`, etc., to manage numerical precision.
+
+*   **`Function DGAMLN(Z:Double; IERR:Integer): Double;`**
+    *   **Purpose:** Computes the natural logarithm of the Gamma function, `LN(Gamma(Z))`, for `Z > 0`.
+    *   **Input:** `Z` (argument), `IERR` (error flag).
+    *   **Output:** `DGAMLN` (result), `IERR=1` if `Z <= 0.0`.
+    *   **Algorithm:** Uses an asymptotic expansion for large `Z` and a table lookup for `Z` up to 100. It adjusts values using the recursion `Gamma(Z+1) = Z * Gamma(Z)`.
+    *   **Reference:** AMOS, DONALD E., SANDIA NATIONAL LABORATORIES, 1983.
+
+*   **`Procedure ZUNHJ(ZR, ZI, FNU:double; IPMTR:integer; Var TOL, PHIR, PHII, ARGR, ARGI, ZETA1R, ZETA1I, ZETA2R, ZETA2I, ASUMR, ASUMI, BSUMR, BSUMI:double);`**
+    *   **Purpose:** Computes parameters for the uniform asymptotic expansion of Bessel functions `J`, `Y`, or `H` for large orders `FNU`.
+    *   **Context:** Used in `ZBESJ`, `ZBESY` via `ZUNI2`.
+    *   **Output Parameters:** `PHI`, `ARG`, `ZETA1`, `ZETA2`, `ASUM`, `BSUM` (all complex components).
+    *   **Algorithm:** Implements a uniform asymptotic expansion (Olver's method). `IPMTR` controls which parameters are computed.
+
+*   **`Procedure ZUNIK(ZRR, ZRI, FNU:double; IKFLG, IPMTR:Integer; TOL:double; INIT:integer; PHIR, PHII, ZETA1R, ZETA1I, ZETA2R, ZETA2I, SUMR, SUMI: double; Var CWRKR, CWRKI:VEC16);`**
+    *   **Purpose:** Computes parameters for the uniform asymptotic expansions of `I` and `K` Bessel functions.
+    *   **Input:** `ZRR, ZRI` (complex argument), `FNU` (order), `IKFLG` (`1` for I-function, `2` for K-function), `IPMTR` (`0` for all, `1` for subset), `TOL`, `INIT` (initialization flag).
+    *   **Output:** `PHI`, `ZETA1`, `ZETA2`, `SUM` (complex components), `CWRKR, CWRKI` (work arrays).
+    *   **Context:** Used in `ZBESI`, `ZBESK` via `ZUNI1`.
+
+*   **`Procedure ZUOIK(ZR, ZI, FNU:Double; KODE, IKFLG, N: Integer; Var YR, YI:VEC; Var NUF:Integer; Var TOL, ELIM, ALIM:Double);`**
+    *   **Purpose:** Tests Bessel function leading terms for overflow/underflow against `ALIM` and `ELIM` (machine-dependent limits).
+    *   **Input:** `ZR, ZI` (argument), `FNU`, `KODE` (scaling option), `IKFLG` (`1` for I-sequence, `2` for K-sequence), `N` (number of terms).
+    *   **Output:** `YR, YI` (result array, potentially set to zero), `NUF` (underflow/overflow flag: `0` normal, `>0` underflows set to zero, `-1` overflow).
+    *   **Context:** Used as a preliminary check by `ZBINU`, `ZBESK`, `ZBESH`.
+
+*   **`Procedure ZS1S2(Var ZRR, ZRI, S1R, S1I, S2R, S2I:double; NZ:Integer; Var ASCLE, ALIM: double; Var IUF:Integer);`**
+    *   **Purpose:** Tests for a possible underflow when adding `I` and `K` functions in analytic continuation.
+    *   **Input:** `ZRR, ZRI`, `S1R, S1I` (K-function), `S2R, S2I` (I-function), `NZ` (from previous underflow check), `ASCLE`, `ALIM`.
+    *   **Output:** `S1R, S1I`, `S2R, S2I` (potentially set to zero), `NZ` (updated underflow flag), `IUF` (internal underflow flag).
+    *   **Context:** Used in `ZACON`, `ZUNK1`, `ZUNK2` during analytic continuation.
+
+*   **`Procedure ZSERI(ZR, ZI, FNU:Double; KODE, N: Integer; Var YR, YI: VEC; Var NZ: Integer; Var TOL, ELIM, ALIM:Double);`**
+    *   **Purpose:** Computes the `I` Bessel function for `REAL(Z) >= 0` using the power series, primarily for small `CABS(Z)`.
+    *   **Output:** `YR, YI` (result array), `NZ` (underflow flag: `0` normal, `>0` last `NZ` components zero, `<0` underflow but condition violated).
+    *   **Context:** Used by `ZBINU` for small arguments.
+
+*   **`Procedure ZASYI(ZR, ZI, FNU:Double; KODE, N: Integer; Var YR, YI: VEC; Var NZ: Integer; Var RL, TOL, ELIM, ALIM:Double);`**
+    *   **Purpose:** Computes the `I` Bessel function for `REAL(Z) >= 0` using the asymptotic expansion for large `CABS(Z)`.
+    *   **Output:** `YR, YI` (result array), `NZ` (overflow flag: `0` normal, `<0` overflow).
+    *   **Context:** Used by `ZBINU` for large arguments.
+
+*   **`Procedure ZMLRI(ZR, ZI, FNU:Double; KODE, N:Integer; Var YR, YI:VEC; Var NZ:Integer; Var TOL:Double);`**
+    *   **Purpose:** Computes the `I` Bessel function for `RE(Z) >= 0` using the Miller algorithm, normalized by a Neumann series.
+    *   **Output:** `YR, YI` (result array), `NZ` (error flag: `0` normal, `-2` if algorithm termination condition not met).
+    *   **Context:** Used by `ZBINU` for intermediate arguments.
+
+*   **`Procedure ZSHCH(ZR, ZI: Double; Var CSHR, CSHI, CCHR, CCHI:Double);`**
+    *   **Purpose:** Computes complex hyperbolic functions `CSH = SINH(X+I*Y)` and `CCH = COSH(X+I*Y)`.
+    *   **Input:** `ZR, ZI` (complex argument).
+    *   **Output:** `CSHR, CSHI` (complex `SINH`), `CCHR, CCHI` (complex `COSH`).
+
+*   **`Procedure ZRATI(ZR, ZI, FNU:Double; Var N:Integer; Var CYR, CYI:VEC; TOL:Double);`**
+    *   **Purpose:** Computes ratios of `I` Bessel functions by backward recurrence.
+    *   **Input:** `ZR, ZI` (argument), `FNU` (order), `N` (number of terms), `TOL`.
+    *   **Output:** `CYR, CYI` (array of ratios `I(FNU+I,Z)/I(FNU+I-1,Z)`).
+    *   **Context:** Used by `ZWRSK` for the Wronskian normalization.
+
+#### 5.1.2 `cbess00.pas` - Bessel K-function and Airy Functions
+
+This unit provides the implementation for Bessel K-functions and Airy functions, essential for certain asymptotic expansions.
+
+**Procedures and Functions:**
+
+*   **`Procedure ZAIRY(ZR, ZI: double; ID, KODE: Integer; Var AIR, AII:Double; Var NZ, IERR: Integer);`**
+    *   **Purpose:** Computes the complex Airy function `AI(Z)` or its derivative `DAI(Z)/DZ`.
+    *   **Input:** `ZR, ZI` (complex argument `Z`), `ID` (derivative order: `0` or `1`), `KODE` (scaling option).
+    *   **Output:** `AIR, AII` (complex result), `NZ` (underflow indicator), `IERR` (error flag).
+    *   **Algorithm:** Uses K-Bessel functions for `CABS(Z) > 1.0` and power series for `CABS(Z) <= 1.0`. Includes extensive error checking for argument reduction losses.
+    *   **References:** NBS Handbook of Mathematical Functions, Amos (1983, 1985, 1986).
+
+*   **`Procedure ZBKNU(ZR, ZI, FNU:double; KODE, N:Integer; Var YR, YI: VEC; Var NZ: Integer; TOL, ELIM, ALIM:Double);`**
+    *   **Purpose:** Computes the `K` Bessel function in the right half `Z` plane.
+    *   **Input:** `ZR, ZI` (complex argument `Z`), `FNU` (order), `KODE` (scaling option), `N` (number of terms).
+    *   **Output:** `YR, YI` (result array), `NZ` (underflow flag).
+    *   **Algorithm:** Uses series for small `CABS(Z)`, Miller algorithm, and forward recurrence. Includes scaling to manage precision.
+    *   **Context:** Core component for `K`-function calculations, used by `ZBESK`.
+
+*   **`Procedure ZACAI(ZR, ZI, FNU:double; KODE, MR, N:Integer; Var YR, YI:VEC; Var NZ: Integer; Var RL, TOL, ELIM, ALIM:Double);`**
+    *   **Purpose:** Applies analytic continuation to the `K` function from the right half to the left half `Z` plane.
+    *   **Context:** Used by `ZAIRY` for `FNU=1/3` or `2/3`. It's a specialized version of `ZACON`.
+
+*   **`Procedure ZKSCL(ZRR,ZRI,FNU:Double; N:Integer; Var YR,YI:VEC; Var NZ:Integer; Var RZR,RZI,ASCLE,TOL,ELIM: Double);`**
+    *   **Purpose:** Sets K-functions to zero on underflow and continues recurrence on scaled functions.
+    *   **Context:** Used internally by `ZBKNU`.
+
+#### 5.1.3 `cbess1.pas` - Bessel I-function (First Kind Modified)
+
+This unit provides the implementation for the complex modified Bessel function of the first kind.
+
+**Procedures and Functions:**
+
+*   **`Procedure ZBINU(ZR, ZI, FNU:Double; KODE, N: Integer; Var CYR, CYI: VEC; Var NZ:Integer; Var RL, FNUL, TOL, ELIM, ALIM: Double);`**
+    *   **Purpose:** Computes the `I` Bessel function in the right half `Z` plane.
+    *   **Input:** `ZR, ZI` (complex argument `Z`), `FNU` (order), `KODE` (scaling option), `N` (number of terms).
+    *   **Output:** `CYR, CYI` (result array), `NZ` (underflow flag).
+    *   **Algorithm:** Orchestrates calls to `ZSERI` (power series for small `Z`), `ZASYI` (asymptotic for large `Z`), `ZMLRI` (Miller algorithm), and `ZBUNI` (uniform asymptotic expansion for large `FNU`). `ZUOIK` is used for overflow/underflow tests.
+    *   **Context:** Core component for `I`-function calculations, used by `ZBESI`.
+
+*   **`Procedure ZWRSK(ZRR, ZRI, FNU:double; KODE, N:Integer; Var YR, YI:VEC; Var NZ: Integer; Var CWR, CWI: VEC; Var TOL, ELIM, ALIM:double);`**
+    *   **Purpose:** Computes the `I` Bessel function for `RE(Z) >= 0.0` by normalizing `I` function ratios using the Wronskian.
+    *   **Context:** Used internally by `ZBINU`.
+
+#### 5.1.4 `cbess2.pas` - Bessel I-function Uniform Asymptotic Expansions
+
+This unit contains implementations for the uniform asymptotic expansions of the I-Bessel functions for large orders.
+
+**Procedures and Functions:**
+
+*   **`Procedure ZBUNI(ZR, ZI, FNU:double; KODE, N:Integer; Var YR, YI:VEC; Var NZ, NUI, NLAST:Integer; Var FNUL, TOL, ELIM, ALIM:double);`**
+    *   **Purpose:** Computes the `I` Bessel function for large `CABS(Z) > FNUL` and `FNU+N-1 < FNUL`. The order is increased by `NUI` terms.
+    *   **Input:** `ZR, ZI` (complex argument), `FNU` (order), `KODE` (scaling option), `N` (number of terms), `NUI` (number of additional terms to increase order), `FNUL` (lower boundary for asymptotic expansion).
+    *   **Output:** `YR, YI` (result array), `NZ` (underflow flag), `NLAST` (number of terms left to compute), `FNUL`.
+    *   **Algorithm:** Dispatches to `ZUNI1` or `ZUNI2` based on the argument's imaginary part. Recalculates `I` functions using backward recurrence from the higher order.
+    *   **Context:** Used by `ZBINU`.
+
+*   **`Procedure ZUNI1(ZR, ZI, FNU:double; KODE, N:integer; var YR, YI:VEC; var NZ, NLAST:integer; var FNUL, TOL, ELIM, ALIM:double);`**
+    *   **Purpose:** Computes `I(FNU,Z)` using the uniform asymptotic expansion for `I(FNU,Z)` in `-PI/3 <= ARG Z <= PI/3`.
+    *   **Context:** Used internally by `ZBUNI`.
+
+*   **`Procedure ZUNI2(ZR, ZI, FNU:double; KODE, N:integer; var YR, YI:VEC; var NZ, NLAST:integer; var FNUL, TOL, ELIM, ALIM:double);`**
+    *   **Purpose:** Computes `I(FNU,Z)` in the right half plane using the uniform asymptotic expansion for `J(FNU,ZN)` where `ZN` is `Z*I` or `-Z*I`. This handles cases where `PI/3 < ABS(ARG(Z)) <= PI/2`.
+    *   **Context:** Used internally by `ZBUNI`.
+
+#### 5.1.5 `cbess3.pas` - Bessel K-function Uniform Asymptotic Expansions and Analytic Continuation
+
+This unit provides implementations for the uniform asymptotic expansions of the K-Bessel functions for large orders and handles analytic continuation to the left half-plane.
+
+**Procedures and Functions:**
+
+*   **`Procedure ZBUNK(ZR, ZI, FNU:double; KODE, MR, N:Integer; Var YR, YI:VEC; Var NZ: Integer; TOL, ELIM, ALIM:double);`**
+    *   **Purpose:** Computes the `K` Bessel function for large orders (`FNU > FNUL`).
+    *   **Input:** `ZR, ZI` (complex argument), `FNU` (order), `KODE` (scaling option), `MR` (rotation indicator for analytic continuation), `N` (number of terms).
+    *   **Output:** `YR, YI` (result array), `NZ` (underflow flag).
+    *   **Algorithm:** Dispatches to `ZUNK1` or `ZUNK2` based on the argument's real/imaginary parts.
+    *   **Context:** Used by `ZBESK`.
+
+*   **`Procedure ZUNK1(ZR, ZI, FNU: double; KODE, MR, N: integer; Var YR, YI:VEC; Var NZ:integer; TOL, ELIM, ALIM:double);`**
+    *   **Purpose:** Computes `K(FNU,Z)` and its analytic continuation from the right half plane to the left half plane using uniform asymptotic expansion.
+    *   **Context:** Used internally by `ZBUNK`.
+
+*   **`Procedure ZUNK2(ZR, ZI, FNU:double; KODE, MR, N:Integer; Var YR, YI:VEC; Var NZ:Integer; TOL, ELIM, ALIM:Double);`**
+    *   **Purpose:** Computes `K(FNU,Z)` and its analytic continuation from the right half plane to the left half plane using uniform asymptotic expansions for Hankel functions (`H(KIND,FNU,ZN)`) and `J(FNU,ZN)`.
+    *   **Context:** Used internally by `ZBUNK`.
+
+*   **`Procedure ZACON(ZR, ZI, FNU:double; KODE, MR, N:integer; Var YR, YI:VEC; Var NZ:Integer; RL, FNUL, TOL, ELIM, ALIM:Double);`**
+    *   **Purpose:** Applies analytic continuation to the `K` function from the right half to the left half `Z` plane.
+    *   **Input:** `ZR, ZI` (complex argument), `FNU` (order), `KODE` (scaling option), `MR` (rotation indicator), `N` (number of terms).
+    *   **Output:** `YR, YI` (result array), `NZ` (underflow flag).
+    *   **Algorithm:** Calls `ZBINU` to get `I` functions (for the continuation formula) and `ZBKNU` for `K` functions in the right half plane. Combines these using the analytic continuation formula `K(FNU, Z*EXP(MP)) = EXP(-MP*FNU)*K(FNU,Z) - MP*I(FNU,Z)`. Includes scaling for numerical stability.
+    *   **Context:** Used by `ZBESK` and `ZBESH`.
+
+### 5.2 `cbessj.pas` - Complex Bessel Function of the 1st Kind of Integer Order J_n(z)
+
+This program directly implements the power series for the complex Bessel function of the first kind `J_nu(z)`.
+
+**Program Description:**
+The `cbessj.pas` program prompts for a complex argument `z` (real and imaginary parts) and an integer order `nu`. It then calculates and displays the complex value of `J_nu(z)`.
+
+**Key Procedures and Functions:**
+
+*   **`Procedure CDIV(Z1,Z2:Complex; Var Z:Complex);`**
+    *   **Purpose:** Divides two complex numbers. Handles division by zero.
+
+*   **`Procedure CMUL(Z1,Z2:Complex; Var Z:Complex);`**
+    *   **Purpose:** Multiplies two complex numbers.
+
+*   **`Procedure IZPower(z: COMPLEX; n: integer; Var z1:COMPLEX);`**
+    *   **Purpose:** Computes `z^n` for a complex base `z` and integer exponent `n`.
+
+*   **`Function Fact(k:Integer):Double;`**
+    *   **Purpose:** Computes the factorial of `k`.
+
+*   **`Function Gamma(xx:double):double;`**
+    *   **Purpose:** Computes the Gamma function `Gamma(x)` for `x > 0`.
+    *   **Algorithm:** Uses an approximation based on Lanczos approximation or similar series.
+
+*   **`Procedure CBESSJ(z:Complex;nu:Integer;Var z1:Complex);`**
+    *   **Purpose:** Calculates the complex Bessel function of the 1st kind `J_nu(z)`.
+    *   **Arguments:**
+        *   `z`: Complex argument.
+        *   `nu`: Integer order (`nu >= 0`).
+        *   `z1`: (Output) Complex result `J_nu(z)`.
+    *   **Algorithm:** Implements the power series expansion:
+        `J_nu(z) = (z/2)^nu * Sum((-z^2/4)^k / (k! * Gamma(nu+k+1)))`
+        The summation runs from `k=0` to `MAXK` (a constant set to 20). This method is generally suitable for small to moderate `|z|`.
+
+**Example Usage (from sample run):**
+```
+ Complex Bessel Function of the 1st Kind of integer order
+
+ Input complex argument (real imaginary): 1 2
+ Input integer order: 1
+
+ Function value:  1.2918475193703E+0000  1.01048836515558E+0000
+```
+This is `J1(1+2i)`.
+
+### 5.3 `tzbesi.pas` - Complex Modified Bessel Function of the First Kind I_n(z)
+
+This program calculates the complex modified Bessel function of the first kind, `I_nu(z)`.
+
+**Program Description:**
+The `tzbesi.pas` program calculates `I_nu(z)` for a specified complex argument `z` and a sequence of `N` orders (e.g., `I0(z)` to `I4(z)`). It displays the complex results and any underflow/error flags.
+
+**Core Procedure:**
+
+#### `Procedure ZBESI(ZR, ZI, FNU:double; KODE, N: integer; Var CYR, CYI: VEC; var NZ, IERR:integer);`
+*   **Purpose:** Computes an `N`-member sequence of complex Bessel functions `CY(J)=I(FNU+J-1,Z)` for real, non-negative orders `FNU+J-1`.
+*   **Arguments:**
+    *   `ZR, ZI`: Complex argument `Z = CMPLX(ZR, ZI)`.
+    *   `FNU`: Order of the initial `I` function (`FNU >= 0.0`).
+    *   `KODE`: Scaling option (`1` for `I(Z)`, `2` for `EXP(-ABS(X))*I(Z)`).
+    *   `N`: Number of members in the sequence (`N >= 1`).
+    *   `CYR, CYI`: (Output) Arrays for real and imaginary parts of the results.
+    *   `NZ`: (Output) Number of components set to zero due to underflow.
+    *   `IERR`: (Output) Error flag.
+*   **Algorithm:**
+    *   Sets machine-dependent parameters (`TOL`, `ELIM`, `ALIM`, `RL`, `FNUL`).
+    *   Checks for argument range and potential loss of significance.
+    *   Performs analytic continuation if `REAL(Z) < 0` by transforming `Z` to `-Z` and adjusting the result with `EXP(FNU*PI*I)`.
+    *   Delegates the core computation to `ZBINU` (from `cbess1.pas`), which handles different computational regimes (power series, asymptotic expansion, Miller algorithm, uniform asymptotic expansions).
+    *   Includes error codes for input errors, overflows, and significant loss of accuracy.
+
+**Example Usage (from sample run):**
+```
+ zr(0) =   0.187854
+ zi(0) =   0.646169
+ zr(1) =  -0.079933
+ zi(1) =   0.790623
+ zr(2) =  -0.412672
+ zi(2) =   0.265974
+ zr(3) =  -0.175353
+ zi(3) =  -0.082431
+ zr(4) =  -0.004414
+ zi(4) =  -0.055957
+ NZ = 0
+ Error code: 0
+```
+This output is for `I_0(1+2i)` to `I_4(1+2i)`.
+
+### 5.4 `tzbesk.pas` - Complex Modified Bessel Function of the Second Kind K_n(z)
+
+This program calculates the complex modified Bessel function of the second kind, `K_nu(z)`.
+
+**Program Description:**
+The `tzbesk.pas` program calculates `K_nu(z)` for a specified complex argument `z` and a sequence of `N` orders (e.g., `K0(z)` to `K4(z)`). It displays the complex results and any underflow/error flags.
+
+**Core Procedure:**
+
+#### `Procedure ZBESK(ZR, ZI, FNU:double; KODE, N:integer; Var CYR, CYI: VEC; Var NZ, IERR:integer);`
+*   **Purpose:** Computes an `N`-member sequence of complex Bessel functions `CY(J)=K(FNU+J-1,Z)`.
+*   **Arguments:**
+    *   `ZR, ZI`: Complex argument `Z = CMPLX(ZR, ZI)`.
+    *   `FNU`: Order of the initial `K` function (`FNU >= 0.0`).
+    *   `KODE`: Scaling option (`1` for `K(Z)`, `2` for `EXP(Z)*K(Z)`).
+    *   `N`: Number of members in the sequence (`N >= 1`).
+    *   `CYR, CYI`: (Output) Arrays for real and imaginary parts of the results.
+    *   `NZ`: (Output) Number of components set to zero due to underflow.
+    *   `IERR`: (Output) Error flag.
+*   **Algorithm:**
+    *   Sets machine-dependent parameters (`TOL`, `ELIM`, `ALIM`, `RL`, `FNUL`).
+    *   Checks for argument range and potential loss of significance.
+    *   Handles computation for `REAL(Z) >= 0` by calling `ZBKNU` (from `cbess00.pas`).
+    *   Handles computation for `REAL(Z) < 0` (left half plane) by using analytic continuation via `ZACON` (from `cbess3.pas`).
+    *   For large orders (`FNU > FNUL`), it uses uniform asymptotic expansions via `ZBUNK` (from `cbess3.pas`).
+    *   Includes error codes for input errors, overflows, and significant loss of accuracy.
+
+**Example Usage (from sample run):**
+```
+ zr(0) =  -0.242345
+ zi(0) =  -0.176267
+ zr(1) =  -0.300362
+ zi(1) =  -0.151186
+ zr(2) =  -0.483439
+ zi(2) =   0.003548
+ zr(3) =  -0.681436
+ zi(3) =   0.625155
+ zr(4) =   0.199208
+ zi(4) =   2.389181
+ NZ = 0
+ Error code: 0
+```
+This output is for `K_0(1+2i)` to `K_4(1+2i)`.
+
+### 5.5 `tzbesy.pas` - Complex Bessel Function of the Second Kind Y_n(z)
+
+This program calculates the complex Bessel function of the second kind, `Y_nu(z)`.
+
+**Program Description:**
+The `tzbesy.pas` program calculates `Y_nu(z)` for a specified complex argument `z` and a sequence of `N` orders (e.g., `Y0(z)` to `Y4(z)`). It uses auxiliary work arrays `cwr` and `cwi` for internal calculations. It displays the complex results and any underflow/error flags.
+
+**Core Procedure:**
+
+#### `Procedure ZBESY(ZR, ZI, FNU:double; KODE, N:integer; Var CYR, CYI: VEC; Var NZ:integer; Var CWRKR, CWRKI:VEC; Var IERR:integer);`
+*   **Purpose:** Computes an `N`-member sequence of complex Bessel functions `CY(J)=Y(FNU+J-1,Z)`.
+*   **Arguments:**
+    *   `ZR, ZI`: Complex argument `Z = CMPLX(ZR, ZI)`.
+    *   `FNU`: Order of the initial `Y` function (`FNU >= 0.0`).
+    *   `KODE`: Scaling option (`1` for `Y(Z)`, `2` for `EXP(-ABS(Y))*Y(Z)`).
+    *   `N`: Number of members in the sequence (`N >= 1`).
+    *   `CYR, CYI`: (Output) Arrays for real and imaginary parts of the results.
+    *   `NZ`: (Output) Number of components set to zero due to underflow.
+    *   `CWRKR, CWRKI`: (Input/Output) Work vectors of dimension at least `N`.
+    *   `IERR`: (Output) Error flag.
+*   **Algorithm:**
+    *   Calculates `Y(FNU,Z)` using the relation `Y(FNU,Z) = 0.5 * (H(1,FNU,Z) - H(2,FNU,Z)) / I`.
+    *   It calls `ZBESH` (from `cbess3.pas`) twice: once for `M=1` (Hankel function of the first kind) and once for `M=2` (Hankel function of the second kind).
+    *   Combines the results from `ZBESH` to compute `Y(Z)`.
+    *   Handles scaling based on `KODE` and checks for underflow.
+    *   Includes error codes for input errors, overflows, and significant loss of accuracy.
+
+#### `Procedure ZBESH(ZR, ZI, FNU:double; KODE, M, N:Integer; Var CYR, CYI:VEC; Var NZ, IERR:Integer);`
+*   **Purpose:** Auxiliary function to compute Hankel (Bessel) functions `H(M,FNU,Z)`.
+*   **Algorithm:** Calculates `H(M,FNU,Z)` using the relation `H(M,FNU,Z) = (1/MP) * EXP(-MP*FNU) * K(FNU, Z*EXP(-MP))`, where `MP = MM * HPI * I` and `MM = 3 - 2*M`. It uses `K`-Bessel functions and handles analytic continuation to the left half plane. Also uses uniform asymptotic expansions for large orders.
+
+**Example Usage (from sample run):**
+```
+ zr(0) =   1.367419
+ zi(0) =   1.521507
+ zr(1) =  -1.089470
+ zi(1) =   1.314951
+ zr(2) =  -0.751245
+ zi(2) =  -0.123950
+ zr(3) =   0.290153
+ zi(3) =  -0.212119
+ zr(4) =   0.590344
+ zi(4) =  -0.826960
+ NZ = 0
+ Error code: 0
+```
+This output is for `Y_0(1+2i)` to `Y_4(1+2i)`.
+
+
+## 6. Real-World Applications and Problem Solving Ideas
+
+Bessel functions are ubiquitous in physics and engineering due to their natural appearance in problems with cylindrical or spherical symmetry. This section provides ideas on how the `jpmMath` library's Bessel function implementations can be leveraged to solve real-world problems.
+
+### 6.1 Wave Propagation and Scattering
+
+**Problem:** Analyzing electromagnetic waves in waveguides, acoustic waves in pipes, or light scattering from small particles.
+
+**Solution Ideas:**
+*   **Waveguides:** The modes in cylindrical waveguides are described by Bessel functions. `BESSJ` (from `tbessj.pas` or `cbessj.pas` for lossy media) can be used to determine the cutoff frequencies of different modes by finding the roots of Bessel functions or their derivatives. The `trootj.pas` and `tzerojp.pas` programs are directly applicable here.
+*   **Acoustic Resonators:** Similar to waveguides, the resonant frequencies of cylindrical acoustic cavities involve Bessel functions.
+*   **Scattering:** Mie scattering theory, which describes the scattering of electromagnetic radiation by spherical particles, heavily relies on spherical Bessel functions. `SPHJ`, `SPHY`, `SPHI`, and `SPHK` (from `msphj.pas`, `msphy.pas`, `msphi.pas`, `msphk.pas`) are fundamental for such calculations, enabling the computation of scattering and extinction efficiencies.
+
+### 6.2 Heat Conduction and Diffusion
+
+**Problem:** Modeling temperature distribution in cylindrical rods or heat diffusion in circular plates.
+
+**Solution Ideas:**
+*   **Transient Heat Conduction:** The transient heat conduction equation in cylindrical coordinates, with boundary conditions, often yields solutions in terms of Bessel functions of the first kind (`J_n(x)`). `tbessj.pas` can be used to calculate these distributions over time.
+*   **Radial Heat Flow:** Steady-state heat flow in a hollow cylinder can involve modified Bessel functions (`I_n(x)` and `K_n(x)`). `tbessi.pas` and `tbessk.pas` are directly relevant.
+*   **Diffusion Processes:** Similar mathematical forms appear in diffusion problems, e.g., diffusion of a substance in a cylindrical medium.
+
+### 6.3 Vibrations and Oscillations
+
+**Problem:** Analyzing the vibration modes of circular membranes (drums), clamped circular plates, or cylindrical structures.
+
+**Solution Ideas:**
+*   **Circular Membranes:** The displacement of a vibrating circular membrane is given by `J_n(k*r) * cos(n*theta)`. The natural frequencies are related to the zeros of `J_n(x)`. `trootj.pas` can find these zeros, allowing for the determination of resonant frequencies.
+*   **Clamped Plates:** More complex vibration problems for plates can involve combinations of Bessel functions.
+
+### 6.4 Signal Processing and Filter Design
+
+**Problem:** Designing filters with specific frequency responses, especially those derived from classical approximations.
+
+**Solution Ideas:**
+*   **Bessel Filters:** Bessel filters are electronic filters characterized by a maximally flat group delay, meaning they preserve the waveform of the signal well. Their design involves Bessel polynomials, which are related to Bessel functions. While this library directly computes Bessel functions, it provides the mathematical primitives necessary for custom filter design where Bessel functions appear in transfer functions.
+
+### 6.5 Fluid Dynamics
+
+**Problem:** Describing laminar flow in pipes or the propagation of waves in fluids.
+
+**Solution Ideas:**
+*   **Poiseuille Flow:** The velocity profile of viscous fluid flow in a cylindrical pipe is described by a simple parabolic function, but more complex flows, especially those with oscillations or non-Newtonian fluids, might involve Bessel functions.
+*   **Fluid-Structure Interaction:** The interaction between fluids and flexible cylindrical structures (e.g., oscillating pipes) can lead to solutions involving Bessel functions.
+
+### 6.6 Quantum Mechanics
+
+**Problem:** Solving the Schrödinger equation for potentials with cylindrical or spherical symmetry.
+
+**Solution Ideas:**
+*   **Particle in a Cylinder:** The wave functions for a particle confined within a cylindrical potential well are often expressed in terms of Bessel functions.
+*   **Hydrogen Atom:** The radial part of the wave function for the hydrogen atom involves spherical Bessel functions.
+*   **Deuteron:** In nuclear physics, the radial wave function of the deuteron (a bound state of a proton and a neutron) can involve spherical Bessel functions.
+
+### 6.7 Optics and Electromagnetism
+
+**Problem:** Analyzing diffraction patterns from circular apertures (Airy disk), or the propagation of electromagnetic waves in optical fibers.
+
+**Solution Ideas:**
+*   **Diffraction:** The Airy pattern, the diffraction pattern of a circular aperture, is described by the `J1(x)` function. `tbessj.pas` can calculate this function to determine the intensity distribution.
+*   **Optical Fibers:** The modes of propagation in optical fibers with cylindrical symmetry are described by Bessel functions. Both `J_n` and `K_n` functions (and their modified counterparts for evanescent fields) are crucial for understanding mode profiles and cutoff conditions.
+
+### 6.8 Probability and Statistics
+
+**Problem:** Some probability distributions, like the non-central chi-squared distribution, involve modified Bessel functions.
+
+**Solution Ideas:**
+*   **Statistical Modeling:** For advanced statistical models where these distributions are relevant, the `tbessi.pas` and `tbessk.pas` functions can be used for calculations.
+
+### 6.9 Engineering Design and Analysis
+
+*   **Structural Mechanics:** Stress and strain analysis in cylindrical or spherical shells.
+*   **Acoustic Engineering:** Design of loudspeakers, microphones, and anechoic chambers.
+*   **Bioengineering:** Modeling blood flow in arteries, nerve impulse propagation.
