@@ -33,7 +33,7 @@ Label fin;
 Var
     chimax,chisqval,epsilon,minchisq,maxchisq: Double;
 Begin
-  epsilon := 1e-6;
+  epsilon := 1e-12; //1e-6;
   chimax := 1e6;
   minchisq := 0.0;
   maxchisq := chimax;

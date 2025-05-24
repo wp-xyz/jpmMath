@@ -13,11 +13,10 @@
 *                             Pascal Version By J-P Moreau, Paris.   *
 *                                      (www.jpmoreau.fr)             *
 *********************************************************************}
-program normal_test;
+program normal_test; // named "normal" in the original code
 
 uses
-  jpmTypes, jpmNormal;
-
+  jpmTypes, jpmStats;
 var
   P, X, Y: Float;
   s: String;
@@ -31,10 +30,10 @@ begin
     if res <> 0 then
       break;
     Writeln;
-    P := phi(X);
+    P := NormalDist(X);
     Writeln(' Probability = ', P, ' (', P:0:3, ')');
 //    Writeln;
-    Y := Normal(P);
+    Y := InvNormalDist(P);
     Writeln(' Verify:   X = ', Y, ' (', Y:0:3, ')');
   until false;
 end.

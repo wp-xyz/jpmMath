@@ -1,0 +1,83 @@
+object MainForm: TMainForm
+  Left = 316
+  Height = 372
+  Top = 121
+  Width = 765
+  Caption = 'Normal Distribution Demo'
+  ClientHeight = 372
+  ClientWidth = 765
+  LCLVersion = '4.99.0.0'
+  OnCreate = FormCreate
+  object Chart: TChart
+    Left = 0
+    Height = 315
+    Top = 0
+    Width = 765
+    AxisList = <    
+      item
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelFont.Orientation = 900
+        Title.LabelBrush.Style = bsClear
+      end    
+      item
+        Intervals.MaxLength = 100
+        Alignment = calBottom
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelBrush.Style = bsClear
+      end>
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    OnAfterDraw = ChartAfterDraw
+    Align = alClient
+    OnMouseLeave = ChartMouseLeave
+    OnMouseMove = ChartMouseMove
+    object LineSeries: TLineSeries
+      LinePen.Color = clRed
+    end
+  end
+  object Panel1: TPanel
+    Left = 6
+    Height = 45
+    Top = 321
+    Width = 753
+    Align = alBottom
+    AutoSize = True
+    BorderSpacing.Around = 6
+    BevelOuter = bvNone
+    ClientHeight = 45
+    ClientWidth = 753
+    TabOrder = 1
+    object Label1: TLabel
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = Panel1
+      Left = 0
+      Height = 15
+      Top = 0
+      Width = 34
+      Caption = 'Label1'
+    end
+    object Label2: TLabel
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = Label1
+      AnchorSideTop.Side = asrBottom
+      Left = 0
+      Height = 15
+      Top = 15
+      Width = 34
+      Caption = 'Label2'
+    end
+    object Label3: TLabel
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = Label2
+      AnchorSideTop.Side = asrBottom
+      Left = 0
+      Height = 15
+      Top = 30
+      Width = 34
+      Caption = 'Label3'
+    end
+  end
+end
