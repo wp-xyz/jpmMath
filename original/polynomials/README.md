@@ -1,0 +1,766 @@
+
+# jpmMath - Polynomials
+
+This folder contains a collection of routines and programs designed for performing various algebraic operations. It aims to provide a robust set of tools for tasks ranging from basic arithmetic (addition, multiplication) to more complex operations like differentiation, division (Euclidian and increasing powers), greatest common divisor (GCD), smallest common multiple (SCM), substitution, and symbolic expansion. The library emphasizes numerical stability and includes mechanisms to handle real, integer, and fractional coefficients.
+
+## 1. Core Units
+
+The functionality of the application programs is built upon two fundamental units: `Polynoms.pas` and `Polfract.pas`. These units define the core data structures for numbers, polynomials, and polynomial fractions, along with essential arithmetic and utility functions.
+
+### `Polynoms` Unit (`polynom.pas`)
+
+This unit defines the `NUMBER` and `POLYNOM` data types and provides essential operations for numerical and polynomial manipulation. It serves as the bedrock for all polynomial-related computations within the library.
+
+#### Data Types:
+
+*   **`NUMBER` Record:** Represents a number which can be a real, integer, or fractional value.
+    ```pascal
+    TYPE
+      NUMBER = Record
+        is_real : BOOLEAN; {TRUE=real number,FALSE=fractional or integer number}
+        value   : REAL;    {value of real number}
+        p,q     : LONGINT  {p/q if fractional number, q=1 for integer number}
+      End;
+    ```
+    *   `is_real`: `BOOLEAN` (TRUE for real numbers, FALSE for fractional or integer).
+    *   `value`: `REAL` (The computed real value of the number).
+    *   `p`: `LONGINT` (Numerator `p` for fractional numbers; for integers, `p` stores the integer value).
+    *   `q`: `LONGINT` (Denominator `q` for fractional numbers; `q` is 1 for integers).
+*   **`POLYNOM` Record:** Represents a polynomial.
+    ```pascal
+    TYPE
+      POLYNOM = Record
+        degree: INTEGER;                     {degree of polynomial}
+        coeff : Array[0..MAXPOL] of NUMBER   {coefficients of polynomial}
+      End;
+    ```
+    *   `degree`: `INTEGER` (The highest degree of the polynomial).
+    *   `coeff`: `Array[0..MAXPOL]` of `NUMBER` (Coefficients of the polynomial, where `coeff[i]` corresponds to the coefficient of `X^i`). `MAXPOL` is a constant defined in the unit, typically `100`.
+
+#### Key Functions and Procedures:
+
+*   **`GCD(a, b: REAL): REAL`**: Returns the Greatest Common Divisor (GCD) of two real numbers. Internally handles conversion to integers for GCD calculation.
+*   **`SetNumber(VAR n: NUMBER; ch: STRING): Boolean`**: Converts a string representation (e.g., `'5.56874'`, `'15/187'`, `'255'`) into a `NUMBER` record. Returns `TRUE` on success, `FALSE` on error (e.g., invalid format).
+*   **`AddNumber(x, y: NUMBER; VAR z: NUMBER): Boolean`**: Adds two `NUMBER` records `x` and `y`, storing the result in `z`. Handles real, integer, and fractional additions, simplifying fractions where possible. Returns `TRUE` on success.
+*   **`MultNumber(x, y: NUMBER; VAR z: NUMBER): Boolean`**: Multiplies two `NUMBER` records `x` and `y`, storing the result in `z`. Handles real, integer, and fractional multiplications, simplifying fractions where possible. Returns `TRUE` on success.
+*   **`DivNumber(x, y: NUMBER; VAR z: NUMBER): Boolean`**: Divides `x` by `y`, storing the result in `z`. Returns `FALSE` if `y` is zero, `TRUE` otherwise. Handles real, integer, and fractional divisions.
+*   **`StrReal(r: REAL; long, deci: INTEGER): STRING`**: Converts a real number `r` to a formatted string with specified total length `long` and decimal places `deci`.
+*   **`ReadNumber(tx: STRING; VAR n: NUMBER)`**: Prompts the user with `tx`, reads a string, and converts it into a `NUMBER` record `n`. Retries up to 3 times on invalid input.
+*   **`WriteNumber(n: NUMBER)`**: Displays a `NUMBER` record `n` to the console, formatting it appropriately (e.g., `+ 1/2`, `- 3.14`).
+*   **`EnterPolynom(tx: STRING; VAR P: POLYNOM): Boolean`**: Prompts the user with `tx` to enter a polynomial as a string (e.g., `'X5 +3/5X4 -12X2 +8X -1/4'`). Parses the string and populates the `P: POLYNOM` record. Returns `TRUE` on successful parsing, `FALSE` on error. This function includes an internal helper `ExtractMonom` for parsing individual terms.
+*   **`DisplayPolynom(VAR P: POLYNOM)`**: Displays the symbolic representation of a polynomial `P` to the console. It formats the output for readability, handling coefficients, signs, and powers, including line breaks for long expressions.
+*   **`EvaluatePolynom(VAR P: POLYNOM; x: NUMBER; VAR y: NUMBER): Boolean`**: Evaluates the polynomial `P` at a given `x` (of type `NUMBER`), storing the result in `y` (of type `NUMBER`). This function uses an optimized Horner's method for efficiency. Returns `TRUE` on success, `FALSE` if the polynomial degree exceeds `MAXPOL`.
+
+### `Polfract` Unit (`polfract.pas`)
+
+This unit extends the capabilities of `polynom.pas` by defining a data type for polynomial fractions and providing functions for their input and display.
+
+#### Data Type:
+
+*   **`FRACTION` Record:** Represents a polynomial fraction `P(x)/Q(x)`.
+    ```pascal
+    Type
+      FRACTION = Record
+        numer,denom: POLYNOM
+      End;
+    ```
+    *   `numer`: The numerator polynomial, of type `POLYNOM`.
+    *   `denom`: The denominator polynomial, of type `POLYNOM`.
+
+#### Key Functions and Procedures:
+
+*   **`EnterPolFract(tx: STRING; VAR F: FRACTION): Boolean`**: Prompts the user with `tx` to enter the numerator and denominator polynomials for a fraction `F`. Returns `TRUE` on successful input, `FALSE` on error after multiple retries.
+*   **`DisplayPolFract(VAR F: FRACTION)`**: Displays the polynomial fraction `F` to the console, showing the numerator, a dividing line, and the denominator. If the denominator is `1` (or its `value` is `1` and `degree` is `0`), it only displays the numerator.
+
+## 2. Application Programs
+
+The following programs demonstrate various polynomial and polynomial fraction operations, leveraging the core functionalities provided by `polynom.pas` and `polfract.pas`. Each program is designed to be run independently, typically prompting the user for input and displaying results to the console or an output file.
+
+### 2.1 Polynomial Operations
+
+These programs primarily operate on `POLYNOM` types.
+
+#### 1. Evaluate a Polynomial (`evalpol.pas`)
+
+**Purpose**: This program evaluates a given polynomial `P(x)` at a specified numerical value `x`.
+
+**Key Functionality**:
+*   Uses `EnterPolynom` to read the polynomial `P(x)`.
+*   Uses `ReadNumber` to get the value of `x`.
+*   Leverages `EvaluatePolynom` from `polynoms.pas` to calculate `P(x)`.
+*   Uses `WriteNumber` to display the numerical result.
+
+**Usage Idea**: Useful for numerical analysis, quickly checking polynomial values for specific inputs, or validating polynomial models in engineering and science. For instance, determining the value of a demand function at a certain price point in economics, or evaluating a stress distribution polynomial at a specific point in material science.
+
+**Example**:
+```
+ EVALUATION OF A POLYNOMIAL P(X) FOR X GIVEN: 
+
+ P(X) = x3 - 5x2 + 7x + 4
+ 
+   3     2
+  X - 5 X + 7 X + 4
+ 
+  X = 1
+  P(X) = + 7
+  X = 10
+  P(X) = + 574
+  X = -5/2
+  P(X) = - 483 / 8
+  X = 1/3
+  P(X) = + 157 / 27
+  X = 0
+  P(X) = + 4
+```
+
+#### 2. Evaluate a Polynomial and its Derivatives By Horner's Method (`thorner.pas`)
+
+**Purpose**: This program efficiently evaluates a polynomial `P(x)` and its derivatives `P'(x)`, `P''(x)`, etc., at various `x` values using Horner's method. It's useful for generating tables of function values and their derivatives at various points.
+
+**Key Functionality**:
+*   The `HORNER` procedure is central, implementing Horner's method algorithm for simultaneous polynomial and derivative evaluation.
+*   It takes the polynomial coefficients (as a dynamic array `pVEC`), the evaluation point `X0`, the maximum order of derivative `K`, and a flag `B` to control output (evaluation only vs. polynomial coefficients near X0).
+
+**Usage Idea**: Essential for numerical methods in calculus and optimization, such as Newton's method for finding roots, or for Taylor series expansions. In engineering, it can be used for sensitivity analysis where derivatives indicate the rate of change of a system's output with respect to its inputs. In computer graphics, it can be used for evaluating B-spline or Bezier curves and their tangents/curvatures.
+
+**Example**:
+```
+    EVALUATE A POLYNOMIAL AND ITS DERIVATIVES BY HORNER'S METHOD
+                                                                       
+            Example:  P(X) = X^4 + 2X^3 +3X^2 + 4X + 5                 
+                                                                       
+      X          P(X)          P'(X)         P"(X)         P"'(X)       
+ -------------------------------------------------------------------    
+  0.00000       5.00000      4.00000       6.00000      12.00000       
+  0.20000       5.93760      5.47200       8.88000      16.80000       
+  0.40000       7.23360      7.61600      12.72000      21.60000       
+  0.60000       9.04160     10.62400      17.52000      26.40000       
+  0.80000      11.55360     14.68800      23.28000      31.20000       
+  1.00000      15.00000     20.00000      30.00000      36.00000       
+  1.20000      19.64960     26.75200      37.68000      40.80000       
+  1.40000      25.80960     35.13600      46.32000      45.60000       
+  1.60000      33.82560     45.34400      55.92000      50.40000       
+  1.80000      44.08160     57.56800      66.48000      55.20000       
+  2.00000      57.00000     72.00000      78.00000      60.00000       
+ -------------------------------------------------------------------
+```
+
+#### 3. Euclidian Division of two polynomials `P(x)/Q(x)` (`divpol.pas`)
+
+**Purpose**: Performs Euclidian division of two polynomials, `P(x)` (dividend) by `Q(x)` (divisor), yielding a quotient `H(x)` and a remainder `R(x)`, such that `P(x) = Q(x) * H(x) + R(x)`, where `deg(R) < deg(Q)`.
+
+**Key Functionality**:
+*   The `DivPolynom` function is the core for Euclidian polynomial division.
+*   It iteratively calculates terms of the quotient by dividing the leading term of the current remainder by the leading term of the divisor, then subtracts the product from the remainder.
+
+**Usage Idea**: Fundamental in algebra for simplifying rational expressions, finding roots, and in control systems for analyzing system stability through pole-zero cancellation. It can also be used in cryptography for polynomial arithmetic over finite fields or as a core component for polynomial simplification and factorization in Computer Algebra Systems.
+
+**Example**:
+```
+ EUCLIDIAN DIVISION OF TWO POLYNOMIALS:
+                                                   
+ P(x) = 2x5 +2x3 -x2 +2x -1
+ Q(x) = x3 -1
+                                                   
+ Quotient:
+                                                   
+    2
+ 2 X + 2
+                                                   
+ Remainder:
+                                                   
+   2
+  X + 2 X + 1
+```
+
+#### 4. Division of two polynomials by increasing powers (`divpol1.pas`)
+
+**Purpose**: Divides two polynomials, `P(x)` by `Q(x)`, to find a quotient `H(x)` and remainder `R(x)` such that `P(x) = Q(x) * H(x) + x^k * R(x)`. This method is particularly useful when the constant term of `Q(x)` is non-zero, and `H(x)` has a degree less than `k`.
+
+**Key Functionality**:
+*   The `DivPolynom1` function implements division by increasing powers.
+*   It processes coefficients from degree 0 up to `k-1` for the quotient `H`. The remainder `R` is then derived from the remaining terms after `x^k`.
+
+**Usage Idea**: Useful in power series expansions, formal power series, and some numerical methods where approximation near `x=0` is desired. For example, in electrical engineering, analyzing circuit behavior around `s=0` for low-frequency approximations, or in numerical analysis for Taylor series expansions.
+
+**Example**:
+```
+ DIVISION OF TWO POLYNOMIALS BY INCREASING POWERS:
+                                                   
+ P(x) = 2x2 +x
+ Q(x) = x3 -x2 +1
+ Order: 4
+                                                   
+ Quotient:
+                                                   
+  3    2
+ X + 2X + X
+                                                   
+ Remainder:
+                                                   
+    2
+ - X - X +1
+```
+
+#### 5. GCD and SCM of two polynomials (`gcdpol.pas`)
+
+**Purpose**: Calculates the Greatest Common Divisor (GCD) and Smallest Common Multiple (SCM) of two polynomials `P(x)` and `Q(x)`. The GCD is determined through a sequence of Euclidian divisions, and the SCM is derived from the relation `P(x) * Q(x) = GCD(P,Q) * SCM(P,Q)`.
+
+**Key Functionality**:
+*   `GCDPolynom`: Computes the greatest common divisor using the Euclidean algorithm for polynomials.
+*   `SCMPolynom`: Computes the smallest common multiple utilizing `GCDPolynom`, `MultPolynom`, and `DivPolynom`.
+*   It also simplifies coefficients by finding the GCD of all rational coefficients.
+
+**Usage Idea**: Critical for simplifying polynomial fractions, solving systems of polynomial equations, and in various algebraic manipulations. In signal processing, it can help in filtering design by simplifying transfer functions. In control system design, common factors in numerator and denominator can indicate pole-zero cancellation, affecting system stability.
+
+**Example**:
+```
+ GCD AND SCM OF TWO POLYNOMIALS:
+                                                   
+ P(x) = x5 +5x4 +7x3 +5x2 +x -1
+ Q(x) = x4 +4x3 -7x +2
+                                                   
+ Greatest common divisor:
+                                                   
+  2
+ X + 3X - 1
+                                                   
+ Smallest common multiple:
+                                                   
+  7    6     5    4   3      2
+ X + 6X + 10X + 2X -8X - 10 X -3X +2
+```
+
+#### 6. Linear combination of two polynomials `a.P(x) + b.Q(x)` (`combipol.pas`)
+
+**Purpose**: Computes the linear combination of two polynomials `P(x)` and `Q(x)` with scalar coefficients `a` and `b`, resulting in `R(x) = a*P(x) + b*Q(x)`.
+
+**Key Functionality**:
+*   The `CombiPolynom` function performs the linear combination.
+*   It uses `AddNumber` and `MultNumber` from `polynoms.pas` for coefficient arithmetic, ensuring precision with `NUMBER` types.
+
+**Usage Idea**: Essential for vector space operations on polynomials, interpolation (e.g., Lagrange interpolation), and linear system theory. Can be used in control theory to combine system responses or in data fitting to create composite models. In computer graphics, it's used for blending polynomial curves or surfaces.
+
+**Example**:
+```
+ LINEAR COMBINATION OF TWO POLYNOMIALS:
+                                                   
+ P(X) = x3 +5/4x2 -8
+ Q(x) = 2x2 -1/7
+                                                   
+ a = 1/2
+ b = -1/3
+                                                   
+      3        2
+ 1/2 X - 1/24 X - 83/21
+```
+
+#### 7. Multiplication of two polynomials `P(x) x Q(x)` (`multpol.pas`)
+
+**Purpose**: Multiplies two polynomials `P(x)` and `Q(x)` to produce a resultant polynomial `R(x) = P(x) * Q(x)`.
+
+**Key Functionality**:
+*   The `MultPolynom` function performs the polynomial multiplication.
+*   It iterates through all possible combinations of terms from P and Q, multiplying their coefficients and adding their exponents, accumulating the results into the new polynomial R.
+
+**Usage Idea**: Fundamental operation in polynomial algebra, used extensively in signal processing (convolution), error-correcting codes, and numerical methods for polynomial interpolation. In finance, it could model the product of two time-varying factors represented by polynomials. In digital filter design, multiplying polynomials in the z-domain is a common operation.
+
+**Example**:
+```
+ MULTIPLY TWO POLYNOMIALS:
+                                                   
+ P(X) = x3 - 6x + 7
+ Q(x) = 5x5 -3x4 +x2 -3
+                                                   
+    8     7      6      5      4     3      2
+ 5 X - 3 X - 30 X + 54 X - 21 X - 9 X  + 7 X
+                                                   
+ + 18 X - 21
+```
+
+#### 8. Nth derivative of a polynomial `P(x)` (`derivpol.pas`)
+
+**Purpose**: Calculates the Nth derivative of a polynomial `P(x)`.
+
+**Key Functionality**:
+*   The `DerivPolynom` function computes the specified order derivative.
+*   For each term `c * x^e`, its derivative is `c * e * x^(e-1)`. The function iterates through the coefficients, adjusting them based on the differentiation order `n`. It handles cases where the degree drops below zero (resulting in a zero polynomial).
+
+**Usage Idea**: Essential for optimization problems (finding extrema by setting the first derivative to zero), physics (velocity and acceleration from position functions), and engineering analysis (rate of change, curvature). In economics, it can help determine marginal costs or marginal utility. Taylor series expansions also rely on successive derivatives.
+
+**Example**:
+```
+ Nth DERIVATIVE OF A POLYNOMIAL:
+                                                   
+ P(X) = 4x5 -3/5x3 + x2 -7/2x +11
+ Order of derivative: 1
+                                                   
+     4        2
+ 20 X  - 9/5 X  + 2 X - 7/2
+                                                   
+ Nth DERIVATIVE OF A POLYNOMIAL:
+                                                   
+ P(X) = 4x5 -3/5x3 + x2 -7/2x +11
+ Order of derivative: 3
+                                                   
+      2
+ 240 X  - 18/5
+```
+
+#### 9. Substitution of two polynomials `P(Q(x))` (`substpol.pas`)
+
+**Purpose**: Computes the substitution of one polynomial `Q(x)` into another polynomial `P(x)`, resulting in `R(x) = P(Q(x))`. This means replacing every instance of 'x' in polynomial P(x) with the entire polynomial Q(x).
+
+**Key Functionality**:
+*   The `SubstPolynom` function performs the polynomial substitution (composition).
+*   It iterates through the terms of `P(x)`. For each term `c_i * x^i`, it calculates `c_i * (Q(x))^i` and adds it to the accumulating result. This involves repeated polynomial multiplications (`MultPolynom`) and linear combinations (`CombiPolynom`).
+
+**Usage Idea**: Used in function composition, chain rule applications, and defining complex transformations. In computer graphics, it could transform a curve defined by one polynomial based on another polynomial representing a distortion or scaling. In robotics, it describes kinematics where movements might be described by composite functions.
+
+**Example**:
+```
+ SUBSTITUTION OF TWO POLYNOMIALS:
+                                                   
+ P(x) = -5x2 +3
+ Q(x) = 2x3 -x +5
+                                                   
+       6      4       3     2
+ - 20 X + 20 X - 100 X - 5 X + 50 X - 122
+```
+
+### 2.2 Polynomial Fraction Operations
+
+This section covers programs that perform elementary operations on polynomial fractions `F(x) = P(x)/Q(x)`. These operations often utilize `SimpPolFract` for simplification (though some programs re-implement `SimpPolFract` and its dependencies locally for self-containment, which is noted in the "Internal Implementation Notes" where applicable).
+
+#### 1. Evaluate a polynomial fraction `P(x)/Q(x)` (`evalfrac.pas`)
+
+**Purpose**: Evaluates a polynomial fraction `F(x) = P(x)/Q(x)` at a given numerical value `x`.
+
+**Key Functionality**:
+*   The `EvalPolFract` function calculates `F(x)` for the given `x`.
+*   It calls `EvaluatePolynom` for both the numerator and denominator, then uses `DivNumber` to compute the fraction's value.
+*   Includes error handling for division by zero (e.g., if `Q(x)` evaluates to 0).
+
+**Usage Idea**: Useful for analyzing the behavior of rational functions, finding asymptotes, or simulating systems whose transfer functions are represented by polynomial fractions. In physics, evaluating the value of a physical quantity described by a rational function at a specific point.
+
+**Example**:
+```
+ EVALUATE A POLYNOMIAL FRACTION:
+                                                   
+ Enter polynomial fraction P(x)/Q(x):
+                                                   
+ P(x) = x3 -5x +2
+ Q(x) = x2 -1
+                                                   
+ x value: -2
+ F(x) = + 4/3
+ x value: 1/2
+ F(x) = + 1/2
+ x value: 2
+ F(x) = - 0/3
+ x value: 1
+ Evaluation failed.
+ x value: 0
+ F(x) = - 2
+```
+
+#### 2. Inversion of a polynomial fraction `P(x)/Q(x)` (`invfract.pas`)
+
+**Purpose**: Inverts a polynomial fraction `F(x) = P(x)/Q(x)` to produce `1/F(x) = Q(x)/P(x)`.
+
+**Key Functionality**:
+*   The `InvPolFract` function simply swaps the numerator and denominator polynomials of the input fraction.
+*   It includes a check to ensure the original numerator (which becomes the new denominator) is not zero.
+
+**Usage Idea**: Useful in control systems for finding inverse transfer functions, or in signal processing to represent the reciprocal of a filter's response. In electrical engineering, it can be used to derive admittance from impedance.
+
+**Example**:
+```
+ INVERSION OF A POLYNOMIAL FRACTION:
+                                                   
+ Enter polynomial fraction P(x)/Q(x):
+                                                   
+ P(x) = x -1
+ Q(x) = x +1
+                                                   
+ + 1 X + 1
+ ---------
+ + 1 X - 1
+```
+
+#### 3. Linear combination of two polynomial fractions `a.F1(x) + b.F2(x)` (`combifra.pas`)
+
+**Purpose**: Computes the linear combination of two polynomial fractions `F1(x)` and `F2(x)` with scalar coefficients `a` and `b`, resulting in `F(x) = a*F1(x) + b*F2(x)`.
+
+**Key Functionality**:
+*   The `CombiPolFract` function performs the linear combination of fractions.
+*   It calculates `a*F1 + b*F2` by finding a common denominator (using `GCDPolynom`, `MultPolynom`), performing polynomial combination (`CombiPolynom`), and simplifying the resulting fraction using `SimpPolFract`.
+*   Note: This program re-implements `MultPolynom`, `DivPolynom`, `GCDPolynom`, `CombiPolynom`, and `SimpPolFract` locally.
+
+**Usage Idea**: Combining different system responses or financial models represented by rational functions. For instance, calculating the overall transfer function of parallel components in an electrical circuit, or applying the superposition principle for linear systems.
+
+**Example**:
+```
+ LINEAR COMBINATION OF TWO POLYNOMIAL FRACTIONS
+            a F1(x) + b F2(x)
+                                                   
+ Enter polynomial fraction F1(x)):
+ P(x) = 2x +3
+ Q(x) = x -1
+                                                   
+ Enter polynomial fraction F2(x)):
+ P(x) = -5x +1
+ Q(x) = x2 -1
+                                                   
+ a = 1
+ b = 1
+                                                   
+    2
+ 2 X + 4
+ -------
+   2
+  X - 1
+```
+
+#### 4. Multiplication of two polynomial fractions `F1(x) x F2(x)` (`multfrac.pas`)
+
+**Purpose**: Multiplies two polynomial fractions `F1(x)` and `F2(x)` to produce `F(x) = F1(x) * F2(x)`.
+
+**Key Functionality**:
+*   The `MultPolFract` function performs the multiplication of fractions.
+*   It first simplifies the input fractions (`SimpPolFract`), then directly multiplies the numerators and denominators using `MultPolynom`. The result is simplified again before being returned.
+*   Note: This program re-implements `MultPolynom`, `DivPolynom`, `GCDPolynom`, and `SimpPolFract` locally.
+
+**Usage Idea**: Combining transfer functions of cascaded systems (where the output of one system is the input to the next), or modeling the multiplicative effects of different economic factors represented by rational functions. Also relevant in probability theory for combining distributions.
+
+**Example**:
+```
+ MULTIPLY TWO POLYNOMIAL FRACTIONS:
+                                                   
+ Enter polynomial fraction F1(x)):
+                                                   
+ P(x) = x -1
+ Q(x) = x2 +5x -7
+                                                   
+ Enter polynomial fraction F2(x)):
+                                                   
+ P(x) = x +3
+ Q(x) = x2 -1
+                                                   
+  X + 3
+ -----------
+   3    2
+  X + 6X - 2X -7
+```
+
+#### 5. Nth derivative of a polynomial fraction `F(x)=P(x)/Q(x)` (`derivfra.pas`)
+
+**Purpose**: Calculates the Nth derivative of a polynomial fraction `F(x) = P(x)/Q(x)`. It applies the quotient rule iteratively.
+
+**Key Functionality**:
+*   The `DerivPolFract` function recursively applies the derivative formula for polynomial fractions: `(u/v)' = (u'v - uv') / v^2`.
+*   It leverages `DerivPolynom`, `MultPolynom`, `CombiPolynom`, `DivPolynom`, `GCDPolynom`, and `SimpPolFract` for internal calculations and simplification.
+
+**Limitations**: The comments in the source code indicate potential numerical accuracy issues for high values of derivation order (e.g., `n >= 7` for certain fractions), leading to incomplete simplification. This is due to accumulating numerical errors caused by successive calls to `SimpPolFract()`.
+
+**Usage Idea**: Advanced control system analysis, optimization problems involving rational functions, and sensitivity analysis in complex systems. It could also be applied in physics for rate-of-change analysis of quantities described by rational functions, such as in queueing theory.
+
+**Example**:
+```
+ Nth DERIVATION OF A POLYNOMIAL FRACTION:
+                                                   
+ Enter polynomial fraction F1(x)):
+ P(x) = 3x2 +2x +1
+ Q(x) = 4x2 +5x +56
+                                                   
+ Order: 1
+                                                   
+    2
+ 7 X + 328 X + 107
+ -----------------
+     4      3       2
+ 16 X + 40 X + 473 X + 560 X + 3136
+```
+
+#### 6. Simple elements of a polynomial fraction (`simpelem.pas`)
+
+**Purpose**: Decomposes a polynomial fraction `F(x) = P(x)/Q(x)` into its simple (partial) elements, where the denominator `Q(x)` is expressed as a product of irreducible polynomial factors (`H1(x)^a1 * H2(x)^a2 * ...`). The program calculates the "integer part" polynomial `E(x)` and the coefficients for each simple element.
+
+**Key Functionality**:
+*   The `SimpleElements` function is the main function for partial fraction decomposition.
+*   It requires the numerator polynomial and a list of irreducible factors (with their powers and coefficients `a,b,c` for `ax^2+bx+c`).
+*   It calculates the integer part `E(x)` (if any) and the coefficients `aij` and `bij` for each simple element.
+*   It solves a linear system of equations (`MU = V`) using a Gauss-Jordan method (`MATINV` procedure) to find the unknown coefficients.
+
+**Limitations**: For accuracy problems, the size of the linear system solved by `MATINV` is limited to `MX = 20`. The program also validates the input factors for irreducibility (discriminant `b^2 - 4ac < 0` for quadratic factors) and distinctness to ensure valid input.
+
+**Usage Idea**: Essential for integration of rational functions in calculus, inverse Laplace transforms, and analyzing linear time-invariant systems in control theory. This is a powerful tool for breaking down complex system responses into simpler, more manageable components for easier analysis or implementation (e.g., breaking down filter transfer functions into parallel components).
+
+**Example**:
+```
+ FIND THE SIMPLE ELEMENTS OF A POLYNOMIAL FRACTION:
+                                                   
+ Enter numerator: 2x9 +1
+                                                   
+ Enter factor 1
+ Power (0 to exit): 3
+ X2 coefficient: 0
+ X  coefficient: 1
+ Constant      : 0
+ Enter factor 2
+ Power (0 to exit): 2
+ X2 coefficient: 1
+ X  coefficient: 1
+ Constant      : 1
+ Enter factor 3
+ Power (0 to exit): 0
+                                                   
+ Integer part:
+                                                   
+       2
+ 2.00 X  - 4.00 X + 2.00
+                                                   
+ Factor 1
+ A(1, 1) =          1.0000000000
+ A(1, 2) =         -2.0000000000
+ A(1, 3) =          1.0000000000
+                                                   
+ Factor 2
+ A(2, 1) =         -3.0000000000
+ B(2, 1) =          2.9999999999
+ A(2, 2) =          3.0000000001
+ B(2, 2) =          0.0000000002
+                                                   
+ So the result is:
+                                                   
+                        1   -2   1      -3 +3x     
+ F(x) = (2x2 -4x +2) + (- + -- + --) + (------ +   
+                        x   x2   x3     x2+x+1     
+       <integer part>   <first factor>  <second    
+                                                   
+   3 + 0x                                          
+ ----------)                                       
+ (x2+x+1)^2                                        
+ factor>      
+```
+
+#### 7. Substitution of two polynomial fractions `F1(F2(x))` (`substfra.pas`)
+
+**Purpose**: Computes the substitution of one polynomial fraction `F2(x)` into another polynomial fraction `F1(x)`, resulting in `F(x) = F1(F2(x))`. This means replacing 'x' in `F1(x)` with the entire polynomial fraction `F2(x)`.
+
+**Key Functionality**:
+*   The `SubstPolFract` function performs the substitution of fractions.
+*   This is a complex operation that effectively computes `P1(P2/Q2) / Q1(P2/Q2)`. It involves creating new polynomials by combining terms with powers of `F2.numer` and `F2.denom` through multiple `MultPolynom` and `CombiPolynom` calls.
+*   The resulting fraction is then simplified using `SimpPolFract`.
+*   Note: This program re-implements `MultPolynom`, `DivPolynom`, `GCDPolynom`, `CombiPolynom`, and `SimpPolFract` locally.
+
+**Usage Idea**: Used when modeling nested systems or composing complex transformations where the output of one rational function becomes the input of another. For example, in control systems, it could represent cascading two dynamic systems described by transfer functions.
+
+**Example**:
+```
+ SUBSTITUTION OF TWO POLYNOMIAL FRACTIONS
+            F(x) = F1(F2(x))
+                                                   
+ Enter polynomial fraction F1(x)):
+ P(x) = 2x +3
+ Q(x) = x -1
+                                                   
+ Enter polynomial fraction F2(x)):
+ P(x) = -5x +1
+ Q(x) = x2 -1
+                                                   
+    2
+ 2 X + 4
+ -------
+   2
+  X - 1
+```
+
+### 2.3 Symbolic and Special Operations
+
+This section covers programs that offer unique functionalities beyond basic arithmetic on polynomials and fractions.
+
+#### Symbolic Parser with Polynomials (`algebra.pas`)
+
+**Purpose**: This program acts as a symbolic parser for algebraic expressions involving polynomials with single variables (A-Z). It can expand and simplify expressions like `(A+B)^2` to `A^2+2AB+B^2`. It supports addition, subtraction, multiplication (implicit and explicit), and integer powers.
+
+**Key Functionality**:
+*   Reads input expressions from screen or `algebra.dat`.
+*   Processes the expression by identifying parentheses, powers, and terms.
+*   `SIMPLI`: Simplifies polynomial terms (e.g., `3AB-AB` becomes `2AB`).
+*   `MONOME`: Simplifies individual monomials (e.g., `BAB` becomes `AB^2`, `A^1` becomes `A`).
+*   `COPIE`: Manages internal polynomial data structures during operations.
+*   `PARE`: Handles multiplication of parenthesized expressions, applying the distributive property.
+*   `PUIS`: Calculates integer powers of expressions.
+*   `ADDI`/`SOUS`: Handles addition/subtraction, effectively removing parentheses preceded by `+` or `-`.
+*   `IMPR`: Prints partial and final results.
+*   The program works by converting the infix expression into an internal representation and then iteratively applying algebraic rules (power expansion, multiplication of terms, combination of like terms) until a simplified form is reached.
+
+**Limitations**:
+*   The source code indicates that derivation (using the `£` operator via the `DERI` procedure) is "not implemented here", implying it's a placeholder or future feature.
+*   The `MaxSize` constant (`270`) limits the maximum number of terms in an expansion.
+*   The `RRs` array has a fixed size (`770` characters), limiting the output string length, beyond which it will report an error.
+
+**Usage Idea**: An excellent educational tool for demonstrating polynomial expansion and algebraic simplification. Could be extended for use in symbolic computation systems, automated theorem proving, or as a component in a larger computer algebra system for simplifying complex algebraic expressions. This program is particularly useful for verifying manual calculations in algebraic expansion.
+
+**Example**:
+```
+                     SYMBOLIC PARSER FOR POLYNOMIALS
+                                                                         
+                     Example: (A+B)^2 ==> A^2+2AB+B^2
+                                                                         
+ Inputs (0=SCREEN  1=algebra.dat file): 0
+ Input string to expand:
+ (A+B+C)^3
+                                                                         
+ Detail analysis (0=NO  1=YES): 1
+ Outputs (0=SCREEN  1=algebra.lst file): 0
+                                                                         
+ SIMPLIFICATION:
+ (A+B+C)^3
+ POWER:
+ (A^3+3A^2B+3A^2C+3AB^2+6ABC+3AC^2+B^3+3B^2C+3BC^2+C^3)
+ ADDITION:
+ A^3+3A^2B+3A^2C+3AB^2+6ABC+3AC^2+B^3+3B^2C+3BC^2+C^3
+                                                                         
+ FINAL SIMPLIFICATION AND RESULT:
+                                                                         
+ A^3+3A^2B+3A^2C+3AB^2+6ABC+3AC^2+B^3+3B^2C+3BC^2+C^3
+```
+
+## 3. How to Use These Programs
+
+The programs in this directory are self-contained Free Pascal applications. Each program is designed to be run independently, typically prompting the user for input and displaying results to the console. Some programs, like `algebra.pas`, offer the option to read input from or write output to a file (e.g., `algebra.dat`, `algebra.lst`).
+
+**General Interaction Pattern:**
+
+1.  **Input:** Most programs will prompt you to "Enter polynomial P(x) =" or "Enter polynomial fraction F(x) =". Follow the specified format for entering coefficients (e.g., `x3 - 5x2 + 7x + 4` for `evalpol.pas`). Fractional coefficients can be entered as `p/q` (e.g., `3/5x2`).
+2.  **Numeric Inputs:** For values like 'x value', 'order of derivative', or 'a =' / 'b =', simply enter the number or fraction.
+3.  **Output:** Results are usually displayed directly on the screen. Programs supporting file output will specify the filename (e.g., `algebra.lst`).
+
+To leverage these functionalities in new Pascal projects, developers would typically include the `Polynoms` and `Polfract` units in their `uses` clause and then call the relevant functions directly. For example, to perform a polynomial multiplication in a new program:
+
+```pascal
+USES WinCrt, Polynoms;
+
+VAR P1, P2, ResultPol: POLYNOM;
+VAR Success: Boolean;
+
+BEGIN
+  InitWinCrt; // Initializes the WinCrt unit for console I/O
+  WriteLn('Enter first polynomial P1(x):');
+  If EnterPolynom(' P1(X) = ', P1) then
+  Begin
+    WriteLn('Enter second polynomial P2(x):');
+    If EnterPolynom(' P2(X) = ', P2) then
+    Begin
+      Success := MultPolynom(P1, P2, ResultPol); // Call the core multiplication function
+      If Success then
+      Begin
+        WriteLn('Resulting polynomial P1(x) * P2(x):');
+        DisplayPolynom(ResultPol);
+      End
+      Else
+        WriteLn('Error during multiplication.');
+    End;
+  End;
+  ReadKey; // Waits for a key press before closing the console window
+  DoneWinCrt; // Cleans up WinCrt
+END.
+```
+
+## 4. Internal Workings and Design Notes
+
+The jpmMath Library for polynomials, implemented in Free Pascal, employs several key design patterns and numerical considerations to achieve its functionality:
+
+*   **Modular Design**: The library is structured into modular units (`Polynoms`, `Polfract`) that define core data types and elementary operations. This promotes reusability and maintainability across different application programs. Each program then `Uses` these units to build more complex operations. Some application programs (e.g., `combifra.pas`, `multfrac.pas`, `derivfra.pas`, `substfra.pas`) re-implement certain core polynomial functions locally for self-containment, which, while increasing code redundancy, makes them individually runnable.
+
+*   **Number Representation (`NUMBER` type)**:
+    *   The `NUMBER` record type is crucial for handling coefficients. It supports both floating-point (`REAL`) and rational (integer `p/q`) representations.
+    *   This dual representation is a significant design choice, allowing for exact arithmetic with rational numbers, which is essential for avoiding floating-point precision issues in symbolic algebra. When operations might lead to very large numerators/denominators or involve real-world measurements, it can fall back to `REAL` representation (e.g., if `p` or `q` exceed the `BIG` constant).
+    *   The `GCD` function is vital for simplifying rational numbers, keeping their `p` and `q` values as small as possible to prevent overflow and maintain precision.
+
+*   **Polynomial Representation (`POLYNOM` type)**:
+    *   Polynomials are stored as an array of `NUMBER` coefficients, indexed by their power (e.g., `coeff[0]` for `x^0`, `coeff[1]` for `x^1`, etc.).
+    *   The `degree` field tracks the highest non-zero power, allowing for dynamic resizing and efficient storage.
+    *   The `MAXPOL` constant defines the maximum allowed degree (100), serving as a hard limit for memory allocation and computational complexity.
+
+*   **Polynomial Fraction Representation (`FRACTION` type)**:
+    *   A `FRACTION` is simply a record containing two `POLYNOM` types: `numer` (numerator) and `denom` (denominator). This straightforward structure allows for direct manipulation of rational polynomial expressions.
+
+*   **Algorithmic Choices**:
+    *   **Horner's Method**: Used in `EvaluatePolynom` (from `polynoms.pas`) and explicitly demonstrated in `thorner.pas` for efficient polynomial evaluation. This method minimizes the number of multiplications and additions, improving performance and numerical stability.
+    *   **Euclidean Algorithm for Polynomials**: Implemented in `DivPolynom` and leveraged by `GCDPolynom` for finding common factors between polynomials. This is a fundamental algorithm for polynomial algebra, leading to efficient GCD computations.
+    *   **Partial Fraction Decomposition Strategy**: The `simpelem.pas` program employs a sophisticated strategy to find simple elements. It transforms the problem into solving a linear system of equations.
+        *   **Gauss-Jordan Method (`MATINV`)**: The `MATINV` procedure, a local implementation within `simpelem.pas`, utilizes the Gauss-Jordan elimination method with full pivoting. This method is chosen for its robustness and numerical stability in solving linear systems, which is critical for accurate partial fraction decomposition, especially when dealing with potentially ill-conditioned matrices.
+        *   **Numerical Stability Constants**: The `EPSMACH` constant (`1.2e-16`) in `MATINV` represents a machine epsilon, used to check for near-zero values to prevent division by zero or handle very small determinants, enhancing numerical stability. The `SMALL` constant (`1E-8`) is used for similar purposes across polynomial operations, treating very small coefficients as effectively zero.
+        *   **Sampling Approach**: `simpelem.pas`'s strategy of evaluating the polynomial fraction at various `x` values (with a `STEP = 0.25`) to form the linear system is an ingenious way to determine the unknown coefficients of the partial fractions. The program carefully selects `x` values to avoid singularities where denominators become zero.
+
+*   **Memory Management**: The programs make use of `New()` and `Dispose()` for dynamic memory allocation of pointer types (e.g., `pVEC`, `pMAT`), particularly for larger data structures like matrices and vectors used in `thorner.pas` and `simpelem.pas`. This helps in managing memory efficiently, especially for potentially large polynomials or linear systems, preventing stack overflows often associated with static array declarations in Pascal.
+
+*   **Error Handling**: Functions consistently return `Boolean` values (e.g., `TRUE` for success, `FALSE` for failure) and often include `exit` statements on error conditions (e.g., division by zero, polynomial degree exceeding `MAXPOL`, parsing errors). This allows calling programs to check for successful completion and react appropriately. `MessageBeep(0)` is used for simple user feedback on input errors in interactive programs.
+
+*   **Input/Output Handling**: The `WinCrt` unit is extensively used for console-based input/output, providing functions for screen clearing, cursor positioning (`GotoXY`), and formatted output. File I/O (`Assign`, `reset`, `rewrite`, `Read`, `Write`, `Close`) is used by `algebra.pas` for reading expressions from a file and writing results to a file, offering flexibility for batch processing or detailed logging.
+
+*   **Symbolic Parser (`algebra.pas`) Specifics**:
+    *   **Internal Representation**: The `algebra.pas` program uses custom arrays (`CPs` for string terms, `CP` for numerical coefficients/values) to store the parsed expression and intermediate results. This acts like a custom stack-based interpreter, enabling the manipulation of complex symbolic expressions.
+    *   **Operator Precedence and Parentheses Handling**: The sophisticated logic for processing `(`, `)`, `^`, `*`, `+`, `-` ensures correct evaluation order based on algebraic operator precedence and associativity.
+    *   **String Manipulation**: Extensive use of Pascal's built-in string functions (`length`, `Copy`, `Pos`, `Upcase`, `StrLCat`, `StrPCopy`, `Delete`) is fundamental to the parsing, tokenization, and reconstruction of symbolic expressions.
+    *   **Term Simplification**: The `SIMPLI` and `MONOME` procedures are crucial for combining like terms (e.g., `3AB-AB` becomes `2AB`) and standardizing monomial representations (e.g., `BAB` to `AB^2`, `A^1` becomes `A`), which is at the heart of algebraic simplification.
+    *   **Transformation Logic**: The program's core idea is to convert the infix expression into an internal, manipulable representation and then iteratively apply algebraic rules (power expansion, multiplication of terms, combination of like terms) until a simplified form is reached.
+
+## 5. Problem Solving Ideas and Real-World Applications
+
+The jpmMath Library's Polynomials module provides foundational tools for various computational and analytical tasks across mathematics, engineering, and science. Here are some ideas for how to use this project to solve real-world problems:
+
+*   **Numerical Analysis and Interpolation**:
+    *   **Problem**: Given a set of discrete data points, find a continuous polynomial function that passes through them (interpolation) or best approximates their trend (regression).
+    *   **Application**: While the library doesn't directly implement interpolation algorithms like Lagrange or Newton, the `Polynoms` unit's ability to represent and evaluate polynomials (`EvaluatePolynom`), combined with the capability to solve linear systems (`MATINV` in `simpelem.pas`), forms a solid basis. For instance, to find an interpolating polynomial, you would set up a system of linear equations where the unknowns are the polynomial coefficients, which `MATINV` could then solve.
+    *   **Real-world Examples**:
+        *   **Scientific Data Analysis**: Filling in missing data points or smoothing noisy experimental data.
+        *   **Computer Graphics**: Generating smooth curves and surfaces for animation or rendering.
+        *   **Control Systems**: Approximating complex non-linear system behaviors with simpler polynomial models.
+
+*   **Control Systems Design and Analysis**:
+    *   **Problem**: Analyzing the dynamic behavior of linear time-invariant (LTI) systems, which are frequently represented by transfer functions (rational functions of polynomials).
+    *   **Application**:
+        *   **Stability Analysis**: While not explicitly finding roots, the ability to manipulate numerator and denominator polynomials is a prerequisite for root-finding algorithms (e.g., Routh-Hurwitz criterion or root locus methods).
+        *   **System Response**: `evalfrac.pas` can evaluate transfer functions at specific frequencies or points, providing insight into system gain and phase.
+        *   **Partial Fraction Expansion (`simpelem.pas`)**: This is critical for decomposing complex transfer functions into simpler, first-order and second-order components. This decomposition is essential for inverse Laplace transforms, allowing engineers to determine the time-domain response of a system (e.g., step response, impulse response) and understand system modes (poles).
+        *   **System Combination**: `combifra.pas` and `multfrac.pas` can combine transfer functions for parallel and cascaded systems, respectively. `substfra.pas` can model complex feedback loops or interconnected systems.
+    *   **Real-world Examples**: Designing PID controllers, analyzing the stability of aircraft control systems, optimizing chemical process control.
+
+*   **Digital Filter Design in Signal Processing**:
+    *   **Problem**: Designing and analyzing digital filters (IIR and FIR) whose frequency responses are often described by rational functions.
+    *   **Application**:
+        *   **Transfer Function Manipulation**: `multpol.pas` can be used to construct filter transfer functions from poles and zeros. `divpol.pas` and `gcdpol.pas` can simplify filter designs.
+        *   **Frequency Response Analysis**: `evalfrac.pas` can evaluate the filter's transfer function at various frequencies to plot its magnitude and phase response.
+        *   **Partial Fraction Decomposition (`simpelem.pas`)**: Used to break down complex filter transfer functions into simpler, parallel components, facilitating implementation and analysis (e.g., converting direct form into parallel form implementations).
+    *   **Real-world Examples**: Audio processing (equalizers, noise reduction), telecommunications (modulators/demodulators), medical imaging.
+
+*   **Computer-Aided Design (CAD) and Computer Graphics**:
+    *   **Problem**: Representing and manipulating complex geometric shapes, curves (e.g., Bezier curves, B-splines), and surfaces in 2D or 3D environments, which are often defined by polynomial equations.
+    *   **Application**:
+        *   **Curve Evaluation**: `evalpol.pas` and `thorner.pas` can evaluate polynomial curves at specific parameter values to generate points for rendering. `thorner.pas` also provides derivatives, which are crucial for calculating tangents and normals to curves and surfaces.
+        *   **Transformations**: `substpol.pas` can apply transformations (like scaling, rotation, translation) by substituting transformation polynomials into the curve's defining polynomial.
+    *   **Real-world Examples**: Automotive design, architectural modeling, character animation, virtual reality environments.
+
+*   **Financial Modeling**:
+    *   **Problem**: Modeling complex relationships in financial data, forecasting trends, or calculating present/future values where polynomial functions can approximate these relationships.
+    *   **Application**: Polynomials can model interest rate yield curves or asset price trends. `evalpol.pas` can evaluate these models, `derivpol.pas` can provide insights into rates of change (e.g., marginal returns). Linear combinations (`combipol.pas`) could be used to combine different market factors.
+    *   **Real-world Examples**: Risk assessment, portfolio optimization, pricing financial derivatives (though often more complex stochastic calculus is involved, polynomials can be foundational building blocks or approximations).
+
+*   **Robotics and Kinematics**:
+    *   **Problem**: Describing and controlling the motion of robotic arms, manipulators, or mobile robots. This often involves solving systems of polynomial equations derived from kinematic chains (forward and inverse kinematics).
+    *   **Application**: The polynomial arithmetic functions (addition, multiplication, division, substitution) can be used to manipulate and simplify the complex polynomial expressions that arise in inverse kinematics problems. Symbolic differentiation (concept from `derivpol.pas`) could be applied for velocity and acceleration analysis.
+    *   **Real-world Examples**: Robot trajectory planning, collision detection, mechanism design and analysis.
+
+*   **Optimization**:
+    *   **Problem**: Finding the maximum or minimum values of functions, particularly those defined by polynomials, to optimize processes or designs.
+    *   **Application**: The derivative functions (`derivpol.pas`, `derivfra.pas`) are directly useful. To find critical points, one would compute the first derivative and then find its roots (not directly provided, but numerical root-finding algorithms could be built on top of the evaluation functions). The second derivative could be used to classify these critical points as local maxima, minima, or saddle points.
+    *   **Real-world Examples**: Optimizing resource allocation, minimizing manufacturing costs, maximizing product efficiency.
+
+*   **Computer Algebra Systems (CAS) Development**:
+    *   **Problem**: Building a symbolic computation environment that can manipulate and simplify algebraic expressions.
+    *   **Application**: The `algebra.pas` symbolic parser is a miniature CAS itself, providing core functionality for expanding and simplifying polynomial expressions. Other operations like symbolic differentiation (`derivpol.pas`'s internal logic, if integrated into a symbolic context), integration, and equation solving would build upon these foundational polynomial arithmetic routines.
+    *   **Real-world Examples**: Educational tools for algebra, research in mathematics, automated theorem proving.
