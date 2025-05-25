@@ -1,5 +1,5 @@
 
-# jpmMath Library - arith
+# jpmMath Library - arith - Basic Arithmetic and Number Theory
 
 ## Core Principles
 
