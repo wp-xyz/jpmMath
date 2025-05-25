@@ -1,0 +1,435 @@
+
+# jpmMath - Least Squares Approximation
+
+This documentation provides an in-depth understanding of the least squares approximation and regression programs available in the `lstsqr` folder of the `jpmMath` library. These programs are designed to assist in various data fitting and functional approximation tasks, offering different methodologies suitable for diverse applications in scientific, engineering, and data analysis domains.
+
+## Table of Contents
+1.  [Introduction](#1-introduction)
+2.  [Theoretical Background on Least Squares Approximations](#2-theoretical-background-on-least-squares-approximations)
+    *   [General Concepts](#general-concepts)
+    *   [First-Order Least Squares (Linear Regression)](#first-order-least-squares-linear-regression)
+    *   [Second-Order Least Squares (Parabolic Regression)](#second-order-least-squares-parabolic-regression)
+    *   [Nth-Order Least Squares (General Polynomial Regression)](#nth-order-least-squares-general-polynomial-regression)
+    *   [Multidimensional Least Squares](#multidimensional-least-squares)
+    *   [Orthogonal Polynomials (Forsythe Polynomials)](#orthogonal-polynomials-forsythe-polynomials)
+    *   [Parametric Least Squares (Non-Linear Regression)](#parametric-least-squares-non-linear-regression)
+    *   [Iterated Regression for Error Reduction](#iterated-regression-for-error-reduction)
+    *   [Simplex Method for Multi-Dimensional Curve Fitting](#simplex-method-for-multi-dimensional-curve-fitting)
+    *   [Chi-Square Statistic](#chi-square-statistic)
+3.  [Program Descriptions](#3-program-descriptions)
+    *   [Least Squares Approximation of a Discrete Function (`approx.pas`)](#least-squares-approximation-of-a-discrete-function-approxpas)
+    *   [Least Squares Approximation with Orthogonal Polynomials (`approx1.pas` and `lsqply.pas`)](#least-squares-approximation-with-orthogonal-polynomials-approx1pas-and-lsqplypas)
+    *   [Least Squares of Order 1 or 2 (`lstsqr2.pas`)](#least-squares-of-order-1-or-2-lstsqr2pas)
+    *   [Nth-Order Least Squares (`lstsqr.pas`)](#nth-order-least-squares-lstsqrpas)
+    *   [Multidimensional Non-Linear Regression (`mltnlreg.pas`)](#multidimensional-non-linear-regression-mltnlregpas)
+    *   [Parametric Least Squares (`parafit.pas`)](#parametric-least-squares-parafitpas)
+    *   [Iterated Multidimensional Regression (`regiter.pas`)](#iterated-multidimensional-regression-regiterpas)
+    *   [Multi-Dimensional Curve Fitting by Simplex Method (`tsmplx.pas`)](#multi-dimensional-curve-fitting-by-simplex-method-tsmplxpas)
+    *   [Chi-Square Statistic Calculation (`chisqa.pas`)](#chi-square-statistic-calculation-chisqapas)
+4.  [Common Utility Subroutines](#4-common-utility-subroutines)
+5.  [Real-World Applications and Problem Solving Ideas](#5-real-world-applications-and-problem-solving-ideas)
+6.  [How to Use](#6-how-to-use)
+7.  [Contribution Guidelines](#7-contribution-guidelines)
+8.  [References](#8-references)
+
+---
+
+## 1. Introduction
+
+The `lstsqr` folder within the `jpmMath` library offers a comprehensive collection of Free Pascal programs and their corresponding explanation files (`.txt`). These resources primarily focus on various techniques for least squares approximation and regression analysis. The methods described herein are applicable for fitting both noisy experimental data and high-accuracy functional tables. The overarching aim is to provide robust numerical routines for statistical regression and functional approximation, with particular attention to numerical stability, round-off error reduction, and the underlying mathematical principles.
+
+## 2. Theoretical Background on Least Squares Approximations
+
+This section provides a detailed overview of the mathematical concepts and methodologies underpinning the programs in this library, drawing insights from the accompanying explanation files.
+
+### General Concepts
+
+(Referenced from `lstsqr.txt` - Section 1)
+
+Least squares curve fitting, or regression, is a fundamental concept in approximation theory. Its primary goal is to establish a mathematical relationship between variables from a given set of data points, even when that data is subject to noise or measurement errors. It can also be employed for functional approximations when high-accuracy tables representing a function are available. The core principle of the least squares method is to minimize the sum of the squared differences (residuals) between the observed data points and the values predicted by the chosen mathematical model. This approach is rooted in statistical concepts and, under assumptions of normally distributed, independent, and additive measurement errors, yields the most precise unbiased estimates.
+
+In comparison to methods like Taylor series expansions, least squares often offers a more globally accurate approximation over the entire data range. While Taylor series are exact at their expansion point, their accuracy typically degrades rapidly further away. A characteristic of least-squares approximations is the potential for uneven error distribution, particularly at the interval endpoints, a phenomenon akin to Gibbs' phenomenon in Fourier analysis. This can sometimes be mitigated by fitting the function over a slightly wider range than strictly required. For applications demanding a more uniform error distribution, min-max polynomials, often approximated through truncated Chebyshev series, are more appropriate.
+
+### First-Order Least Squares (Linear Regression)
+
+(Referenced from `lstsqr.txt` - Section 2)
+
+This is the simplest and most common form of least squares fitting, typically used for straight-line approximations (`y = a + bx`). It is particularly useful for noisy data or sensitivity analysis, where the slope `b` provides insights into the rate of change. The coefficients (`a`, `b`) are derived by minimizing the sum of squared residuals, `S(a,b) = Sum((yᵢ - a - b*xᵢ)²)`. This minimization is achieved by setting the partial derivatives of `S` with respect to `a` and `b` to zero, which leads to a solvable system of two linear equations.
+
+**Key Formulas:**
+Given N data points (`xᵢ`, `yᵢ`), and defining mean values $\bar{x} = \frac{1}{N} \sum x_i$ and $\bar{y} = \frac{1}{N} \sum y_i$:
+*   $\beta = \frac{\sum_{i=1}^N (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^N (x_i - \bar{x})^2}$
+*   $\alpha = \bar{y} - \beta \bar{x}$
+*   Standard Deviation ($S_d$) = $\sqrt{\frac{\sum_{i=1}^N (y_i - \alpha - \beta x_i)^2}{N-2}}$ (unbiased estimate)
+
+This method is generally robust against round-off error and executes quickly. It requires at least three data points, with at least two being distinct (due to the `N-2` divisor in standard deviation and the geometric requirement of defining a line).
+
+### Second-Order Least Squares (Parabolic Regression)
+
+(Referenced from `lstsqr.txt` - Section 3)
+
+Extending the linear case, parabolic least squares fits a quadratic equation (`y = a + bx + cx²`) to data. This allows the model to capture curvilinear relationships present in the data. The coefficients (`a`, `b`, `c`) are determined by minimizing the sum of squared errors, `S(a,b,c) = Sum((yᵢ - a - b*xᵢ - c*xᵢ²)²)`, similar to the first-order case, but involving three simultaneous equations.
+
+**Key Concepts for Formulas:**
+The derivation involves setting the partial derivatives of `S` with respect to `a`, `b`, and `c` to zero. This leads to a system of normal equations. The coefficients are then expressed in terms of statistical moments like:
+*   $S_{xx} = \frac{1}{N} \sum (x_i - \bar{x})^2$
+*   $S_{xy} = \frac{1}{N} \sum (x_i - \bar{x})(y_i - \bar{y})$
+*   $S_{x²x²} = \frac{1}{N} \sum (x_i^2 - \bar{x}^2)^2$
+*   And other similar definitions ($S_{xx²}, S_{yx²}$, etc.) involving $\bar{x}, \bar{y}, x_i^2, y_i^2$.
+The full expressions for $\alpha, \beta, \gamma$ become more complex due to the simultaneous solution of equations. This method requires at least four data points, with at least three being distinct.
+
+### Nth-Order Least Squares (General Polynomial Regression)
+
+(Referenced from `lstsqr.txt` - Section 4)
+
+This method generalizes least squares to fit polynomials of an arbitrary degree `n` to a dataset, described by the equation `y(x) = D₀x⁰ + D₁x¹ + ... + Dnxⁿ`. The solution is elegantly formulated using matrix algebra, where the coefficient vector `D` is found using the normal equation:
+
+*   **Matrix Equation:** $D = (X^t X)^{-1} X^t Y$
+    *   `Y`: A column vector of length M (number of data points) containing the measured `y` values.
+    *   `X`: An M row by N+1 column matrix (often referred to as the design matrix or polynomial coefficient matrix) where each element `X(i,j)` corresponds to $x_i^{j-1}$. For instance, the first column is $x_i^0=1$, the second is $x_i^1$, and so on, up to $x_i^N$.
+    *   `D`: A column vector of length N+1 containing the coefficients ($D_0, D_1, ..., D_n$).
+
+This general approach, while elegant and powerful, is susceptible to round-off error, particularly for higher polynomial degrees, mainly due to the numerical instability often associated with the full matrix inversion step. It forms the basis for multidimensional regression.
+
+### Multidimensional Least Squares
+
+(Referenced from `lstsqr.txt` - Section 5)
+
+Expanding on the Nth-order matrix approach, multidimensional least squares allows for fitting functions with multiple independent variables, resulting in models like `y(x1, x2) = D₀x₁⁰x₂⁰ + D₁x₁¹x₂⁰ + D₂x₁⁰x₂¹ + D₃x₁¹x₂¹ + ...`. The primary challenge lies in correctly constructing the design matrix (referred to as `Z(I,J)` in the source code), which maps the various combinations of powers of the independent variables to the model's terms. For `L` dimensions with polynomial degrees `M1, M2, ..., ML` respectively, the total number of coefficients (`N`) will be `(M1+1)(M2+1)...(ML+1)`. Like its Nth-order counterpart, this method can also be prone to round-off error, especially when dealing with a large number of dimensions or high polynomial degrees, due to the increased size of the matrices involved.
+
+### Orthogonal Polynomials (Forsythe Polynomials)
+
+(Referenced from `lsqply.txt`)
+
+To mitigate the significant round-off error inherent in the general matrix least squares method, especially for one-dimensional polynomial fitting, orthogonal polynomials like Forsythe polynomials are used. The key advantage is that by choosing these orthogonal polynomials, the `P^t P` matrix (analogous to `X^t X` in the general case) becomes diagonal, or nearly so, eliminating the need for a complex and error-prone full matrix inversion. This significantly improves numerical stability and accuracy. The coefficients $D_j$ can then be calculated directly using summation formulas:
+
+*   $D_j = \frac{\sum_{i=1}^m P_j(x_i)y_i}{\sum_{i=1}^m P_j(x_i)^2}$
+
+These polynomials are generated using a recursion relation:
+
+*   $P_j(x) = (x - g_j) P_{j-1}(x) - d_j P_{j-2}(x)$
+    *   with $P_{-1}(x) = 0$ and $P_0(x) = 1$.
+The $g_j$ and $d_j$ terms are also defined by summation formulas involving the previous order polynomials and data points. This formulation also has the advantage that the order of the fit can be increased incrementally by one degree without extensive recalculation.
+
+### Parametric Least Squares (Non-Linear Regression)
+
+(Referenced from `parafit.txt`)
+
+Unlike standard least squares methods that assume linear relationships between coefficients and variables, Parametric Least Squares addresses scenarios where parameters appear nonlinearly within the function (e.g., in exponential, Gaussian, or logistic models). This method employs an iterative, heuristic optimization technique, often referred to as the "shuffle" method, to find the set of parameters that minimizes the standard deviation of the fit. The algorithm works by iteratively adjusting each parameter: if an adjustment improves the fit, larger steps are taken; if it degrades the fit, the step size is reduced and the direction potentially reversed. This process continues until a convergence criterion is met. While powerful for non-linear functions, it can be slow and convergence is not always guaranteed, relying on good initial parameter guesses.
+
+### Iterated Regression for Error Reduction
+
+(Referenced from `regiter.txt`)
+
+For multidimensional least squares, round-off error, particularly from subtractions of comparable numbers during matrix inversion, can significantly impact accuracy. Iterated regression addresses this by repeatedly refining the coefficient vector. Starting with an initial estimate $D_1$ (often from a standard least squares calculation), the residual $r_1 = D - D_1$ is estimated, and a corrected $D_2 = D_1 + r_1$ is computed. This process (e.g., $D_{n+1} = D_n + A(Y - X D_n)$) is repeated until the variance (or standard deviation) no longer decreases, or begins to increase, indicating that the round-off error limit has been reached. This method greatly improves accuracy but can be computationally intensive due to its iterative nature.
+
+### Simplex Method for Multi-Dimensional Curve Fitting
+
+(Referenced from `_info.txt` and `tsmplx.pas` comments)
+
+The Simplex method, specifically the Nelder-Mead algorithm, is a direct search optimization technique used for multi-dimensional curve fitting. Unlike gradient-based optimization methods or least squares techniques that rely on derivatives, the Simplex method does not require derivative calculations. Instead, it systematically evaluates the function at the vertices of a geometric shape (a simplex, with N+1 vertices for N parameters) and iteratively moves this simplex towards the minimum of the function. This makes it particularly robust and suitable for optimizing functions that are non-smooth, discontinuous, or when their derivatives are difficult or impossible to compute. The method minimizes a weighted sum of squares.
+
+### Chi-Square Statistic
+
+(Referenced from `_info.txt` and `chisqa.txt`)
+
+The Chi-square statistic is a fundamental tool in hypothesis testing, primarily used to assess the "goodness of fit" between observed data and expected frequencies, or to test for independence between categorical variables. While not a curve-fitting algorithm itself, it is often used in the context of regression to assess how well a model fits observed data. The `chisqa.pas` program demonstrates the calculation of the Chi-square statistic and its cumulative distribution approximation, particularly optimized for cases with a large number of degrees of freedom.
+
+## 3. Program Descriptions
+
+This section details the individual Pascal programs provided in the `lstsqr` folder, outlining their purpose, inputs, outputs, key procedures, and any specific usage notes or precautions.
+
+### Least Squares Approximation of a Discrete Function (`approx.pas`)
+
+*   **Description:** This program performs a basic least squares polynomial approximation of a discrete real function F(x). It calculates the coefficients of a polynomial of a specified degree that best fits a given set of (X, Y) data points.
+*   **Methodology:** The program directly computes coefficients by solving a system of linear equations derived from the least squares criterion, a common approach for polynomial fitting.
+*   **Key Procedures/Functions:**
+    *   `IntPower`: A helper function to calculate `x^k` for integer powers.
+    *   The main program logic directly implements the coefficient calculation and approximation display.
+*   **Inputs:**
+    *   Number of points.
+    *   Degree of polynomial.
+    *   Data pairs (X(i), Y(i)).
+*   **Outputs:**
+    *   Coefficients of the approximating polynomial (A(0) to A(m)).
+    *   Approximated Y values for the input X points.
+*   **Notes:** Suitable for general polynomial fitting when the number of points and degree are not excessively large to avoid significant round-off errors.
+
+### Least Squares Approximation with Orthogonal Polynomials (`approx1.pas` and `lsqply.pas`)
+
+*   **Description:** These programs implement least squares fitting using orthogonal polynomials (specifically Forsythe polynomials, as detailed in `lsqply.txt`). This method is designed to significantly reduce round-off error compared to direct matrix inversion, making it highly suitable for higher-degree polynomial fits and ill-conditioned data.
+*   **Methodology:** The programs construct orthogonal polynomials recursively and compute coefficients using summations, which avoids numerically unstable matrix inversions.
+    *   **`lsqply.pas`**: This program provides a generalized procedure for least squares polynomial fitting. It includes an optional error reduction factor (`E`) that allows for automatic determination of the optimal degree of fit by iteratively increasing the order until the standard deviation improvement falls below a specified threshold or starts to increase.
+    *   **`approx1.pas`**: Another implementation example demonstrating least squares approximation using orthogonal polynomials, noted as being derived from a Fortran 77 Numath Library, highlighting its robust numerical foundation.
+*   **Key Procedures (`lsqply.pas`):**
+    *   `LS_POLY`: The main procedure that implements the orthogonal polynomial fitting algorithm, including the recursive calculation of Forsythe polynomials and their corresponding coefficients.
+*   **Key Procedures (`approx1.pas`):**
+    *   `PRD`: An auxiliary function for calculating sums of products, used in `MCARRE`.
+    *   `MCARRE`: Implements the core orthogonal polynomial fitting algorithm, determining `S`, `ALPHA`, and `BETA` coefficients and calculating standard deviations.
+    *   `P`: A function that evaluates the approximated function at a given point `X` using the calculated coefficients.
+*   **Inputs (for `lsqply.pas`):**
+    *   Order of the fit (N).
+    *   Error reduction factor (E): If 0, the fit is to order N. If >0, the order of fit increases towards N, but will stop if the relative standard deviation does not decrease by more than E between successive fits, or if it increases.
+    *   Number of data points (M).
+    *   Data pairs (X(i), Y(i)).
+*   **Outputs (for `lsqply.pas`):**
+    *   Fitted polynomial coefficients.
+    *   Standard deviation of the fit.
+    *   Actual degree of fit (L) if termination occurs before Nth degree.
+*   **Precautions:** The number of distinct data points must exceed the degree of fit (M >= N + 1). The error reduction factor E must be non-negative.
+*   **Advantages:** Highly recommended for polynomial regression due to its resistance to round-off error and the ability to incrementally increase fit order efficiently.
+
+### Least Squares of Order 1 or 2 (`lstsqr2.pas`)
+
+*   **Description:** This program calculates either a linear (first-order) or parabolic (second-order) least squares fit to a given data set. It provides optimized implementations for these specific common cases.
+*   **Methodology:** Contains dedicated subroutines `lstsqr1` and `lstsqr2` to calculate coefficients for linear (`y = A + BX`) and parabolic (`y = A + BX + CX²`) fits respectively. These subroutines implement the direct analytical formulas derived from minimizing the sum of squares for these specific polynomial orders, avoiding general matrix operations.
+*   **Key Procedures:**
+    *   `lstsqr1`: Implements the linear least squares calculation.
+    *   `lstsqr2`: Implements the parabolic least squares calculation.
+*   **Inputs:**
+    *   Order of fit (1 for linear, 2 for parabolic).
+    *   Number of data points (N).
+    *   Data pairs (X(i), Y(i)). An option to input X values first, then Y values separately is also available.
+*   **Outputs:**
+    *   Calculated coefficients (A, B, C).
+    *   Unbiased estimate of the standard deviation (D).
+*   **Precautions:** Requires at least three data points (for linear) or four data points (for parabolic), with sufficient distinct points to define the curve, to avoid divide-by-zero errors in standard deviation calculation.
+*   **Advantages:** Easy to apply and less sensitive to round-off error for low-order fits, and executes quickly due to direct formulas. Includes graphical output to visualize the fit.
+
+### Nth-Order Least Squares (`lstsqr.pas`)
+
+*   **Description:** This program demonstrates the general Nth-order least squares polynomial fitting for one-dimensional data using matrix operations. It is a modular program relying on distinct subroutines for coefficient matrix generation, core matrix operations (transpose, multiplication, inversion), and standard deviation calculation.
+*   **Methodology:** Implements the general matrix equation $D = (X^t X)^{-1} X^t Y$.
+*   **Key Procedures:**
+    *   `Gene_Coeffs`: Generates the `Z(I,J)` matrix (equivalent to `X` in the matrix equation) based on the input X(I) data values and the desired polynomial degree.
+    *   `LstSqrN`: A supervisory subroutine that implements the matrix equation by calling several other matrix-operation subroutines.
+    *   `Standard_deviation`: Calculates the standard deviation of the fit from the fitted coefficients.
+*   **Inputs:**
+    *   Number of data points (M, minimum 3, maximum 25).
+    *   Degree of the polynomial to be fitted (N, maximum 10).
+    *   Data pairs (X(i), Y(i)).
+*   **Outputs:**
+    *   Calculated coefficients (D(i)).
+    *   Standard deviation of the fit.
+*   **Precautions:** The calling program must ensure at least N+1 distinct data pairs are passed. Prone to round-off error, especially for higher-order fits, due to matrix inversion. Low-order fits are suggested initially. Includes graphical output option.
+
+### Multidimensional Non-Linear Regression (`mltnlreg.pas`)
+
+*   **Description:** This program effectively demonstrates multidimensional and multi-nonlinear regression using the matrix-based least squares approach. It builds upon the general Nth-order framework but includes a specialized coefficient matrix generation routine to handle multiple independent variables and their interactions.
+*   **Methodology:** The `Gene_Coeffs_SD` subroutine creates the `Z(I,J)` matrix that represents the multidimensional polynomial terms (e.g., $1, x_1, x_1^2, x_2, x_1x_2, x_1^2x_2, ...$) based on user-defined degrees of fit for each dimension. This matrix is then used by the `LstSqrN` routine (shared with `lstsqr.pas`) to solve for the coefficients. It also calculates the standard deviation.
+*   **Key Procedures:**
+    *   `Gene_Coeffs_SD`: Generates the coefficient matrix `Z` and calculates the standard deviation. It handles the logical structure for combining powers of multiple input dimensions.
+    *   `LstSqrN`: The core least squares regression procedure (shared with `lstsqr.pas`) that applies the matrix operations to solve for the coefficients.
+*   **Inputs:**
+    *   Number of data points (M).
+    *   Number of dimensions (L).
+    *   Degree of fit for each dimension (M1(i)).
+    *   Data: Y(i) values and X(i,j) values for each dimension.
+*   **Outputs:**
+    *   Calculated coefficients (D(i)).
+    *   Standard deviation of the fit.
+*   **Precautions:**
+    *   The degree of fit in each dimension must be linear or higher.
+    *   Requires at least N+1 data points, where N is the total number of coefficients (N = (M1+1)(M2+1)...(ML+1)).
+    *   The number of dimensions is limited to nine (LMAX = 9) due to implementation specifics in `Gene_Coeffs_SD`; exceeding this limit will abort the subroutine.
+    *   Susceptible to round-off error due to large matrix operations.
+
+### Parametric Least Squares (`parafit.pas`)
+
+*   **Description:** This program implements an iterative parametric least squares curve fit, designed for functions where the parameters appear non-linearly (e.g., exponential, Gaussian). It uses a heuristic "shuffle" method to find the optimal parameters that minimize the standard deviation of the fit.
+*   **Methodology:** The `Param_LS` procedure orchestrates the iterative optimization. It relies on a user-defined function (`S500`) that computes the model's output for a given set of parameters. The `S200` procedure calculates the sum of squared residuals for the current parameter estimates. The "shuffle" method then iteratively adjusts each parameter, taking larger steps if the fit improves and reducing step size if it degrades, until convergence.
+*   **Key Procedures:**
+    *   `S500`: A placeholder function where the user defines the specific non-linear model to be fitted. In the sample, it defines a Gaussian function: `Y = A[1] * EXP(-(X - A[2]) * (X - A[2]) / A[3])`.
+    *   `S200` (Residual generation subroutine): Calculates the sum of squared residuals and the standard deviation for the current set of parameters.
+    *   `Param_LS`: The main procedure implementing the iterative "shuffle" method, supervising the parameter adjustments and convergence tests.
+*   **Inputs:**
+    *   Number of data points (N).
+    *   Number of coefficients (L).
+    *   Data pairs (X(i), Y(i)).
+    *   Initial step size (`E1`, typically 0.5, must be 0 < E1 < 1).
+    *   Convergence factor (`E`): Iteration stops if the relative change in the standard deviation between two complete successive passes through the parameters is less than `E`.
+    *   Initial guesses for coefficients (A(i)).
+*   **Outputs:**
+    *   Estimated coefficients (A(i)).
+    *   Standard deviation of the fit (D).
+    *   Number of iterations employed (M).
+*   **Precautions:**
+    *   Execution speed can be slow.
+    *   Convergence is not always guaranteed and heavily depends on good initial guesses for parameters and appropriate `E1`/`E` values.
+    *   If `L > N`, the subroutine may not terminate.
+    *   Does not perform input validation for `L`, `N`, `E1`.
+
+### Iterated Multidimensional Regression (`regiter.pas`)
+
+*   **Description:** This program provides a highly accurate multidimensional least squares curve fitting by employing an iterative error reduction technique. It reuses the matrix operations from `lstsqr.pas` and `mltnlreg.pas` but applies successive corrections to the coefficients to minimize round-off error, which is particularly problematic in direct matrix inversion.
+*   **Methodology:** The `Iter_Supervisor` routine orchestrates the iterative process. It performs an initial regression, calculates the residual error (the difference between measured and predicted `Y` values), and then uses this residual to refine the coefficients in subsequent iterations. This process (e.g., $D_{n+1} = D_n + A(Y - X D_n)$) is repeated until the standard deviation (variance) no longer decreases, or begins to increase, indicating that the round-off error limit has been reached. The core `LstSqrN` and `Gene_Coeffs_SD` routines are called repeatedly within this iteration.
+*   **Key Procedures:**
+    *   `Iter_Supervisor`: The main iterative control procedure that manages the successive refinement of coefficients. It saves original `Y` values, tracks standard deviation changes, and updates coefficients.
+    *   `LstSqrN` and `Gene_Coeffs_SD`: These core regression and matrix generation routines are repeatedly called by `Iter_Supervisor` to compute new coefficient estimates and standard deviations in each iteration.
+*   **Inputs:**
+    *   Number of data points (M).
+    *   Number of dimensions (L).
+    *   Degree of fit for each dimension (M1(i)).
+    *   Input data: X(i,j) for independent variables and Y(i) for dependent variable.
+*   **Outputs:**
+    *   Calculated coefficients (D(i)).
+    *   Standard deviation (D).
+    *   Number of iterations performed (L1).
+*   **Precautions:**
+    *   Can be slow due to multiple matrix calculations within the iterative loop.
+    *   While reliable, a theoretical possibility of non-convergence exists (though rarely encountered by the author); in such cases, it terminates at the point of divergence.
+*   **Advantages:** Highly effective for achieving high-accuracy fits in multidimensional problems, significantly reducing the impact of round-off error that affects direct methods.
+
+### Multi-Dimensional Curve Fitting by Simplex Method (`tsmplx.pas`)
+
+*   **Description:** This program implements the Simplex method (Nelder-Mead algorithm) for multi-dimensional non-linear curve fitting. It is a direct search optimization routine useful when analytical derivatives are unavailable or difficult to compute for the objective function.
+*   **Methodology:** The program fits a user-defined model function (e.g., `Z = A / (1 + BX + CY)` for the sample) to a set of data points by minimizing the weighted sum of squares (`PHI`). The `SMPLX` procedure iteratively adjusts the parameters (represented as a simplex in parameter space) to find the minimum of the objective function. It includes reflection, expansion, and contraction steps to explore the parameter space efficiently. The `FIDO` subroutine is used post-optimization to compute confidence intervals for the parameters using the method of support planes.
+*   **Key Procedures:**
+    *   `FUNK`: This procedure defines the model function to be fitted and calculates the `FOBJ` (weighted sum of squares, `PHI`). **Users must modify this function to define their specific non-linear models.**
+    *   `SMPLX`: The core Simplex minimization algorithm, handling the iterative adjustments of the simplex to find the minimum `FOBJ`.
+    *   `FIDO`: A subroutine used in conjunction with `SMPLX` to compute confidence half-intervals ("errors") for the parameters.
+    *   `SIBEG`, `SIFUN`, `DATSW`, `STSET`: Supporting procedures for initializing parameters, evaluating the function, handling sense switches (dummy in this version), and setting default values for `SMPLX`.
+*   **Inputs:**
+    *   Data points (`T(J,1), T(J,2), Y(J), YSIG(J)`) typically loaded from an external file (e.g., `SIMPTEST.DAT`).
+    *   Number of variables/parameters (NV, e.g., 3 for A, B, C).
+    *   Initial guesses for parameters (X(J)).
+    *   Optimization control parameters: `NFMAX` (maximum function evaluations), `DELTX` (initial step size), `DELMIN` (convergence tolerance), `NTRACE` (output level).
+*   **Outputs:**
+    *   Final value of `FOBJ` (weighted sum of squares).
+    *   Final estimated parameter values (X(J)).
+    *   Confidence half-intervals for each parameter, providing uncertainty estimates.
+*   **Precautions:**
+    *   Can be very slow for a large number of parameters (e.g., > 6-8).
+    *   Convergence to a global minimum is not guaranteed (can find local minima depending on initial guesses).
+    *   Requires double precision for good performance.
+
+### Chi-Square Statistic Calculation (`chisqa.pas`)
+
+*   **Description:** This program demonstrates the calculation of the Chi-square cumulative distribution approximation. It is a utility for statistical analysis, particularly useful for "goodness-of-fit" testing.
+*   **Methodology:** Implements a regressed table correction method in the `Chi_Square` procedure to approximate the Chi-square statistic (`x`) for a given probability (`y`) and degrees of freedom (`m`). It includes logic to handle zero discontinuity in input probabilities and distinguishes between probabilities below and above 0.5.
+*   **Key Procedures:**
+    *   `Chi_Square`: The core procedure that performs the Chi-square cumulative distribution approximation.
+*   **Inputs:**
+    *   Probability (P(X), `y`).
+    *   Degrees of freedom (`m`, fixed at 100 in the sample run).
+*   **Outputs:**
+    *   Calculated Chi-square statistic (`X²`, `x`).
+*   **Notes:** The program provides sample values for comparison against reference "REAL X²" values. It is particularly optimized for cases with a large number of degrees of freedom (`m > 100`).
+
+## 4. Common Utility Subroutines
+
+Several programs within this library, particularly those dealing with matrix operations in least squares (e.g., `lstsqr.pas`, `mltnlreg.pas`, `regiter.pas`), share common utility subroutines. These are often inlined within each program for self-containment and ease of use, rather than being compiled as separate units. Understanding these common routines is crucial for comprehending the modular design of these least squares solvers.
+
+**Common Matrix Operations:**
+*   `Transpose`: Computes the transpose of a matrix (`A[i,j]` becomes `B[j,i]`).
+*   `Matmult`: Performs matrix multiplication of two matrices (`A` and `B`), storing the result in `C`.
+*   `Matinv`: Computes the inverse of a square matrix (`A`), storing the result in `B`. This is a critical step in many direct least squares solutions but also a significant source of round-off error.
+*   `A_IN_C`, `B_IN_A`, `C_IN_B`, `C_IN_A`: Utility procedures for copying matrix contents between internal `A`, `B`, and `C` arrays. These are used to manage data flow between chained matrix operations.
+
+**Common Regression-Specific Routines:**
+*   `Gene_Coeffs` (found in `lstsqr.pas`) or `Gene_Coeffs_SD` (found in `mltnlreg.pas` and `regiter.pas`): These routines are responsible for generating the design matrix (referred to as `Z` array in the source code). This matrix holds the polynomial terms (powers of X, or combinations of powers of multiple Xs for multidimensional regression) based on the input data and desired polynomial degrees. `Gene_Coeffs_SD` also typically calculates the standard deviation in conjunction with coefficient calculations.
+*   `LstSqrN`: This is the core least squares regression procedure in `lstsqr.pas`, `mltnlreg.pas`, and `regiter.pas`. It orchestrates the application of the common matrix operations (`Transpose`, `Matmult`, `Matinv`) to solve the normal equation $D = (X^t X)^{-1} X^t Y$ for the coefficient vector `D`.
+
+These routines are fundamental to the modular design of the least squares solvers, allowing for a clear separation of concerns in mathematical operations and facilitating code reuse (even if duplicated across files for some examples).
+
+## 5. Real-World Applications and Problem Solving Ideas
+
+The algorithms within the `lstsqr` module provide a powerful toolkit for data analysis and modeling across various scientific, engineering, and business domains. Here's a synthesis of their potential applications and how they can be used to solve real-world problems:
+
+*   **Data Fitting and Trend Analysis:**
+    *   **General Least Squares (`approx.pas`, `lstsqr2.pas`, `lstsqr.pas`):** Analyze sensor data (e.g., temperature over time, pressure vs. volume, light intensity vs. distance) to identify underlying linear, quadratic, or higher-order polynomial trends. This is crucial for forecasting, system calibration, or understanding physical phenomena. For example, fitting a polynomial to a set of experimental measurements (e.g., from a material stress-strain test) to derive an empirical formula or to smooth noisy time-series data.
+    *   **Financial Modeling:** Predict stock prices, commodity futures, or economic indicators by fitting historical data to polynomial trends (though caution is advised for long-term extrapolation due to market complexities). This can inform investment strategies or economic policy decisions.
+
+*   **Noise Reduction and Signal Processing:**
+    *   **Orthogonal Polynomials (`approx1.pas`, `lsqply.pas`):** Smooth noisy signals from high-precision instruments (e.g., spectrography, chromatography, medical imaging data like fMRI). By fitting the noisy data with a low-degree orthogonal polynomial, the noise can be effectively filtered out while preserving the underlying signal shape. This is particularly useful in situations where preserving numerical precision is paramount, such as in high-resolution scientific data or in preparing data for further machine learning analysis.
+
+*   **Complex System Modeling and Optimization:**
+    *   **Nth-Order and Multidimensional Least Squares (`lstsqr.pas`, `mltnlreg.pas`):** Model complex systems with multiple interacting variables. For instance, in chemical engineering, predict reaction yield based on temperature, pressure, and catalyst concentration (using a multidimensional polynomial to capture interactions). In materials science, model material properties (e.g., strength, conductivity, elasticity) as a function of multiple synthesis parameters (e.g., composition, heat treatment time, cooling rate). This is essential for response surface methodology, allowing engineers to find optimal operating conditions or material formulations.
+    *   **Environmental Modeling:** Predict pollutant dispersion or air quality index based on multiple factors like emission sources, wind speed/direction, and humidity.
+
+*   **Non-Linear System Parameter Estimation:**
+    *   **Parametric Least Squares (`parafit.pas`):** Fit experimental data to known non-linear theoretical models where coefficients appear non-linearly. Examples include:
+        *   **Pharmacokinetics:** Determine drug absorption/elimination rates by fitting blood concentration data to exponential decay models (e.g., first-order kinetics).
+        *   **Spectroscopy:** Fit absorption or emission spectra to Gaussian or Lorentzian peak functions to quantify components and their properties (e.g., concentration, peak position, width).
+        *   **Reliability Engineering:** Analyze failure rates of products by fitting data to Weibull distributions to predict product lifetime and understand failure modes (e.g., early failures vs. wear-out failures).
+        *   **Biological Growth Models:** Fit population growth data to logistic or exponential models to predict population size or resource consumption.
+
+*   **High-Precision Numerical Analysis:**
+    *   **Iterated Multidimensional Regression (`regiter.pas`):** When extreme accuracy is required in multi-dimensional curve fitting, such as in calibrating high-precision scientific instruments, complex sensor arrays, or in control systems where small errors can lead to significant deviations. For instance, precisely modeling trajectories in aerospace engineering simulations or calibrating advanced imaging systems. This method is critical when direct matrix inversion is too prone to numerical instability.
+
+*   **General Optimization and Model Calibration:**
+    *   **Simplex Method (`tsmplx.pas`):** This is a versatile tool for general non-linear optimization problems where an objective function needs to be minimized but its derivatives are not easily obtainable or are computationally expensive. Applications include:
+        *   **Calibrating complex simulation models:** Adjusting parameters in a large-scale simulation (e.g., climate models, fluid dynamics models) to make its output match real-world observations or empirical data.
+        *   **Image Processing:** Optimizing parameters for image filters, denoising algorithms, or segmentation algorithms where the objective function relates to image quality metrics.
+        *   **Robotics:** Tuning control parameters for robot movements to achieve desired performance (e.g., minimizing jerk or maximizing speed within constraints).
+        *   **Financial Portfolio Optimization:** Finding the optimal allocation of assets to minimize risk for a given return, where the objective function might be non-linear and complex, and traditional analytical solutions are not feasible.
+
+*   **Statistical Goodness-of-Fit Testing:**
+    *   **Chi-Square Statistic (`chisqa.pas`):** Assess how well a theoretical distribution or a fitted model matches observed frequency data. For example, testing if observed genetic ratios in an experiment are consistent with Mendelian inheritance, or evaluating if survey responses fit a hypothesized distribution. In regression, it can be used to test if the residuals from a fit are normally distributed or if they exhibit patterns that suggest a poor model choice.
+
+By understanding these techniques and their implementations, developers can leverage this library to tackle a wide array of data analysis and modeling challenges in various scientific and engineering disciplines.
+
+## 6. How to Use
+
+To utilize these programs, you typically compile and run the desired `.pas` file using a Free Pascal compiler. The programs are interactive and will prompt the user for necessary inputs such as the number of data points, degree of polynomial fit, and the actual data pairs (X, Y values).
+
+**General Steps for Program Usage**:
+1.  **Select Program**: Identify the `.pas` file corresponding to the desired least squares method or statistical analysis.
+2.  **Understand Inputs**: Review the "SAMPLE RUN" section within the `.pas` file itself (usually in the comments at the top) and its corresponding `.txt` explanation file for expected input formats (e.g., number of points, polynomial order, data pairs, initial guesses).
+3.  **Execute Program**: Run the compiled program from your terminal.
+4.  **Provide Data**: Input the requested data interactively via the console as prompted by the program.
+5.  **Interpret Output**: The program will output the calculated coefficients, standard deviation, and sometimes approximated function values or statistical results. Some programs also offer graphical output, which will be displayed in a separate window.
+
+**Example: Using `lstsqr2.pas` for linear regression:**
+Running `lstsqr2.pas` will prompt you as follows:
+```
+LEAST SQUARES CURVE FIT ROUTINE
+
+ This program calculates a linear or parabolic least
+ squares fit to a given data set.
+
+INSTRUCTIONS
+------------
+
+ The number of data coordinates provided must be greater
+ than three. Otherwise, a divide by zero error may result.
+
+ Order of fit (1 or 2): 1
+ Number of data points: 4
+
+ There are two input options:
+ 1. input coordinate pairs (Example;1,2.5)
+ 2. first input the independant variable values,
+    then input dependant ones.
+    Your choice (1 or 2): 1
+
+ 1  X  Y = 1 1
+ 2  X  Y = 2 2
+ 3  X  Y = 3 3
+ 4  X  Y = 5 5.01
+
+ Fitted equation is:
+   Y = -0.004571 + 1.002571 X
+
+ Standard deviation of fit: 0.002928
+
+ Do you want a chart (y/n): n
+```
+
+## 7. Contribution Guidelines
+
+Contributions aimed at improving the clarity, robustness, or extending the functionality of this library are welcome. When contributing:
+*   **Documentation Focus**: All new or modified code should be thoroughly documented, following the existing style of explanation files (`.txt`) and inline comments in `.pas` files.
+*   **Technical Language**: Maintain a technical and precise language, avoiding commercial jargon.
+*   **Focus on Existing Features**: Ensure documentation solely reflects currently implemented features. Avoid documenting future or "to-be-developed" functionalities.
+*   **Referenced Files/Functions**: Verify that all references to files, procedures, and functions within documentation accurately reflect their existence and naming in the codebase to prevent broken links or misleading information.
+*   **Educational Value**: Consider how contributions can help future developers understand the mathematical and computational aspects of the methods, fostering a deeper understanding.
+*   **Code Structure**: While some duplication of utility functions exists for demonstration purposes, consider proposing consolidation into shared units (e.g., Pascal `unit` files) for larger enhancements, if appropriate for Free Pascal.
+
+## 8. References
+
+The theoretical foundations and implementations within this `lstsqr` library are drawn from established numerical analysis and statistical texts.
+
+*   **[BIBLI 01]** Ruckdeschel, F. R. *BASIC Scientific Subroutines, Vol. II*. BYTE/McGRAW-HILL, 1981.
+*   **[BIBLI 04]** Nowakowski, Claude. *Méthodes de calcul numérique, Tome 2*. PSI Edition, 1984.
+*   **[BIBLI 18]** Dang Trong, Tuan. *Numath Library*. Fortran 77.
