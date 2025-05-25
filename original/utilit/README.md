@@ -1,5 +1,5 @@
 
-# jpmMath - Utilit
+# jpmMath - utilit - General Utilities for Graphics and Timing
 
 ## Table of Contents
 1.  [Overview of the `utilit` Folder](#1-overview-of-the-utilit-folder)
