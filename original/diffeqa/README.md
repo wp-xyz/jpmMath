@@ -1,5 +1,5 @@
 
-# jpmMath/diffeqa - Differential Equations Library
+# jpmMath/diffeqa - Differential Equations
 
 This directory contains a collection of Pascal units and programs for solving various types of differential equations, including Ordinary Differential Equations (ODEs) as Initial Value Problems (IVPs) and Boundary Value Problems (BVPs), as well as Partial Differential Equations (PDEs). The implementations cover a range of numerical methods, from classical approaches like Runge-Kutta and Adams-Bashforth to more advanced techniques like Gear's method for stiff systems and the Bulirsch-Stoer extrapolation method.
 
