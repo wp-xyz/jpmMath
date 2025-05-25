@@ -8,18 +8,9 @@
 
 The repository is organized into two main sections:
 
--   **`original/`** – An archive of Jean-Pierre Moreau’s original source code and documentation. This folder contains the original Turbo Pascal units and programs, organized by topic as they were on Moreau’s site. For example, you will find subfolders like `functions1`, `functions2`, `geometry`, `graphic`, `linearprog`, `lstsqr`, etc., containing the original `.pas` files, example programs (often prefixed with `t...` for “test”), and any accompanying notes (`.txt`) or PDFs describing the algorithms.
+-   **[`original/`](original/README.md)** – An archive of Jean-Pierre Moreau’s original source code and documentation. This folder contains the original Turbo Pascal units and programs, organized by topic as they were on Moreau’s site. For example, you will find subfolders like `functions1`, `functions2`, `geometry`, `graphic`, `linearprog`, `lstsqr`, etc., containing the original `.pas` files, example programs (often prefixed with `t...` for “test”), and any accompanying notes (`.txt`) or PDFs describing the algorithms.
     
--   **`fpc/`** – The modernized Free Pascal version of the library. Code here is updated to work with **Free Pascal** (FPC) and Lazarus. The structure under `fpc/` mirrors the categories of the original code, but with each routine or algorithm in its own module for clarity and reuse. Notable subdirectories include:
-    
-    -   **`fpc/function1/`** – Contains ports of routines from the original “functions1” collection. Each subfolder under `function1` corresponds to a specific algorithm or routine, with its source code and demos. _For example:_ the `akima/` subfolder implements the **Akima interpolation** algorithm.
-        
-    -   **`fpc/stat/`** – Contains statistical routines. For instance, there are modules for probability distributions (e.g. normal distribution in `stat/normal/` and Student’s t-distribution in `stat/student/`), each with their own test/demo programs.
-        
-    -   _(As the project evolves, other categories from the original codebase – such as geometry, linear programming, special functions, etc. – will be added under `fpc/` with a similar structure.)_
-        
-
-Each algorithm’s folder under `fpc/functions1/` (and other categories) typically includes: the Pascal **unit** implementing the routine, an **explanation document** (if available from Moreau’s originals), and one or more **demo programs** showing how to use the routine. Demo programs might be provided in two forms – a simple console application (CLI demo) and a Lazarus project with a GUI – to illustrate usage.
+-   **`fpc/`** – The modernized Free Pascal version of the library. Code here is updated to work with **Free Pascal** (FPC) and Lazarus. The structure under `fpc/` mirrors the categories of the original code, but with each routine or algorithm in its own module for clarity and reuse. Each algorithm’s folder under `fpc/functions1/` (and other categories) typically includes: the Pascal **unit** implementing the routine, an **explanation document** (if available from Moreau’s originals), and one or more **demo programs** showing how to use the routine. Demo programs might be provided in two forms – a simple console application (CLI demo) and a Lazarus project with a GUI – to illustrate usage.
 
 ## Modernizing the Legacy Code
 
