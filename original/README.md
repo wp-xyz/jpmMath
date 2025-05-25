@@ -111,7 +111,7 @@ This module houses a collection of foundational Pascal units designed to provide
 
 ## General Usage Notes
 
-*   **Programming Language**: All components of the `jpmMath` library are implemented in **Turbo Pascal** or **Borland Pascal for Windows**.
+*   **Programming Language**: All components of the `jpmMath` library are implemented in **Turbo Pascal** or **Borland Pascal for Windows**. (In an on-going activity, routines are being be ported to modern **Free Pascal** - see folder `fpc`).
 *   **Data Types**: The library primarily utilizes `DOUBLE` (aliased as `REAL_AR` in many units) for floating-point numbers to ensure high precision in numerical computations. Integers (`INTEGER`, `LONGINT`) are used for degrees, counts, and indices.
 *   **Input/Output**: Most programs interact with the user via the console for input and display results directly to the console. Some advanced modules, particularly those handling large datasets or providing graphical output, may read from structured text files (e.g., `.dat` files) and write comprehensive reports to output files (e.g., `.lst` or `.txt` files).
 *   **Global Variables**: Many procedures and functions within the library's units frequently use global variables for inputs, outputs, and internal state. When integrating these routines into larger applications, users should be aware of this scope and manage variable assignments carefully to avoid unintended side effects.
