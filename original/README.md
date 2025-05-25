@@ -4,6 +4,21 @@
 ## Introduction
 The `jpmMath` library is a robust and extensive collection of numerical and scientific computing routines implemented in Pascal. Designed for engineers, scientists, researchers, and students, this library provides a foundational toolkit for solving a wide array of mathematical, physics, and engineering problems. It emphasizes direct mathematical implementation, numerical accuracy, and modularity, making it an excellent resource for both practical applications and educational purposes in understanding classical algorithms.
 
+## License ##
+Jean-Pierre Moreau does not explicitely specify any conditions how his code can be used. After inquiry about this (https://www.lazarusforum.de/viewtopic.php?p=150255#p150255), his son responded in a mail:
+
+```
+Hello,
+
+My father, now very old, who created this website to capitalize and share his passion for
+developing numerical computing algorithms, would be very happy if his work could benefit other people.
+
+You can recover and reuse his work with great pleasure.
+
+Kind regards,
+François-Xavier Moreau
+```
+
 ## Core Principles and Philosophy
 
 The `jpmMath` library adheres to the following core principles:
@@ -92,11 +107,11 @@ This module offers a suite of Pascal programs for performing statistical computa
 
 ### [utilit - General Utilities for Graphics and Timing](utilit/README.md)
 
-This module houses a collection of foundational Free Pascal units designed to provide essential functionalities for graphical applications, time measurement, and screen interaction within a Windows environment. It includes units for CRT window management, 2D graphing, screen save/load utilities, timing, and printer interfacing.
+This module houses a collection of foundational Pascal units designed to provide essential functionalities for graphical applications, time measurement, and screen interaction within a Windows environment. It includes units for CRT window management, 2D graphing, screen save/load utilities, timing, and printer interfacing.
 
 ## General Usage Notes
 
-*   **Programming Language**: All components of the `jpmMath` library are implemented in **Pascal**.
+*   **Programming Language**: All components of the `jpmMath` library are implemented in **Turbo Pascal** or **Borland Pascal for Windows**.
 *   **Data Types**: The library primarily utilizes `DOUBLE` (aliased as `REAL_AR` in many units) for floating-point numbers to ensure high precision in numerical computations. Integers (`INTEGER`, `LONGINT`) are used for degrees, counts, and indices.
 *   **Input/Output**: Most programs interact with the user via the console for input and display results directly to the console. Some advanced modules, particularly those handling large datasets or providing graphical output, may read from structured text files (e.g., `.dat` files) and write comprehensive reports to output files (e.g., `.lst` or `.txt` files).
 *   **Global Variables**: Many procedures and functions within the library's units frequently use global variables for inputs, outputs, and internal state. When integrating these routines into larger applications, users should be aware of this scope and manage variable assignments carefully to avoid unintended side effects.
@@ -112,7 +127,7 @@ Contributions aimed at improving the clarity, robustness, or extending the funct
 *   **Focus on Existing Features**: Ensure documentation solely reflects currently implemented features. Avoid documenting future or "to-be-developed" functionalities.
 *   **Referenced Files/Functions**: Verify that all references to files, procedures, and functions within documentation accurately reflect their existence and naming in the codebase to prevent broken links or misleading information.
 *   **Educational Value**: Consider how contributions can help future developers understand the mathematical and computational aspects of the methods, fostering a deeper understanding.
-*   **Code Structure**: While some duplication of utility functions exists for demonstration purposes, consider proposing consolidation into shared units (e.g., Pascal `unit` files) for larger enhancements, if appropriate for Free Pascal.
+*   **Code Structure**: While some duplication of utility functions exists for demonstration purposes, consider proposing consolidation into shared units (e.g., Pascal `unit` files) for larger enhancements, if appropriate for Pascal.
 
 ## References
 
