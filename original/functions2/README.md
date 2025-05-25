@@ -1,0 +1,559 @@
+
+# jpmMath Library - Functions2
+
+This folder contains a collection of numerical computation programs implemented in Pascal, originally based on BASIC Scientific Subroutines by F.R. Ruckdeschel. These routines provide solutions for various mathematical problems, from special functions to optimization algorithms.
+
+The programs in this collection are designed for numerical analysis algorithms. They are useful for researchers, engineers, and students who need to perform accurate mathematical computations in applications such as physics, signal processing, optimization, and data analysis.
+
+## Table of Contents
+
+1.  [Mathematical Constants](#1-mathematical-constants)
+2.  [Special Functions](#2-special-functions)
+    *   [Bernoulli Numbers](#bernoulli-numbers)
+    *   [Euler Numbers](#euler-numbers)
+    *   [Airy Functions and their Derivatives](#airy-functions-and-their-derivatives)
+    *   [Zeros of Airy Functions](#zeros-of-airy-functions)
+    *   [Beta Function](#beta-function)
+    *   [Cosine and Sine Integrals](#cosine-and-sine-integrals)
+    *   [Mathieu Functions and Characteristic Values](#mathieu-functions-and-characteristic-values)
+    *   [Confluent Hypergeometric Function](#confluent-hypergeometric-function)
+    *   [Struve Functions (H Series)](#struve-functions-h-series)
+    *   [Modified Struve Functions (L Series)](#modified-struve-functions-l-series)
+    *   [Arcsine Recursion](#arcsine-recursion)
+    *   [Hyperbolic Functions](#hyperbolic-functions)
+    *   [Inverse Hyperbolic Functions](#inverse-hyperbolic-functions)
+    *   [Elliptic Integrals (Complete)](#elliptic-integrals-complete)
+3.  [Polynomials and Interpolation](#3-polynomials-and-interpolation)
+    *   [Hermite Coefficients](#hermite-coefficients)
+    *   [Lagrange Interpolation](#lagrange-interpolation)
+    *   [Laguerre Coefficients](#laguerre-coefficients)
+    *   [Legendre Polynomials (Coefficients and Evaluation)](#legendre-polynomials-coefficients-and-evaluation)
+    *   [Cubic Spline Interpolation](#cubic-spline-interpolation)
+4.  [Optimization Techniques](#4-optimization-techniques)
+    *   [Bracketing a Minimum (1D)](#bracketing-a-minimum-1d)
+    *   [Golden Section Search (1D)](#golden-section-search-1d)
+    *   [Brent's Method (1D)](#brents-method-1d)
+    *   [Multidimensional Minimization (Nelder-Mead Simplex)](#multidimensional-minimization-nelder-mead-simplex)
+    *   [Steepest Descent Optimization (Approximate Derivatives)](#steepest-descent-optimization-approximate-derivatives)
+    *   [Steepest Descent Optimization (Functional Derivatives)](#steepest-descent-optimization-functional-derivatives)
+
+---
+
+## 1. Mathematical Constants
+
+Several programs in this library may implicitly use `PI` and `E` (Euler's number, base of natural logarithm) as defined in standard Pascal libraries or internally within specific routines (e.g., in `hyper.pas` for exponential calculations). Users should be aware of these implicit constants.
+
+---
+
+## 2. Special Functions
+
+### Bernoulli Numbers
+
+*   **Purpose:** Computes Bernoulli numbers `B_n`.
+*   **Description:** Bernoulli numbers are a sequence of rational numbers that frequently appear in the Taylor series expansion of trigonometric and hyperbolic tangent functions, in the Euler-Maclaurin formula for approximating sums, and in expressions for the sum of powers of integers. This routine calculates `B_n`, noting that `B_1` is -0.5 and `B_n` for odd `n > 1` are 0.
+*   **Source File:** [`mbernoa.pas`](mbernoa.pas)
+*   **Subroutine:** `BERNOA(N: Integer; BN: pVEC)`
+    *   **Inputs:**
+        *   `N` (Integer): The maximum serial number (order) up to which Bernoulli numbers are to be computed.
+    *   **Outputs:**
+        *   `BN` (`pVEC` - pointer to an array of Doubles): An array where `BN^[k]` stores the k-th Bernoulli number, for `k` from 0 to `N`.
+*   **Real-world Problem Solving Ideas:**
+    *   **Numerical Analysis:** Utilize in the Euler-Maclaurin formula to improve the accuracy of numerical integration or summation of infinite series.
+    *   **Number Theory:** Explore connections to the Riemann zeta function for even integer values.
+
+### Euler Numbers
+
+*   **Purpose:** Computes Euler numbers `E_n`.
+*   **Description:** Euler numbers are a sequence of integers that appear in the Taylor series expansion of the secant and hyperbolic secant functions. By definition, `E_n` is zero for all odd `n`.
+*   **Source File:** [`meulera.pas`](meulera.pas)
+*   **Subroutine:** `EULERA(N: Integer; EN: pVEC)`
+    *   **Inputs:**
+        *   `N` (Integer): The maximum serial number (order) up to which Euler numbers are to be computed.
+    *   **Outputs:**
+        *   `EN` (`pVEC` - pointer to an array of Doubles): An array where `EN^[k]` stores the k-th Euler number, for `k` from 0 to `N`.
+*   **Real-world Problem Solving Ideas:**
+    *   **Combinatorics:** Apply in counting alternating permutations.
+    *   **Analysis of Series:** Use in the Taylor series expansions of functions like `sec(x)` and `sech(x)`.
+
+### Airy Functions and their Derivatives
+
+*   **Purpose:** Computes Airy functions `Ai(x)` and `Bi(x)`, and their first derivatives `Ai'(x)` and `Bi'(x)`.
+*   **Description:** Airy functions are fundamental solutions to Airy's differential equation (`y'' - xy = 0`). They are crucial in physical phenomena near caustics or boundaries, such as light diffraction, quantum tunneling, and wave propagation in inhomogeneous media. The implementation dynamically switches between series and asymptotic expansions based on the argument `X` for optimal numerical stability and accuracy. It leverages internal Bessel function computations.
+*   **Source File:** [`mairya.pas`](mairya.pas)
+*   **Subroutine:** `AIRYA(X: Double; Var AI, BI, AD, BD: Double)`
+    *   **Inputs:**
+        *   `X` (Double): The argument for which the Airy functions and their derivatives are to be computed.
+    *   **Outputs:**
+        *   `AI` (Double): The computed value of `Ai(X)`.
+        *   `BI` (Double): The computed value of `Bi(X)`.
+        *   `AD` (Double): The computed value of `Ai'(X)`.
+        *   `BD` (Double): The computed value of `Bi'(X)`.
+*   **Real-world Problem Solving Ideas:**
+    *   **Optics:** Describe the intensity distribution and diffraction patterns near the caustic of a rainbow or in other optical systems.
+    *   **Quantum Mechanics:** Approximate solutions to the Schrödinger equation for particles in a triangular potential well or in the WKB approximation near turning points.
+    *   **Wave Propagation:** Analyze wave phenomena in media with a linear refractive index gradient.
+
+### Zeros of Airy Functions
+
+*   **Purpose:** Computes the first `NT` zeros of Airy functions `Ai(x)` and `Ai'(x)`, and `Bi(x)` and `Bi'(x)`, along with associated function values.
+*   **Description:** Finding the zeros of Airy functions is essential for boundary value problems where these functions arise, such as determining allowed energy levels in quantum wells. This routine employs an iterative root-finding method (e.g., Newton-Raphson or secant method) initialized with known approximations, and relies on the `AIRYB` (a variant of `AIRYA`) for function evaluations.
+*   **Source File:** [`mairyzo.pas`](mairyzo.pas)
+*   **Subroutine:** `AIRYZO(NT, KF: integer; Var XA, XB, XC, XD: VEC)`
+    *   **Inputs:**
+        *   `NT` (Integer): The total number of zeros to compute.
+        *   `KF` (Integer): A function code:
+            *   `1`: for computing zeros of `Ai(x)` and `Ai'(x)`.
+            *   `2`: for computing zeros of `Bi(x)` and `Bi'(x)`.
+    *   **Outputs:** (all `VEC` - pointers to arrays of Doubles)
+        *   `XA`: `a`, the m-th zero of `Ai(x)` (if `KF=1`) or `b`, the m-th zero of `Bi(x)` (if `KF=2`).
+        *   `XB`: `a'`, the m-th zero of `Ai'(x)` (if `KF=1`) or `b'`, the m-th zero of `Bi'(x)` (if `KF=2`).
+        *   `XC`: `Ai(a')` (if `KF=1`) or `Bi(b')` (if `KF=2`).
+        *   `XD`: `Ai'(a)` (if `KF=1`) or `Bi'(b)` (if `KF=2`).
+*   **Real-world Problem Solving Ideas:**
+    *   **Physics Simulations:** Determine quantized energy levels in models where the potential leads to Airy functions.
+    *   **Resonance Phenomena:** Identify resonance frequencies or critical parameters in systems whose behavior is described by Airy functions.
+
+### Beta Function
+
+*   **Purpose:** Computes the Beta function `B(p,q)`.
+*   **Description:** The Beta function is a symmetric special function closely related to the Gamma function, defined as `B(p,q) = Γ(p)Γ(q) / Γ(p+q)`. It is widely used in probability theory and the evaluation of definite integrals. This implementation relies on the `GAMMA` function (also provided in `mbeta.pas`) for its computation.
+*   **Source File:** [`mbeta.pas`](mbeta.pas)
+*   **Function:** `BETA(P, Q: Double): Double`
+    *   **Inputs:**
+        *   `P` (Double): Parameter `p` (`p > 0`).
+        *   `Q` (Double): Parameter `q` (`q > 0`).
+    *   **Outputs:**
+        *   (Double): The computed value of `B(p,q)`.
+*   **Real-world Problem Solving Ideas:**
+    *   **Probability and Statistics:** Directly compute values for the probability density function of the Beta distribution, used for modeling probabilities or proportions (e.g., the probability of success in a series of Bernoulli trials).
+    *   **Integral Calculus:** Simplify and evaluate complex definite integrals that can be expressed in terms of the Beta function.
+
+### Cosine and Sine Integrals
+
+*   **Purpose:** Computes the Cosine Integral `Ci(x)` and Sine Integral `Si(x)`.
+*   **Description:** The Cosine and Sine Integrals are special functions important in various fields, including signal processing, optics, and electromagnetism. They are defined as `Ci(x) = γ + ln(x) + integral from 0 to x of (cos(t)-1)/t dt` and `Si(x) = integral from 0 to x of sin(t)/t dt`. This routine uses different series or asymptotic expansions based on the argument `X` for numerical accuracy and stability.
+*   **Source File:** [`mcisia.pas`](mcisia.pas)
+*   **Subroutine:** `CISIA(X: Double; Var CI, SI: Double)`
+    *   **Inputs:**
+        *   `X` (Double): The argument for which the integrals are to be computed (`X >= 0`).
+    *   **Outputs:**
+        *   `CI` (Double): The computed value of `Ci(X)`. Note: `Ci(x)` approaches negative infinity as `x` approaches 0.
+        *   `SI` (Double): The computed value of `Si(X)`.
+*   **Real-world Problem Solving Ideas:**
+    *   **Electromagnetism:** Analyze radiation patterns from antennas or solve problems involving wave diffraction.
+    *   **Signal Processing:** Evaluate the step response of an ideal low-pass filter or in Fourier analysis.
+    *   **Optics:** Describe diffraction phenomena, such as those related to Fresnel integrals.
+
+### Mathieu Functions and Characteristic Values
+
+*   **Purpose:** Calculates Mathieu functions `cem(x,q)`, `sem(x,q)` and their first derivatives, and computes their characteristic values.
+*   **Description:** Mathieu functions are solutions to Mathieu's differential equation, which describes wave phenomena in systems with elliptical boundaries or the stability of systems under periodic forces. This library provides routines for both direct function evaluation and for the computation of their characteristic values, which are eigenvalues of the Mathieu equation.
+*   **Source Files:** [`mmtu0.pas`](mmtu0.pas), [`mcva1.pas`](mcva1.pas)
+*   **Main Functions/Procedures:**
+    *   `MTU0(KF, M: Integer; Q, X: Double; Var CSF, CSD: Double)` (in `mmtu0.pas`)
+        *   **Purpose:** Computes Mathieu functions and their derivatives for a given order `M` and parameter `Q` at argument `X`.
+        *   **Inputs:**
+            *   `KF` (Integer): Function code (`1` for `cem(x,q)`, `2` for `sem(x,q)`).
+            *   `M` (Integer): Order of the Mathieu function.
+            *   `Q` (Double): Parameter of the Mathieu function.
+            *   `X` (Double): Argument of the Mathieu function (in degrees).
+        *   **Outputs:**
+            *   `CSF` (Double): The computed Mathieu function value (`cem(x,q)` or `sem(x,q)`).
+            *   `CSD` (Double): The computed derivative value (`cem'(x,q)` or `sem'(x,q)`).
+    *   `CVA1(KD, M: Integer; Q: Double; CV: pVEC)` (in `mcva1.pas`)
+        *   **Purpose:** Computes a sequence of characteristic values of Mathieu functions.
+        *   **Inputs:**
+            *   `KD` (Integer): Case code (`1` for `cem` even order, `2` for `cem` odd order, `3` for `sem` odd order, `4` for `sem` even order).
+            *   `M` (Integer): Maximum order of Mathieu functions for which to compute characteristic values.
+            *   `Q` (Double): Parameter of the Mathieu function.
+        *   **Outputs:**
+            *   `CV` (`pVEC` - pointer to an array of Doubles): An array where the characteristic values are stored. The indexing of this array corresponds to the sequence of characteristic values for the specified `KD` case.
+*   **Real-world Problem Solving Ideas:**
+    *   **Wave Propagation:** Model wave phenomena in elliptical waveguides, resonant cavities, or optical fibers with elliptical cores.
+    *   **Vibrational Analysis:** Analyze the stability of periodically driven systems, such as an inverted pendulum, or vibrations in elliptical membranes.
+    *   **Quantum Mechanics:** Solve Schrödinger's equation in potentials with elliptical symmetry.
+
+### Confluent Hypergeometric Function
+
+*   **Purpose:** Computes the confluent hypergeometric function `M(a,b,x)`.
+*   **Description:** Also known as Kummer's function (`_1F_1(a;b;x)`), this is a significant special function that serves as a generalization of many other elementary and special functions (e.g., Bessel functions, error functions, incomplete Gamma functions, Laguerre and Hermite polynomials). It is a solution to Kummer's differential equation. The implementation uses different approaches (series expansions, asymptotic expansions) depending on the input parameters for optimal accuracy, relying on the `GAMMA` procedure internally.
+*   **Source File:** [`mchgm.pas`](mchgm.pas)
+*   **Subroutine:** `CHGM(A, B, X: Double; Var HG: Double)`
+    *   **Inputs:**
+        *   `A` (Double): Parameter `a`.
+        *   `B` (Double): Parameter `b`. **Precautions:** `b` must not be a non-positive integer (0, -1, -2, ...), as the function is undefined in these cases.
+        *   `X` (Double): Argument `x`.
+    *   **Outputs:**
+        *   `HG` (Double): The computed value of `M(a,b,x)`.
+*   **Real-world Problem Solving Ideas:**
+    *   **Mathematical Physics:** Express and analyze a wide range of other special functions, simplifying complex mathematical derivations.
+    *   **Quantum Mechanics:** Solve Schrödinger's equation for certain potentials, such as those arising in atomic physics models (e.g., hydrogen atom).
+    *   **Differential Equations:** Provide solutions to second-order linear differential equations that transform into Kummer's equation.
+
+### Struve Functions (H Series)
+
+*   **Purpose:** Computes Struve functions `H_0(x)`, `H_1(x)`, and `H_v(x)` for arbitrary order `v`.
+*   **Description:** Struve functions are a class of special functions closely related to Bessel functions, arising as solutions to non-homogeneous Bessel-like differential equations. They appear in problems involving wave propagation, diffraction, and certain types of integrals. The implementations use series expansions for small `X` and asymptotic expansions for large `X` to ensure accuracy. `STVHV` relies on the `GAMMA` function.
+*   **Source Files:** [`mstvh0.pas`](mstvh0.pas), [`mstvh1.pas`](mstvh1.pas), [`mstvhv.pas`](mstvhv.pas)
+*   **Main Functions/Procedures:**
+    *   `STVH0(X: Double; Var SH0: Double)` (in `mstvh0.pas`)
+        *   **Purpose:** Computes Struve function `H_0(x)`.
+        *   **Inputs:** `X` (Double): Argument (`X >= 0`).
+        *   **Outputs:** `SH0` (Double): Value of `H_0(X)`.
+    *   `STVH1(X: Double; Var SH1: Double)` (in `mstvh1.pas`)
+        *   **Purpose:** Computes Struve function `H_1(x)`.
+        *   **Inputs:** `X` (Double): Argument (`X >= 0`).
+        *   **Outputs:** `SH1` (Double): Value of `H_1(X)`.
+    *   `STVHV(V: Double; X: Double; Var HV: Double)` (in `mstvhv.pas`)
+        *   **Purpose:** Computes Struve function `H_v(x)` for an arbitrary order `v`.
+        *   **Inputs:**
+            *   `V` (Double): Order (`-8.0 <= V <= 12.5`).
+            *   `X` (Double): Argument (`X > 0`).
+        *   **Outputs:** `HV` (Double): Value of `H_v(X)`.
+        *   **Precautions:** Be mindful of the `V` and `X` ranges to ensure accurate computation and avoid numerical instability, especially near `X=0` for negative `V`.
+*   **Real-world Problem Solving Ideas:**
+    *   **Wave Phenomena:** Analyze acoustic or electromagnetic wave propagation in specific media.
+    *   **Fluid Dynamics:** Solve problems involving oscillating bodies in fluids.
+    *   **Heat Transfer:** Model certain heat conduction problems.
+
+### Modified Struve Functions (L Series)
+
+*   **Purpose:** Computes modified Struve functions `L_0(x)`, `L_1(x)`, and `L_v(x)` for arbitrary order `v`.
+*   **Description:** Modified Struve functions are variants of the Struve functions, typically arising when the argument becomes imaginary. They are solutions to modified non-homogeneous Bessel-like differential equations and find applications in similar areas, often for problems involving exponential decay or growth. The implementations use series expansions for small `X` and asymptotic expansions for large `X`, relying on the `GAMMA` function where applicable.
+*   **Source Files:** [`mstvl0.pas`](mstvl0.pas), [`mstvl1.pas`](mstvl1.pas), [`mstvlv.pas`](mstvlv.pas)
+*   **Main Functions/Procedures:**
+    *   `STVL0(X: Double; Var SL0: Double)` (in `mstvl0.pas`)
+        *   **Purpose:** Computes modified Struve function `L_0(x)`.
+        *   **Inputs:** `X` (Double): Argument (`X >= 0`).
+        *   **Outputs:** `SL0` (Double): Value of `L_0(X)`.
+    *   `STVL1(X: Double; Var SL1: Double)` (in `mstvl1.pas`)
+        *   **Purpose:** Computes modified Struve function `L_1(x)`.
+        *   **Inputs:** `X` (Double): Argument (`X >= 0`).
+        *   **Outputs:** `SL1` (Double): Value of `L_1(X)`.
+    *   `STVLV(V, X: Double; Var SLV: Double)` (in `mstvlv.pas`)
+        *   **Purpose:** Computes modified Struve function `L_v(x)` for an arbitrary order `v`.
+        *   **Inputs:**
+            *   `V` (Double): Order (`|V| <= 20`).
+            *   `X` (Double): Argument (`X >= 0`).
+        *   **Outputs:** `SLV` (Double): Value of `L_v(X)`.
+        *   **Precautions:** Be mindful of the `V` and `X` ranges to ensure accurate computation and avoid numerical instability, especially near `X=0` for negative `V`.
+*   **Real-world Problem Solving Ideas:**
+    *   **Engineering:** Analyze transient responses in electrical circuits or mechanical systems where solutions involve modified Bessel functions.
+    *   **Applied Mathematics:** Solve diffusion equations with cylindrical or spherical symmetry.
+
+### Arcsine Recursion
+
+*   **Purpose:** Computes the arcsine (`arcsin`) of a value using a recursive algorithm.
+*   **Description:** This program demonstrates an iterative recursion procedure to approximate the arcsine of a given number. It provides an alternative numerical approach to calculating inverse trigonometric functions, useful for understanding the underlying algorithms or when high-precision is desired beyond standard library functions.
+*   **Source File:** [`arcsin.pas`](arcsin.pas)
+*   **Procedure:** `Arcsin` (implemented as a procedure within the main program)
+    *   **Inputs:** (Note: In the provided `arcsin.pas` sample, `x` and `e` are global variables set in the main program before calling `Arcsin`.)
+        *   `x` (Double): The input value for arcsine (`-1 < x < 1`).
+        *   `e` (Double): The convergence criterion, controlling the accuracy of the result.
+    *   **Outputs:**
+        *   `y` (Double): The computed value of `arcsin(x)`.
+        *   `m` (Integer): The number of steps (iterations) performed to reach convergence.
+    *   **Precautions:** The input `x` must be within the valid domain `(-1, 1)`. The algorithm handles boundary cases `x = +/- 1` separately.
+*   **Real-world Problem Solving Ideas:**
+    *   **Numerical Libraries:** Can serve as a building block or a reference implementation for numerical computation libraries, especially in environments where highly optimized native inverse trigonometric functions are not available.
+    *   **Algorithm Education:** Illustrate iterative numerical methods for function approximation and the concepts of convergence.
+
+### Hyperbolic Functions
+
+*   **Purpose:** Computes the hyperbolic sine (`sinh`), cosine (`cosh`), and tangent (`tanh`) functions.
+*   **Description:** Hyperbolic functions are analogous to trigonometric functions but are defined in terms of the hyperbola. They are fundamental in various areas of physics and engineering, such as modeling hanging cables (catenaries), relativistic kinematics, and transmission line analysis. The implementation uses the exponential definitions for `cosh(x)` and `tanh(x) = sinh(x) / cosh(x)`, with a Maclaurin series approximation for `sinh(x)` near zero to avoid round-off errors. An internal CORDIC-like `XExp` function is used for exponential calculations.
+*   **Source File:** [`hyper.pas`](hyper.pas)
+*   **Explanation File:** [`hyper.txt`](hyper.txt)
+*   **Main Functions:**
+    *   `SinH(X: Double): Double`
+    *   `CosH(X: Double): Double`
+    *   `TanH(X: Double): Double`
+    *   **Inputs:**
+        *   `X` (Double): The argument for which the hyperbolic function is to be computed.
+    *   **Outputs:**
+        *   (Double): The computed value of the respective hyperbolic function.
+*   **Real-world Problem Solving Ideas:**
+    *   **Structural Engineering:** Model the shape of hanging cables (catenary curves) in bridges, power lines, or architectural structures.
+    *   **Electrical Engineering:** Analyze voltage and current distribution along transmission lines.
+    *   **Relativity:** Express spacetime intervals and Lorentz transformations in special relativity.
+    *   **Neural Networks:** `tanh(x)` is a common activation function due to its squashing properties.
+
+### Inverse Hyperbolic Functions
+
+*   **Purpose:** Computes the inverse hyperbolic sine (`arcsinh`), cosine (`arccosh`), and tangent (`arctanh`) functions.
+*   **Description:** These functions are the inverses of the hyperbolic functions and are used in solving certain differential equations, and in various fields including physics and engineering. The implementation uses logarithmic relations, with specific handling for potential round-off errors and argument range restrictions. An internal CORDIC-based `XLn` function is used for natural logarithm calculations.
+*   **Source File:** [`invhyper.pas`](invhyper.pas)
+*   **Explanation File:** [`invhyper.txt`](invhyper.txt)
+*   **Main Functions:**
+    *   `ArcSinH(X: Double): Double`
+    *   `ArcCosH(X: Double): Double`
+    *   `ArcTanH(X: Double): Double`
+    *   **Inputs:**
+        *   `X` (Double): The argument for which the inverse hyperbolic function is to be computed.
+        *   **Precautions:**
+            *   `ArcCosH` requires `X >= 1.0`. Inputs outside this range will return 0.0 or an incorrect value.
+            *   `ArcTanH` requires `|X| < 1.0`. Values at or outside this range (especially `X` near `+/- 1.0`) may result in large values (`+/- 1E18`) or incorrect results due to division by zero or large argument to `ln`.
+    *   **Outputs:**
+        *   (Double): The computed value of the respective inverse hyperbolic function.
+*   **Real-world Problem Solving Ideas:**
+    *   **Differential Equations:** Solve linear differential equations where the characteristic equation leads to inverse hyperbolic functions.
+    *   **Geometry:** Calculate distances and angles in hyperbolic geometry.
+    *   **Engineering Analysis:** Solve various physical systems where these functions naturally arise, such as certain types of filters or wave propagation in specific media.
+
+### Elliptic Integrals (Complete)
+
+*   **Purpose:** Evaluates complete elliptic integrals of the first kind `K(k)` and second kind `E(k)`.
+*   **Description:** Elliptic integrals are a class of non-elementary integrals that frequently appear in physics and engineering problems, such as calculating the period of a large-amplitude pendulum or the circumference of an ellipse. This implementation uses Gauss's formula for the arithmetico-geometrical mean (AGM) and an associated series for `E(k)`. The recursive procedure converges rapidly to the desired accuracy.
+*   **Source File:** [`cliptic.pas`](cliptic.pas)
+*   **Explanation File:** [`cliptic.txt`](cliptic.txt)
+*   **Procedure:** `CElliptic` (procedure within the main program)
+    *   **Inputs:** (Note: In the provided `cliptic.pas` sample, `xk` and `e` are global variables set in the main program.)
+        *   `xk` (Double): The parameter `k` (`0 <= k <= 1`).
+        *   `e` (Double): The convergence accuracy criterion.
+    *   **Outputs:**
+        *   `e1` (Double): The computed value of `K(k)`.
+        *   `e2` (Double): The computed value of `E(k)`.
+        *   `n` (Integer): The number of steps (iterations) performed for convergence.
+    *   **Precautions:** The input parameter `xk` must be within the range `[0, 1]`. For `xk=1`, `K(k)` approaches infinity.
+*   **Real-world Problem Solving Ideas:**
+    *   **Physics:** Accurately calculate the period of a non-ideal pendulum (for large amplitude swings), which deviates significantly from the small-angle approximation.
+    *   **Engineering:** Determine the exact circumference of an ellipse (e.g., for gear design or architectural structures).
+    *   **Gravitation:** Calculate gravitational potentials for non-spherical mass distributions.
+
+---
+
+## 3. Polynomials and Interpolation
+
+### Hermite Coefficients
+
+*   **Purpose:** Computes the coefficients of Hermite polynomials `H_n(x)`.
+*   **Description:** Hermite polynomials are a sequence of orthogonal polynomials defined over the entire real line `(-∞, +∞)` with respect to a Gaussian weight function `e^(-x^2)`. They are crucial in quantum mechanics (as eigenfunctions of the quantum harmonic oscillator), probability theory, and numerical analysis. The routine uses the recursion relation `H_{n+1}(x) = 2x H_n(x) - 2n H_{n-1}(x)` with initial conditions `H_0(x) = 1` and `H_1(x) = 2x`.
+*   **Source File:** [`hermite.pas`](hermite.pas)
+*   **Procedure:** `Hermite_Coeff` (procedure within the main program)
+    *   **Inputs:**
+        *   `n` (Integer): The order of the Hermite polynomial to compute coefficients for.
+    *   **Outputs:**
+        *   `A` (Array of Double, e.g., `Array[0..10]`): An array where `A[k]` stores the k-th coefficient (by increasing power of x) of the Hermite polynomial of order `n`.
+*   **Real-world Problem Solving Ideas:**
+    *   **Quantum Harmonic Oscillator:** Derive the wavefunctions of the quantum harmonic oscillator, which is a fundamental model in physics.
+    *   **Probability Theory:** Construct Hermite series expansions of probability density functions, especially those related to the normal distribution.
+    *   **Numerical Integration:** Construct Gaussian quadrature rules with Hermite polynomials.
+
+### Lagrange Interpolation
+
+*   **Purpose:** Performs Lagrange interpolation of a discrete function `F(X)`, given by `N+1` points `(X(I), Y(I))`.
+*   **Description:** Lagrange interpolation constructs a unique polynomial that passes precisely through a given set of `N+1` distinct data points. This method is valuable for approximating functions when only discrete data points are available, and it can handle unequally spaced independent variables.
+*   **Source File:** [`lagrange.pas`](lagrange.pas)
+*   **Explanation File:** [`lagrange.txt`](lagrange.txt)
+*   **Procedure:** `Interpol_Lagrange` (procedure within the main program)
+    *   **Inputs:** (Note: In `lagrange.pas` sample, `iv`, `X`, `Y`, `xx`, `n` are global variables.)
+        *   `iv` (Integer): Total number of table values (points available).
+        *   `X` (Array of Double, e.g., `Array[0..14]`): Array of independent variable values. **Precautions:** Must be in ascending order and no two `X(I)` values should be equal.
+        *   `Y` (Array of Double, e.g., `Array[0..14]`): Array of dependent variable values corresponding to `X`.
+        *   `xx` (Double): The point at which to interpolate the function value.
+        *   `n` (Integer): The degree of the interpolation polynomial (i.e., `n+1` table values are used for the fit).
+    *   **Outputs:**
+        *   `yy` (Double): The interpolated value at `xx`.
+        *   `n` (Integer): An error check flag. If set to 0, an error occurred (e.g., interpolation point `xx` was out of the allowed range `X(1) <= xx <= X(iv-n)` or insufficient table values were provided).
+*   **Real-world Problem Solving Ideas:**
+    *   **Data Reconstruction:** Fill in missing data points in experimental measurements or sensor readings.
+    *   **Computer Graphics:** Create smooth curves for fonts, animations, or CAD/CAM applications from a set of control points.
+    *   **Numerical Methods:** Derive numerical integration or differentiation formulas by approximating the function with an interpolating polynomial.
+
+### Laguerre Coefficients
+
+*   **Purpose:** Computes the coefficients of Laguerre polynomials `L_n(x)`.
+*   **Description:** Laguerre polynomials are a sequence of orthogonal polynomials defined over the interval `[0, +∞)` with respect to an exponential weight function `e^(-x)`. They are fundamental in quantum mechanics (e.g., for the radial part of the solution to the hydrogen atom) and in various areas of applied mathematics. The routine uses the recursion relation `(n + 1) L_{n+1}(x) = (2n + 1 - x) L_n(x) - n L_{n-1}(x)` with initial conditions `L_0(x) = 1` and `L_1(x) = 1 - x`.
+*   **Source File:** [`laguerre.pas`](laguerre.pas)
+*   **Procedure:** `Laguerre_Coeff` (procedure within the main program)
+    *   **Inputs:**
+        *   `n` (Integer): The order of the Laguerre polynomial to compute coefficients for.
+    *   **Outputs:**
+        *   `A` (Array of Double, e.g., `Array[0..10]`): An array where `A[k]` stores the k-th coefficient (by increasing power of x) of the Laguerre polynomial of order `n`.
+*   **Real-world Problem Solving Ideas:**
+    *   **Hydrogen Atom:** Calculate the radial wavefunctions and probability distributions for the electron in a hydrogen atom.
+    *   **Queueing Theory:** Analyze stochastic processes and systems where events occur randomly over time, such as customer service lines or network traffic.
+    *   **Numerical Integration:** Construct Gaussian quadrature rules that are particularly effective for integrals with an exponential weight function.
+
+### Legendre Polynomials (Coefficients and Evaluation)
+
+*   **Purpose:** Computes the coefficients of Legendre polynomials `P_n(x)` and evaluates `P_n(x)` for a given argument `x`.
+*   **Description:** Legendre polynomials are a sequence of orthogonal polynomials defined over the interval `[-1, 1]`. They are widely used in physics (e.g., solving Laplace's equation in spherical coordinates for electrostatics or gravitation), approximation theory, and numerical integration. The coefficient computation uses a recursion relation, and the evaluation uses Horner's Rule for efficiency.
+*   **Source Files:** [`legendre.pas`](legendre.pas), [`eval_leg.pas`](eval_leg.pas)
+*   **Main Functions/Procedures:**
+    *   `Legendre_Coeff` (Procedure in both `legendre.pas` and `eval_leg.pas`)
+        *   **Purpose:** Computes the coefficients of the Legendre polynomial of order `n`.
+        *   **Inputs:**
+            *   `n` (Integer): The order of the Legendre polynomial.
+        *   **Outputs:**
+            *   `A` (Array of Double, e.g., `Array[0..10]` or `Array[0..NMAX]`): An array where `A[k]` stores the k-th coefficient (by increasing power of x) of the Legendre polynomial of order `n`.
+    *   `Eval(x: Double): Double` (Function in `eval_leg.pas`)
+        *   **Purpose:** Evaluates a Legendre polynomial of order `n` at a specific argument `x`.
+        *   **Inputs:** (Note: `n` is a global variable in `eval_leg.pas`, `A` is populated by `Legendre_Coeff`.)
+            *   `x` (Double): The argument at which to evaluate the polynomial.
+        *   **Outputs:**
+            *   (Double): The computed value of `P_n(x)`.
+*   **Real-world Problem Solving Ideas:**
+    *   **Physics Simulations:** Calculate electric or gravitational potential fields outside a charge/mass distribution, especially for non-spherical sources, using multipole expansions.
+    *   **Approximation Theory:** Use as basis functions to approximate complex functions, particularly over a finite interval, for tasks like data fitting or signal representation.
+    *   **Numerical Integration:** Develop Gaussian quadrature rules, which are highly efficient for integrating polynomials.
+
+### Cubic Spline Interpolation
+
+*   **Purpose:** Performs cubic spline interpolation of a discrete function `F(X)`, given by `N` points `(X(I), Y(I))`.
+*   **Description:** Cubic spline interpolation constructs a piecewise cubic polynomial that smoothly passes through a set of given data points. Unlike a single high-degree polynomial, it ensures continuity of the first and second derivatives at the data points (knots), resulting in a visually smoother and numerically more stable interpolation, especially for larger datasets. The process involves two main steps: calculating the coefficients of each cubic segment and then evaluating the spline at desired points.
+*   **Source File:** [`tseval.pas`](tseval.pas)
+*   **Main Functions/Procedures:**
+    *   `SPLINE(N: Integer; X, Y: pVEC; Var B, C, D: pVEC)` (Procedure within `tseval.pas`)
+        *   **Purpose:** Calculates the coefficients (B, C, D) for the cubic spline segments based on the given data points. This procedure must be called *before* `SEVAL` to compute the necessary coefficients.
+        *   **Inputs:**
+            *   `N` (Integer): The number of given data points (`N >= 2`). For a true cubic spline, `N >= 3`.
+            *   `X` (`pVEC` - pointer to an array of Doubles): X-coordinates of the data points.
+            *   `Y` (`pVEC` - pointer to an array of Doubles): Y-coordinates of the data points.
+        *   **Outputs:**
+            *   `B`, `C`, `D` (`pVEC` - pointers to arrays of Doubles): Arrays storing the computed coefficients for each cubic spline segment.
+    *   `SEVAL(N: Integer; U: Double; X, Y, B, C, D: pVEC): Double` (Function within `tseval.pas`)
+        *   **Purpose:** Evaluates the cubic spline at a given abscissa `U`, using the coefficients previously computed by the `SPLINE` subroutine.
+        *   **Inputs:**
+            *   `N` (Integer): Number of points of the curve used for spline generation.
+            *   `U` (Double): The abscissa of the point to be interpolated.
+            *   `X`, `Y` (`pVEC`): Pointers to the X and Y coordinates of the original data points.
+            *   `B`, `C`, `D` (`pVEC`): Pointers to the cubic spline coefficients obtained from `SPLINE`.
+        *   **Outputs:**
+            *   (Double): The interpolated value of the function at `U`.
+*   **Real-world Problem Solving Ideas:**
+    *   **Computer-Aided Design (CAD) and Computer Graphics:** Create smooth and aesthetically pleasing curves for product design (e.g., car bodies, aircraft wings), font rendering, and animation paths.
+    *   **Data Smoothing and Visualization:** Generate smooth curves from discrete or noisy experimental data for better understanding and presentation.
+    *   **Numerical Integration and Differentiation:** Provide a smoothly interpolating function that can be more accurately integrated or differentiated numerically than piecewise linear approximations.
+
+---
+
+## 4. Optimization Techniques
+
+### Bracketing a Minimum (1D)
+
+*   **Purpose:** Finds three points `(AX, BX, CX)` for a real function `F(X)` such that `F(BX)` is less than both `F(AX)` and `F(CX)`, thereby reliably bracketing a minimum.
+*   **Description:** This routine serves as a crucial preparatory step for most one-dimensional minimization algorithms. Given two distinct initial points, it intelligently expands the search interval in a downhill direction until a local minimum is guaranteed to be contained within the interval `(AX, CX)`. It employs a combination of golden ratio steps and parabolic interpolation for efficient bracketing.
+*   **Source File:** [`mnbrak.pas`](mnbrak.pas)
+*   **Procedure:** `MNBRAK(AX, BX: Double; Var CX, FA, FB, FC: Double)`
+    *   **Inputs:**
+        *   `AX`, `BX` (Double): Two distinct initial points for the search.
+        *   `FUNC` (Function): The user-defined function `F(X)` for which the minimum is sought (passed implicitly as a global function in the example program).
+    *   **Outputs:**
+        *   `AX`, `BX`, `CX` (Double): The three points that bracket a minimum. After execution, `BX` will be between `AX` and `CX`, and `F(BX)` will be the minimum among `F(AX)`, `F(BX)`, and `F(CX)`.
+        *   `FA`, `FB`, `FC` (Double): The function values evaluated at `AX`, `BX`, and `CX` respectively.
+*   **Real-world Problem Solving Ideas:**
+    *   **Preprocessing for Optimization:** Provide the necessary bracketing interval for more advanced 1D minimization algorithms like Golden Section Search or Brent's Method.
+    *   **Experimental Optimization:** Quickly identify an approximate optimal range for a single process variable in an experiment based on limited initial observations.
+
+### Golden Section Search (1D)
+
+*   **Purpose:** Seeks the minimum of a real function `F(X)` using the Golden Section Search method.
+*   **Description:** The Golden Section Search is a robust, albeit sometimes slower, one-dimensional minimization algorithm. Given an initial interval that is known to contain a minimum (e.g., obtained from `MNBRAK`), it iteratively narrows down this interval by evaluating the function at new points determined by the golden ratio (`~0.618`). This method guarantees a fixed reduction in the search interval size at each step and does not require derivative information.
+*   **Source File:** [`golden.pas`](golden.pas)
+*   **Function:** `GOLDEN(AX, BX, CX, TOL: Double; VAR XMIN: Double): Double`
+    *   **Inputs:**
+        *   `AX`, `BX`, `CX` (Double): A bracketing triplet of abscissas such that `BX` is between `AX` and `CX`, and `F(BX)` is less than both `F(AX)` and `F(CX)`. This triplet can be obtained from `MNBRAK`.
+        *   `TOL` (Double): The desired fractional precision for the location of the minimum.
+        *   `F` (Function): The user-defined function `F(X)` to minimize (passed implicitly as a global function in the example program).
+    *   **Outputs:**
+        *   `XMIN` (Double): The abscissa (x-value) at which the minimum is found.
+        *   (Double): The minimum function value found (returned by the function itself).
+*   **Real-world Problem Solving Ideas:**
+    *   **Unimodal Function Optimization:** Efficiently find the minimum of any unimodal function in one dimension when derivatives are not available or are too complex to compute.
+    *   **Cost Minimization:** Optimize a single parameter (e.g., manufacturing temperature, ingredient concentration) to minimize cost or maximize efficiency in an engineering or economic model.
+    *   **Resource Allocation:** Determine the optimal level of a single resource to achieve the best outcome.
+
+### Brent's Method (1D)
+
+*   **Purpose:** Seeks the minimum of a real function `F(X)` using Brent's Method.
+*   **Description:** Brent's method is a highly efficient and widely used algorithm for finding the minimum of a one-dimensional function. It combines the reliability of bracketing methods (like Golden Section Search) with the faster, superlinear convergence of inverse quadratic interpolation. The algorithm adaptively switches between these techniques, falling back to the robust golden section search if parabolic interpolation does not yield a satisfactory new point, thus achieving rapid convergence without sacrificing robustness.
+*   **Source File:** [`brent.pas`](brent.pas)
+*   **Function:** `BRENT(AX, BX, CX, TOL: Double; Var XMIN: Double): Double`
+    *   **Inputs:**
+        *   `AX`, `BX`, `CX` (Double): A bracketing triplet of abscissas (same requirements as for `GOLDEN`).
+        *   `TOL` (Double): The desired fractional precision for the location of the minimum.
+        *   `F` (Function): The user-defined function `F(X)` to minimize (passed implicitly as a global function in the example program).
+    *   **Outputs:**
+        *   `XMIN` (Double): The abscissa (x-value) at which the minimum is found.
+        *   (Double): The minimum function value found (returned by the function itself).
+*   **Real-world Problem Solving Ideas:**
+    *   **General 1D Optimization:** Considered one of the best general-purpose methods for finding minima of continuous functions in one dimension, especially when function evaluations are computationally expensive but derivatives are not easily available.
+    *   **Calibration Processes:** Precisely finding the optimal setting for a single adjustable parameter in a complex system or instrument.
+    *   **Numerical Libraries:** Frequently implemented in standard numerical optimization libraries due to its balance of speed and reliability.
+
+### Multidimensional Minimization (Nelder-Mead Simplex)
+
+*   **Purpose:** Performs multidimensional minimization of a function `FUNC(X)` (where `X` is an `NDIM`-dimensional vector) by the downhill simplex method of Nelder and Mead.
+*   **Description:** The Nelder-Mead simplex method is a direct search optimization algorithm that does not require derivative information. It operates by maintaining a simplex (a geometric figure with `NDIM+1` vertices in `NDIM` dimensions) and iteratively tries to replace the vertex with the highest function value with a new, "better" vertex through operations like reflection, expansion, and contraction. This method is robust for non-smooth or noisy functions and is less prone to getting stuck in local minima compared to purely gradient-based methods in some scenarios, though it does not guarantee a global minimum.
+*   **Source File:** [`tamoeba.pas`](tamoeba.pas)
+*   **Procedure:** `AMOEBA(Var P: MAT; Var Y: VEC; MP, NP, NDIM: Integer; FTOL: Double; Var ITER: Integer)`
+    *   **Inputs:**
+        *   `P` (`MAT` - 2D array of Doubles): A matrix whose `NDIM+1` rows represent the `NDIM`-dimensional vectors forming the vertices of the starting simplex.
+        *   `Y` (`VEC` - array of Doubles): A vector of length `NDIM+1` where `Y[I]` stores the function value of `FUNC` evaluated at the `I`-th vertex in `P`.
+        *   `MP`, `NP` (Integer): Physical dimensions of the `P` matrix (e.g., `MP=21, NP=20` for `NDIM=20`). These define the maximum size of the arrays.
+        *   `NDIM` (Integer): The dimensionality of the function to be minimized.
+        *   `FTOL` (Double): The fractional convergence tolerance to be achieved in the function value.
+        *   `FUNC` (Function): The user-defined function `FUNC(X)` to minimize (passed implicitly as a global function in the example program).
+    *   **Outputs:**
+        *   `P` (`MAT`): The updated matrix with vertices that have converged closer to the minimum.
+        *   `Y` (`VEC`): The updated function values at the new vertices.
+        *   `ITER` (Integer): The total number of iterations performed.
+*   **Real-world Problem Solving Ideas:**
+    *   **Parameter Fitting:** Adjust multiple parameters in a complex, non-linear model to minimize the error between model predictions and observed data (e.g., in chemistry, biology, or engineering).
+    *   **Process Optimization:** Find optimal settings for multiple variables in an industrial process (e.g., chemical reaction conditions, manufacturing settings) where an explicit mathematical derivative of the objective function is not available.
+    *   **Robotics:** Solve inverse kinematics problems or optimize robot trajectories by minimizing a cost function over multiple joint angles.
+
+### Steepest Descent Optimization (Approximate Derivatives)
+
+*   **Purpose:** Performs multi-dimensional Steepest Descent Optimization for finding a local maximum or minimum of an `L`-dimensional function, where partial derivatives are *not* explicitly required.
+*   **Description:** This variant of the steepest descent method is particularly useful when analytical expressions for partial derivatives are unavailable, too complex to derive, or computationally expensive. It approximates the gradient (direction of steepest ascent for maximization, or descent for minimization) using finite differences. The algorithm iteratively moves in this estimated gradient direction, dynamically adjusting the step size (`xk`) based on changes in the function value to accelerate convergence or prevent overshooting.
+*   **Source File:** [`steepda.pas`](steepda.pas)
+*   **Explanation File:** [`steepda.txt`](steepda.txt)
+*   **Procedure:** `Steepda` (procedure within the main program)
+    *   **Inputs:** (These parameters are typically set globally in the program, often read from user input in the example `DEMO_STEEPDS`.)
+        *   `l` (Integer): The dimension of the function to be optimized.
+        *   `e` (Double): The convergence criterion, defining the desired accuracy for the function value change.
+        *   `m` (Integer): The maximum number of iterations allowed.
+        *   `xk` (Double): A starting constant for the step size. Its choice is problem-dependent and can influence convergence.
+        *   `X` (Array of Double, e.g., `Array[1..10]`): Initial values of the variables (the starting point for the optimization).
+        *   `Eval` (Function): The user-defined objective function `F(X)` to optimize (passed implicitly as a global function in the example program).
+    *   **Outputs:**
+        *   `X` (Array of Double): The locally optimum set of parameters found.
+        *   `Eval` (Double): The value of the local maximum (or minimum, if the objective function was inverted) found.
+        *   `n` (Integer): The total number of iterations performed.
+    *   **Precautions:**
+        *   Since derivatives are approximated, the accuracy might be lower, and convergence can be slower or more erratic compared to methods using analytical derivatives, especially near the optimum where derivatives approach zero.
+        *   The method finds a local optimum, not necessarily the global one.
+        *   For minimization, the objective function should be transformed (e.g., maximize `-F(X)` for a general function `F(X)`, or `1/F(X)` for a positive `F(X)`).
+*   **Real-world Problem Solving Ideas:**
+    *   **Non-linear Regression:** Fit experimental data to complex models where obtaining analytical derivatives is impractical or impossible.
+    *   **Black-Box Optimization:** Optimize systems where the objective function is only accessible through simulations or external programs that do not provide derivative information.
+    *   **Engineering Design:** Optimize designs where performance evaluation involves computationally expensive simulations.
+
+### Steepest Descent Optimization (Functional Derivatives)
+
+*   **Purpose:** Performs multi-dimensional Steepest Descent Optimization for finding a local maximum or minimum of an `L`-dimensional function, where analytical partial derivatives *are* explicitly required.
+*   **Description:** This implementation of the steepest descent method directly utilizes analytically defined partial derivatives to compute the gradient. This allows for more precise and potentially faster convergence compared to using approximate derivatives, especially as the optimization approaches the optimum. The algorithm iteratively moves in the direction of the steepest ascent (for maximization) or steepest descent (for minimization). It also dynamically adjusts the step size based on performance.
+*   **Source File:** [`steepds.pas`](steepds.pas)
+*   **Explanation File:** [`steepds.txt`](steepds.txt)
+*   **Procedure:** `Steepds` (procedure within the main program)
+    *   **Inputs:** (These parameters are typically set globally in the program, often read from user input in the example `DEMO_STEEPDS`.)
+        *   `l` (Integer): The dimension of the function to be optimized.
+        *   `e` (Double): The convergence criterion, defining the desired accuracy for the function value change.
+        *   `m` (Integer): The maximum number of iterations allowed.
+        *   `xk` (Double): A starting constant for the step size. Its choice is problem-dependent and can influence convergence.
+        *   `X` (Array of Double, e.g., `Array[1..10]`): Initial values of the variables (the starting point for the optimization).
+        *   `Eval` (Function): The user-defined objective function `F(X)` to optimize. In this version, `Eval` is expected to *also* compute and store its partial derivatives in a global `D` array (e.g., `D[1], D[2], ... D[l]`).
+    *   **Outputs:**
+        *   `X` (Array of Double): The locally optimum set of parameters found.
+        *   `Eval` (Double): The value of the local maximum (or minimum, if the objective function was inverted) found.
+        *   `n` (Integer): The total number of iterations performed.
+    *   **Precautions:**
+        *   Requires the user to provide correct analytical expressions for the partial derivatives within the `Eval` function. This might not always be feasible for very complex functions.
+        *   The method finds a local optimum, not necessarily the global one.
+        *   For minimization, the objective function should be transformed (e.g., maximize `-F(X)` for a general function `F(X)`, or `1/F(X)` for a positive `F(X)`).
+*   **Real-world Problem Solving Ideas:**
+    *   **Gradient-Based Optimization:** When analytical derivatives are available, this method is often more efficient and accurate for optimization problems than methods relying on finite differences.
+    *   **Machine Learning:** Implement fundamental gradient descent algorithms for training various machine learning models (e.g., linear regression, logistic regression, feed-forward neural networks) by minimizing a loss function.
+    *   **Engineering Design Optimization:** Find optimal design parameters for systems modeled by well-defined, differentiable functions.
