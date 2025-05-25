@@ -2,7 +2,9 @@
 # jpmMath Library - A Comprehensive Math Toolkit by Jean-Pierre Moreau
 
 ## Introduction
-The `jpmMath` library is a robust and extensive collection of numerical and scientific computing routines implemented in Pascal. Designed for engineers, scientists, researchers, and students, this library provides a foundational toolkit for solving a wide array of mathematical, physics, and engineering problems. It emphasizes direct mathematical implementation, numerical accuracy, and modularity, making it an excellent resource for both practical applications and educational purposes in understanding classical algorithms.
+The `jpmMath` library is a robust and extensive collection of numerical and scientific computing routines implemented in Pascal by Jean-Pierre Moreau. Designed for engineers, scientists, researchers, and students, this library provides a foundational toolkit for solving a wide array of mathematical, physics, and engineering problems. It emphasizes direct mathematical implementation, numerical accuracy, and modularity, making it an excellent resource for both practical applications and educational purposes in understanding classical algorithms.
+
+Jean-Pierre's original code is no longer available on a regular web-site, only in the internet-archive: https://web.archive.org/web/20231002075104/https://jean-pierre.moreau.pagesperso-orange.fr/pascal.html. In order to preserve the code, the files were downloaded and stored in the folder `original` of this repository. Folder `fpc`contains reworked code, modernized for Free Pascal.
 
 ## License ##
 Jean-Pierre Moreau does not explicitely specify any conditions how his code can be used. After inquiry about this (https://www.lazarusforum.de/viewtopic.php?p=150255#p150255), his son responded in a mail:
