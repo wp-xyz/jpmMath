@@ -1,5 +1,5 @@
 
-# jpmMath - Geometry
+# jpmMath - geometry - Geometric and Astronomical Calculations
 
 ## Table of Contents
 
