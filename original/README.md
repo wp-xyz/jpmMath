@@ -19,79 +19,79 @@ The `jpmMath` library adheres to the following core principles:
 
 The `jpmMath` library is logically organized into several modules, each focusing on a distinct area of numerical and scientific computing. Click on each module name to access its detailed documentation.
 
-### [arith - Basic Arithmetic and Number Theory](arith-readme.md)
+### [arith - Basic Arithmetic and Number Theory](arith/README.md)
 
 This module provides fundamental tools for tasks such as numerical base conversions, high-precision arithmetic, equation solving (Diophantine), combinatorial analysis, and prime number operations. It emphasizes direct mathematical implementation within the Pascal environment.
 
-### [bessel - Bessel Functions](bessel-readme.md)
+### [bessel - Bessel Functions](bessel/README.md)
 
 This module focuses on the computation of various Bessel functions (real, spherical, and complex), their derivatives, and their roots. These functions are critical in solving problems across wave propagation, heat conduction, vibrations, and quantum mechanics, particularly those involving cylindrical or spherical symmetry.
 
-### [complex - Complex Numbers and Linear Algebra](complex-readme.md)
+### [complex - Complex Numbers and Linear Algebra](complex/README.md)
 
 This module offers a comprehensive set of functionalities for complex number arithmetic, evaluation of specialized complex functions (Gamma, Psi, Exponential Integral), polynomial operations (evaluation, root finding using various methods), and linear algebra operations on complex matrices (inversion, determinants, solving systems, eigenvalues).
 
-### [diffeqa - Differential Equations](diffeqa-readme.md)
+### [diffeqa - Differential Equations](diffeqa/README.md)
 
 This module provides a collection of numerical methods for solving ordinary differential equations (ODEs) as initial value problems (IVPs) and boundary value problems (BVPs), as well as partial differential equations (PDEs). It includes methods like Runge-Kutta, Adams-Bashforth, Bulirsch-Stoer, and solvers for stiff systems, emphasizing accuracy and adaptive step-size control.
 
-### [functions1 - Mathematical Functions (Part 1)](functions1-readme.md)
+### [functions1 - Mathematical Functions (Part 1)](functions1/README.md)
 
 This module covers a broad range of numerical routines including various interpolation methods (Akima Spline, Chebyshev, Lagrange, Newton, Cubic Spline, Rational, Trigonometric), numerical differentiation (formal, Lagrange, Nth derivative, Romberg), numerical integration (Gauss, Simpson, Romberg, Clenshaw-Curtis, Primitive), multidimensional integration (cubature), and optimization algorithms (Bracketing, Golden Section, Brent, Nelder-Mead Simplex, Steepest Descent). It also includes tools for Taylor series expansion and function plotting.
 
-### [functions2 - Mathematical Functions (Part 2)](functions2-readme.md)
+### [functions2 - Mathematical Functions (Part 2)](functions2/README.md)
 
 This module offers implementations for a variety of specialized mathematical functions and further optimization techniques. It includes calculations for Bernoulli and Euler numbers, Airy functions and their zeros, Beta function, Cosine and Sine Integrals, Mathieu functions, Confluent Hypergeometric functions, Struve functions (H and L series), hyperbolic and inverse hyperbolic functions, and complete elliptic integrals. It also provides methods for Hermite, Lagrange, and Legendre polynomial coefficients.
 
-### [geometry - Geometric and Astronomical Calculations](geometry-readme.md)
+### [geometry - Geometric and Astronomical Calculations](geometry/README.md)
 
 This module provides programs for solving specific geometrical and astronomical problems. It includes tools for calculating arc parameters, reducing conic equations, finding conics from five points, demonstrating Euler's circle, determining planetary positions, computing polygon surface areas, and resolving triangles.
 
-### [linearprog - Linear Programming and Operational Research](linearprog-readme.md)
+### [linearprog - Linear Programming and Operational Research](linearprog/README.md)
 
 This module focuses on operational research and linear programming methods. It includes implementations for the Appointment Method (assignment problems), Dantzig's Model (optimal path finding), Simplex Method (basic and general forms), Time P.E.R.T. Model (project scheduling), Transport Model (resource dispatching), and the Traveling Salesman Problem using Simulated Annealing.
 
-### [lstsqr - Least Squares Approximation](lstsqr-readme.md)
+### [lstsqr - Least Squares Approximation](lstsqr/README.md)
 
 This module offers a comprehensive collection of programs for least squares approximation and regression analysis. It supports linear, parabolic, and Nth-order polynomial regression, multidimensional least squares, orthogonal polynomial fitting, parametric (non-linear) least squares, and iterated regression for error reduction. It also includes Chi-square statistic calculation and multi-dimensional curve fitting via the Simplex method.
 
-### [matrices - Numerical Linear Algebra](matrices-readme.md)
+### [matrices - Numerical Linear Algebra](matrices/README.md)
 
 This module provides a versatile collection of routines for various numerical linear algebra operations. It includes solvers for general dense, iterative, symmetric, and specialized linear systems (banded, tridiagonal, Vandermonde, Toeplitz). It also covers matrix inversion (LU, Householder, Cholesky), determinant calculation, and a variety of algorithms for computing eigenvalues and eigenvectors (Power methods, Jacobi, QL, QR algorithms, Characteristic Polynomials).
 
-### [mechanics - Mechanical Engineering Simulations](mechanics-readme.md)
+### [mechanics - Mechanical Engineering Simulations](mechanics/README.md)
 
 This module contains programs designed to solve various problems in mechanical engineering, including structural analysis, vibrations, and composite materials. It covers 1-DOF and N-DOF system responses, beam analysis, composite layer stress/stiffness, bouncing ball simulations, and a Finite Element Method (FEM) demonstration for 3D structures.
 
-### [miscellaneous - Diverse Computational and Algorithmic Concepts](miscellaneous-readme.md)
+### [miscellaneous - Diverse Computational and Algorithmic Concepts](miscellaneous/README.md)
 
 This module is a collection of standalone Pascal programs covering a diverse range of computational and algorithmic concepts. It includes fundamental physics calculations (relativistic mass, Snell's Law), astronomical phenomena (stellar magnitude), classical cryptography techniques (transposition, substitution ciphers, Morse code), and demonstrations of cellular automata (Sierpinski Triangle).
 
-### [polynomials - Algebraic Operations on Polynomials](polynomials-readme.md)
+### [polynomials - Algebraic Operations on Polynomials](polynomials/README.md)
 
 This module provides a collection of routines for performing various algebraic operations on polynomials and polynomial fractions. It includes basic arithmetic (addition, multiplication), differentiation, division (Euclidian, increasing powers), greatest common divisor (GCD), smallest common multiple (SCM), substitution, and symbolic expansion. It handles real, integer, and fractional coefficients.
 
-### [roots - Root Finding Methods](roots-readme.md)
+### [roots - Root Finding Methods](roots/README.md)
 
 This module offers a comprehensive collection of numerical methods for finding roots of functions. It includes single-variable root-finding algorithms (Bisection, Newton, Secant, Brent, Mueller, Pegasus, Lagrange, Aitken Acceleration, Zeroin), polynomial root-finding methods (Bairstow, Bernouilli, Lin, direct solvers for degree 2,3,4), and solvers for systems of non-linear equations (Brown, Levenberg-Marquardt, NNES, 2D Mueller).
 
-### [series - Series Expansions and Special Functions](series-readme.md)
+### [series - Series Expansions and Special Functions](series/README.md)
 
 This module focuses on numerical methods related to series expansions and special functions. It includes calculations for asymptotic error functions, Chebyshev economization and series coefficients, Chi-square distribution functions (PDF and CDF), logarithm of factorial, complex series evaluation, Horner's rule for polynomial shifting, inverse normal distribution, polynomial inversion, and series reversion.
 
-### [signal - Signal Processing Applications](signal-readme.md)
+### [signal - Signal Processing Applications](signal/README.md)
 
 This module provides a robust collection of tools for various signal processing applications. It covers Fourier analysis (Fourier series, FFT), numerical filtering (Butterworth), signal smoothing (FFT-based, Savitzky-Golay), single-degree-of-freedom oscillator response, shock spectrum analysis, and deconvolution.
 
-### [sorting - Sorting and Searching Algorithms](sorting-readme.md)
+### [sorting - Sorting and Searching Algorithms](sorting/README.md)
 
 This module contains implementations of various classical sorting algorithms (Bubble Sort, Straight Insertion Sort, Shell Sort, Heapsort, Quicksort, Merge Sort) and searching algorithms (Linear Search, Binary Search). It provides fundamental tools for data organization and retrieval, emphasizing time and space complexity characteristics.
 
-### [stat - Statistical Functions](stat-readme.md)
+### [stat - Statistical Functions](stat/README.md)
 
 This module offers a suite of Pascal programs for performing statistical computations. It includes implementations for special mathematical functions (Gamma, Incomplete Beta), various probability distributions (Binomial, Poisson, Normal, Chi-square, Student's T, F-distribution), descriptive statistics and moments (mean, deviation, skewness, kurtosis), median calculation, and simple linear regression minimizing Sum of Absolute Deviations (SAD). It also includes a parser for evaluating probability expressions.
 
-### [utilit - General Utilities for Graphics and Timing](utilit-readme.md)
+### [utilit - General Utilities for Graphics and Timing](utilit/README.md)
 
 This module houses a collection of foundational Free Pascal units designed to provide essential functionalities for graphical applications, time measurement, and screen interaction within a Windows environment. It includes units for CRT window management, 2D graphing, screen save/load utilities, timing, and printer interfacing.
 
