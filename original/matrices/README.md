@@ -1,5 +1,5 @@
 
-# jpmMath Library - Matrices
+# jpmMath Library - matrices - Numerical Linear Algebra
 
 The `matrices` sub-library offers a versatile collection of routines for various numerical linear algebra operations, including:
 *   Solving linear systems of equations (dense, sparse, symmetric, banded, and special structures).
