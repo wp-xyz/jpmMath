@@ -1,0 +1,821 @@
+
+# jpmMath Library - Functions1
+
+## Table of Contents
+
+1.  [Introduction](#introduction)
+2.  [Mathematical Function Categories](#mathematical-function-categories)
+    *   [Interpolation](#interpolation)
+    *   [Differentiation](#differentiation)
+    *   [Integration](#integration)
+    *   [Cubature (Multidimensional Integration)](#cubature-multidimensional-integration)
+    *   [Optimization](#optimization)
+    *   [Limited Developments (Taylor Series)](#limited-developments-taylor-series)
+    *   [Other Utilities](#other-utilities)
+        *   [Laguerre Polynomial Coefficients](#laguerre-polynomial-coefficients)
+        *   [Function Plotting and Evaluation](#function-plotting-and-evaluation)
+        *   [Function Simplification](#function-simplification)
+
+---
+
+## 1. Introduction
+The `jpmMath` library's `functions1` directory provides a comprehensive set of numerical routines implemented in Free Pascal.
+
+---
+
+## 2. Mathematical Function Categories
+
+### Interpolation
+
+Interpolation methods are used to estimate values between known data points. This library offers various techniques for different interpolation requirements.
+
+*   **Akima Spline Fitting**
+    *   **Files:** `akima.pas`, `akima.txt`
+    *   **Description:** Implements Akima's cubic interpolation technique, which approximates the properties of a natural spline. It is faster than exact spline interpolation algorithms as it avoids time- and memory-consuming matrix operations. This method is particularly effective for smoothing curves and handling data with discontinuities, as it tends to minimize net curvature, preventing excessive "kinks" in the interpolated curve.
+    *   **Purpose & Usage:** The `Interpol_Akima` procedure is designed to interpolate values within a table of discrete points.
+        *   **Procedure:** `Interpol_Akima` (within `akima.pas`)
+        *   **Inputs:**
+            *   `X`: `Array` of `double` (table x-values, assumed to be in ascending order).
+            *   `Y`: `Array` of `double` (table y-values).
+            *   `XX`: `double` (the interpolation point).
+            *   `IV`: `INTEGER` (the total number of points in the `X` and `Y` tables).
+        *   **Outputs:**
+            *   `YY`: `double` (the interpolated value at `XX`).
+            *   `N`: `INTEGER` (an error flag; `0` indicates an error, typically if `XX` is outside the allowable table range, which requires at least one table value to the left and three to the right of `XX`).
+    *   **Real-world Applications:**
+        *   **Data Smoothing:** Useful in signal processing to smooth noisy sensor data (e.g., temperature, pressure, or motion sensor readings) without introducing artificial oscillations.
+        *   **Computer Graphics & CAD/CAM:** Generating smooth curves for rendering 2D or 3D models from a limited set of control points. This is crucial in designing aesthetically pleasing and functionally continuous surfaces for automotive bodies, aircraft wings, or product designs.
+        *   **Robotics:** Creating smooth and continuous trajectory paths for robotic arms or autonomous vehicles. This ensures fluid movement, minimizes wear on mechanical components, and allows for precise control.
+    *   **Notes:** While generally robust, Akima's method can sometimes suffer from round-off errors compared to methods like Lagrange interpolation. However, it often provides better behavior for discontinuous functions, producing a smoother fit than Newton's method in such scenarios.
+
+*   **Chebyshev Polynomial Approximation**
+    *   **Files:** `chebyshe.pas`, `chebyshe.txt`, `tchebysh.pas`, `tchebint.pas`, `tchebde.pas`
+    *   **Description:** Implements Chebyshev polynomial approximation using Chebyshev coefficients. This method is known for yielding a "minimax" polynomial, which minimizes the maximum deviation from the true function over a specified interval. It's particularly useful for approximating functions when a highly accurate and numerically stable polynomial representation is needed. The unit also includes routines for integrating and differentiating Chebyshev series.
+    *   **Purpose & Usage:** The `Chebyshe` unit provides several routines for approximation, evaluation, integration, and differentiation using Chebyshev polynomials.
+        *   `CHEBFT(A, B: Double; Var C: Tab; N: Integer)`: Computes the Chebyshev coefficients `Ck` for a function `FUNC(X)` over an interval `[A,B]`. The approximation is exact at the `N` zeros of `TN(X)`.
+        *   `CHEBEV(A, B: Double; C: Tab; M: Integer; X: Double): Double`: Evaluates the Chebyshev polynomial at a given point `X` using the computed coefficients `C` (of length `M`).
+        *   `CHINT(A, B: Double; C: Tab; Var CINT: Tab; N: Integer)`: Computes the Chebyshev coefficients (`CINT`) of the integral of a function whose coefficients are `C`. The constant of integration is set so that the integral vanishes at `A`.
+        *   `CHDER(A, B: Double; C: Tab; Var CDER: Tab; N: Integer)`: Computes the Chebyshev coefficients (`CDER`) of the derivative of a function whose coefficients are `C`.
+        *   `FUNC(x:Double): Double`: A user-defined function (within `chebyshe.pas`) that needs to be approximated.
+    *   **Real-world Applications:**
+        *   **Numerical Libraries:** Building highly accurate and efficient approximations for transcendental functions (e.g., `sin`, `cos`, `exp`, `log`) in scientific computing libraries, ensuring uniform approximation error.
+        *   **Data Compression:** Representing complex data curves with a smaller set of coefficients for efficient storage and transmission, especially in scientific data analysis.
+        *   **Digital Signal Processing:** Designing optimal digital filters or approximating complex signals where uniform approximation error across a frequency band is desired.
+    *   **Notes:** The approximation can be truncated to a lower degree `m << N` to yield a very accurate polynomial of degree `m`. `tchebysh.pas` demonstrates approximation, `tchebint.pas` demonstrates integration, and `tchebde.pas` demonstrates differentiation.
+
+*   **Continuous Fractions Interpolation**
+    *   **Files:** `confract.pas`, `confract.txt`
+    *   **Description:** Implements interpolation using continuous fractions, an alternative to polynomial interpolation. This method can sometimes provide better approximations, especially for functions with singularities or complex behavior, by representing the function as a quotient of polynomials.
+    *   **Purpose & Usage:** The `Confract` program interpolates a function `F(x)` that passes through `N+1` given points `(xi, f(xi))`. It calculates coefficients based on an inverse divided differences formula and then evaluates the continuous fraction.
+        *   **Program:** `Confract`
+        *   **Inputs:**
+            *   `N1`: `INTEGER` (Number of points).
+            *   `X[K]`: `Array` of `double` (x-coordinates of the `N1` points).
+            *   `Y[K]`: `Array` of `double` (y-coordinates of the `N1` points).
+            *   `XX`: `double` (The interpolation point).
+        *   **Outputs:**
+            *   `D[K]`: `Array` of `double` (Coefficients of the continuous fraction).
+            *   `S`: `double` (The interpolated `Y` value for `XX`).
+    *   **Real-world Applications:**
+        *   **Approximation Theory:** For highly oscillatory functions or those with poles, where polynomial approximations might diverge or become unstable (Runge's phenomenon).
+        *   **Signal Processing:** Enhancing signal reconstruction from discrete samples, particularly in scenarios where the underlying signal has sharp changes or asymptotic behavior.
+        *   **Control Systems:** Designing controllers that require accurate and stable function approximations over a wide range, even with complex system dynamics.
+
+*   **Lagrange Interpolation**
+    *   **Files:** `lagrange.pas`, `lagrange.txt`
+    *   **Description:** Implements Lagrange polynomial interpolation, which constructs a unique polynomial of degree `N` that passes through `N+1` given data points. It is straightforward to program due to its repetitive structure, and it can handle arbitrarily spaced independent variables.
+    *   **Purpose & Usage:** The `Interpol_Lagrange` procedure interpolates data points `(X(I), Y(I))` for a given interpolation point `XX` and a specified degree `N`.
+        *   **Procedure:** `Interpol_Lagrange` (within `lagrange.pas`)
+        *   **Inputs:**
+            *   `X`: `Array` of `double` (table x-values, must be in ascending order).
+            *   `Y`: `Array` of `double` (table y-values).
+            *   `XX`: `double` (the interpolation point).
+            *   `IV`: `INTEGER` (the total number of table values).
+            *   `N`: `INTEGER` (the degree of interpolation).
+        *   **Outputs:**
+            *   `YY`: `double` (the interpolated value).
+            *   `N`: `INTEGER` (an error flag; `0` implies an error, e.g., `XX` is outside the allowed range (`X[1] <= XX <= X[IV-N]`) or `X(I)` are not distinct/ordered).
+    *   **Real-world Applications:**
+        *   **Scientific Experimentation:** Estimating values of physical quantities at unmeasured points based on a set of experimental observations, such as temperature between sensors or pressure in a fluid.
+        *   **Numerical Integration (Newton-Cotes formulas):** The underlying principle for deriving various numerical integration rules.
+        *   **Computer Animation:** Creating smooth paths for objects or characters by interpolating keyframe data, ensuring continuous motion between predefined poses.
+
+*   **Newton Divided-Differences Interpolation**
+    *   **Files:** `newton.pas`, `newton.txt`
+    *   **Description:** Implements Newton's divided-differences interpolation, an alternative formulation to Lagrange interpolation for constructing a polynomial that passes through a set of data points. It provides an error estimate based on the next term in the Taylor series expansion. The implementation calculates cubic interpolation.
+    *   **Purpose & Usage:** The `Interpol_Newton` procedure calculates cubic interpolation for a given table `(X(I), Y(I))` at an interpolation point `XX`.
+        *   **Procedure:** `Interpol_Newton` (within `newton.pas`)
+        *   **Inputs:**
+            *   `X`: `Tab` (Array of `double`) (table x-values, must be in ascending order).
+            *   `Y`: `Tab` (Array of `double`) (table y-values).
+            *   `XX`: `double` (the interpolation point).
+            *   `IV`: `INTEGER` (the total number of table values).
+        *   **Outputs:**
+            *   `YY`: `double` (the interpolated value).
+            *   `E`: `double` (the error estimate based on the next term in the expansion).
+            *   `N`: `INTEGER` (an error flag; `0` implies an error, e.g., `XX` is outside the allowed range `X[1]` to `X[IV-3]` for cubic interpolation).
+    *   **Real-world Applications:**
+        *   **Numerical Analysis Education:** A classic method for demonstrating polynomial interpolation and understanding error propagation in numerical algorithms.
+        *   **Data Analysis:** When an error estimate is desirable alongside the interpolated value, for example, in quality control systems or financial risk assessments.
+        *   **Computational Physics:** Approximating physical phenomena from discrete measurements, where the behavior between points is assumed to be polynomial, such as particle trajectories.
+    *   **Notes:** While mathematically equivalent to Lagrange, Newton's method can be more susceptible to round-off error, especially when dealing with closely spaced points or extending to higher orders.
+
+*   **Polynomial Interpolation/Extrapolation (General)**
+    *   **Files:** `tpolint.pas`
+    *   **Description:** Provides a general procedure for polynomial interpolation or extrapolation of a discrete function `F(x)`. It uses an algorithm that iteratively updates approximations, offering an estimated error `DY` along with the interpolated value `Y`.
+    *   **Purpose & Usage:** The `POLINT` procedure estimates `Y` for a given `X` based on a table of `N` points `(XA, YA)`. It can be used for both interpolation (within the range of `XA`) and extrapolation (outside the range of `XA`).
+        *   **Procedure:** `POLINT(XA, YA: pVEC; N: Integer; X: Double; Var Y, DY: Double)`
+        *   **Inputs:**
+            *   `XA`: `pVEC` (pointer to `VEC` type, table of abscissas).
+            *   `YA`: `pVEC` (pointer to `VEC` type, table of ordinates).
+            *   `N`: `INTEGER` (number of points).
+            *   `X`: `double` (the interpolation/extrapolation abscissa).
+        *   **Outputs:**
+            *   `Y`: `double` (the estimated function value for `X`).
+            *   `DY`: `double` (the estimated error for `Y`).
+    *   **Real-world Applications:**
+        *   **Engineering Design:** Predicting performance characteristics of a system beyond the tested range, such as stress levels in materials under higher loads than tested.
+        *   **Financial Forecasting:** Estimating future stock prices or market trends based on historical data, though extrapolation carries inherent risks.
+        *   **Trajectory Prediction:** In aerospace or ballistics, predicting the future position of an object given a series of observed positions, or past positions.
+    *   **Notes:** Includes an error check for identical abscissas to prevent division by zero.
+
+*   **Rational Function Interpolation/Extrapolation**
+    *   **Files:** `tratint.pas`
+    *   **Description:** Implements interpolation or extrapolation using a quotient of polynomials (rational function). This method can be more stable than polynomial interpolation for certain functions, particularly those with poles or asymptotic behavior, as it can model such features more effectively.
+    *   **Purpose & Usage:** The `RATINT` procedure estimates `Y` for a given `X` based on a table of `N` points `(XA, YA)`, and returns an estimated error `DY`.
+        *   **Procedure:** `RATINT(XA, YA: pVEC; N: Integer; X: Double; Var Y, DY: Double)`
+        *   **Inputs:**
+            *   `XA`: `pVEC` (pointer to `VEC` type, table of abscissas).
+            *   `YA`: `pVEC` (pointer to `VEC` type, table of ordinates).
+            *   `N`: `INTEGER` (number of points).
+            *   `X`: `double` (the interpolation/extrapolation abscissa).
+        *   **Outputs:**
+            *   `Y`: `double` (the estimated function value for `X`).
+            *   `DY`: `double` (the estimated error for `Y`).
+    *   **Real-world Applications:**
+        *   **Chemical Engineering:** Modeling reactions with non-linear dependencies or saturation effects, where rational functions often provide a better fit than polynomials.
+        *   **Control Systems:** Designing controllers for systems with complex, non-linear transfer functions that might exhibit resonance or saturation.
+        *   **Image Processing:** Resampling images where traditional linear or cubic interpolation might introduce artifacts due to sharp edges or complex patterns.
+    *   **Notes:** Uses a `TINY` constant to prevent division by zero in case of identical function values or near poles. Detects and reports poles at the requested `X` value.
+
+*   **Cubic Spline Interpolation**
+    *   **Files:** `tseval.pas`
+    *   **Description:** Implements cubic spline interpolation, which constructs a piecewise cubic polynomial that passes through a set of `N` given points `(X(I), Y(I))`. The spline coefficients (`B`, `C`, `D`) are calculated to ensure continuity up to the second derivative, resulting in a very smooth curve.
+    *   **Purpose & Usage:**
+        *   The `SPLINE` procedure calculates the coefficients for the cubic spline based on input data points.
+        *   The `SEVAL` function then evaluates the spline at a given abscissa `U` using these computed coefficients.
+        *   **Procedure:** `SPLINE(N: Integer; X, Y: pVEC; Var B, C, D: pVEC)`
+            *   **Inputs:**
+                *   `N`: `INTEGER` (number of points).
+                *   `X`: `pVEC` (pointer to `VEC` type, x-coordinates of the points).
+                *   `Y`: `pVEC` (pointer to `VEC` type, y-coordinates of the points).
+            *   **Outputs:**
+                *   `B`, `C`, `D`: `pVEC` (pointers to `VEC` type, arrays of spline coefficients).
+        *   **Function:** `SEVAL(N: Integer; U: Double; X, Y, B, C, D: pVEC): Double`
+            *   **Inputs:**
+                *   `N`: `INTEGER` (number of points).
+                *   `U`: `double` (the abscissa to interpolate).
+                *   `X`, `Y`, `B`, `C`, `D`: `pVEC` (as obtained from `SPLINE` procedure).
+            *   **Output:**
+                *   `SEVAL`: `double` (the interpolated value at `U`).
+    *   **Real-world Applications:**
+        *   **Computer-Aided Design (CAD):** Generating smooth and aesthetically pleasing curves for product design, automotive body panels, or aircraft wings, where continuity and smoothness are paramount.
+        *   **Numerical Control (NC) Machining:** Defining precise tool paths for CNC machines to cut smooth contours in materials, ensuring high-quality finishes.
+        *   **Data Visualization:** Drawing smooth curves through scattered data points for clearer presentation of trends, often preferred over piecewise linear interpolation for aesthetic and analytical reasons.
+    *   **Notes:** The method involves solving a tridiagonal system to determine the spline coefficients, ensuring a smooth and continuous curve. `tseval.pas` demonstrates the full workflow.
+
+*   **Trigonometric Polynomial Interpolation**
+    *   **Files:** `trigpoly.pas`
+    *   **Description:** Interpolates a function using trigonometric polynomials. This method is particularly suitable for periodic functions, representing them as a sum of sines and cosines (similar to a truncated Fourier series).
+    *   **Purpose & Usage:** The `TrigPoly` program interpolates a function `F(x)` given `N` points by calculating its Fourier coefficients. The function values are assumed to be known or provided within the `TF` array.
+        *   **Program:** `TrigPoly`
+        *   **Inputs:**
+            *   `N`: `INTEGER` (Number of points).
+            *   `NH`: `INTEGER` (Number of harmonics). `N` must be `>= NH`.
+            *   `TF`: `Vec` (Array of `double`) (array storing function values at specific, equally spaced points).
+        *   **Outputs:**
+            *   `A`: `Vec` (Array of `double`) (Cosine coefficients of the Fourier series).
+            *   `B`: `Vec` (Array of `double`) (Sine coefficients of the Fourier series).
+            *   Displays the interpolated function values over a denser range.
+    *   **Real-world Applications:**
+        *   **Audio and Sound Synthesis:** Representing and manipulating sound waves, which are inherently periodic, for effects like equalization or synthesis.
+        *   **Electrical Engineering:** Analyzing and synthesizing periodic electrical signals, such as alternating currents or voltage waveforms.
+        *   **Oceanography:** Modeling natural periodic phenomena like tides, ocean currents, or seasonal temperature variations.
+    *   **Notes:** The program uses a method for calculating coefficients that is conceptually related to the Discrete Fourier Transform.
+
+### Differentiation
+
+These routines are designed for calculating derivatives of functions, either numerically from discrete points or formally from their equations.
+
+*   **Formal Derivative of a User-Defined Function**
+    *   **Files:** `deriv.pas`, `simplif2.pas`, `ufunct.pas`
+    *   **Description:** Calculates the formal (symbolic) derivative of a user-defined function `F(x)` expressed as a string. It leverages the `UFunct` unit for parsing and compiling the function and the `Simplif2` unit for simplifying the resulting derivative expression. It supports a wide range of standard mathematical operations and functions.
+    *   **Purpose & Usage:** The `DerivFunction` function computes the symbolic first derivative of `F(x)`.
+        *   **Function:** `DerivFunction(f:FONC; VAR g:FONC): Boolean` (in `deriv.pas`)
+        *   **Inputs:**
+            *   `f`: `FONC` (a compiled user-defined function, typically obtained via `EnterFunction` or `CompileFunction` from `ufunct.pas`).
+        *   **Outputs:**
+            *   `g`: `FONC` (a new `FONC` structure representing the compiled formal derivative function).
+            *   `DerivFunction`: `Boolean` (`TRUE` if successful, `FALSE` otherwise).
+    *   **Dependencies:** Requires the `UFunct` unit for handling `FONC` types, function compilation, evaluation, and destruction. Also requires the `Simplif2` unit for algebraic simplification of the derivative expression.
+    *   **Real-world Applications:**
+        *   **Symbolic Mathematics Engines:** A core component for building computer algebra systems that can perform symbolic differentiation, integration, and other algebraic manipulations.
+        *   **Optimization Algorithms:** Providing analytical derivatives for gradient-based optimization methods (e.g., Newton's method, gradient descent) when symbolic forms are available.
+        *   **Automated Control Systems:** Deriving control laws that depend on the rate of change of system variables or optimizing control parameters.
+
+*   **Lagrange Derivative Interpolation**
+    *   **Files:** `derivati.pas`
+    *   **Description:** Estimates derivatives of a function from tabular data using Lagrange interpolation formulas. It provides two methods: a general `N`-level Lagrange derivative interpolation and a specific 2nd-order (parabola) derivative estimation.
+    *   **Purpose & Usage:**
+        *   `Deriv`: Calculates the `NL`-level Lagrange derivative of a function given by table values `X[i]`, `Y[i]`.
+        *   `DERIV1`: Estimates the derivative using a parabolic fit (2nd order) from three points.
+        *   **Procedure:** `Deriv(N, NL: INTEGER; X, Y: Tab; x1: DOUBLE; VAR Yp: DOUBLE; VAR error: BOOLEAN)`
+            *   **Inputs:**
+                *   `N`: `INTEGER` (total number of table values).
+                *   `X`: `Tab` (Array of `DOUBLE`) (x-coordinate table values).
+                *   `Y`: `Tab` (Array of `DOUBLE`) (y-coordinate table values).
+                *   `x1`: `DOUBLE` (the interpolation point at which to estimate the derivative).
+                *   `NL`: `INTEGER` (the level/order of interpolation for `Deriv`, e.g., `3` for cubic).
+            *   **Outputs:**
+                *   `Yp`: `DOUBLE` (the estimated derivative at `x1`).
+                *   `error`: `BOOLEAN` (`TRUE` if `x1` is not within the valid interpolation interval, `FALSE` otherwise).
+        *   **Procedure:** `DERIV1(N: INTEGER; X, Y: Tab; X1: DOUBLE; VAR YP: DOUBLE; VAR ERREUR: BOOLEAN)`
+            *   **Inputs:** (Similar to `Deriv`, but `N` is used differently internally for 3 points)
+            *   `X1`: `DOUBLE` (the interpolation point).
+            *   **Outputs:** `YP`, `ERREUR`.
+    *   **Real-world Applications:**
+        *   **Experimental Data Analysis:** Estimating rates of change from discrete, potentially noisy, or irregularly spaced experimental measurements (e.g., chemical reaction rates from concentration-time data, velocity from position data).
+        *   **Process Control:** Inferring process dynamics (e.g., reaction rates, flow changes) from sampled data to adjust control parameters.
+        *   **Machine Learning (Feature Engineering):** Creating new features from time-series data that represent rates of change or acceleration, which can be useful for predictive models.
+    *   **Notes:** The accuracy of the derivative estimation depends on the data spacing and the order of interpolation. Higher orders can introduce more round-off error, especially with noisy data.
+
+*   **Nth Derivative Estimation**
+    *   **Files:** `nderiv.pas`
+    *   **Description:** Estimates the Nth derivative (for N=1 to 5) of a real function `f(x)` at a point `x` with a given step size `h`. This utility is useful for numerical differentiation when an analytical form of the derivative is difficult to obtain or when verifying analytical results.
+    *   **Purpose & Usage:** The `ar_nderiv` function computes `f^(n)(x)` where `n` is the order of the derivative (1 to 5). The function `f(x)` to be differentiated must be defined within the program.
+        *   **Function:** `ar_nderiv(x: double; n: integer; h: double): Double`
+        *   **Inputs:**
+            *   `x`: `double` (the point at which to evaluate the derivative).
+            *   `n`: `integer` (the order of the derivative, from 1 to 5).
+            *   `h`: `double` (the increment step size).
+        *   **Output:**
+            *   `ar_nderiv`: `double` (the estimated Nth derivative).
+    *   **Real-world Applications:**
+        *   **Sensitivity Analysis:** Quantifying how sensitive a system's output is to changes in its inputs (e.g., in engineering design, economic modeling, or pharmaceutical development).
+        *   **Curve Fitting Diagnostics:** Assessing the smoothness of a fitted curve by numerically examining its derivatives to detect anomalies or overfitting.
+        *   **Physics Simulations:** Approximating accelerations (second derivative of position) or higher-order rates of change from discrete or continuous function models.
+    *   **Notes:** The choice of `h` is critical for accuracy; for polynomial functions, a larger `h` (e.g., `h=1`) can sometimes yield better results than a very small `h` (e.g., `h=0.01`) due to floating-point precision issues and the specific finite difference formulas used.
+
+*   **Romberg Method for First Derivative**
+    *   **Files:** `difrom.pas`, `tdifrom.pas`
+    *   **Description:** Computes an approximation for the first derivative of a function `func(x)` using the Romberg method. This method is an iterative process that refines derivative approximations by using a series of decreasing step sizes and Richardson extrapolation, leading to higher accuracy and an estimate of the error.
+    *   **Purpose & Usage:** The `difrom1` procedure approximates the first derivative of `func` at `x0` with a desired precision `eps`. The function `func(x)` to be differentiated must be defined within the `difrom.pas` unit.
+        *   **Procedure:** `difrom1(x0, eps: Double; n: Integer; h: Double; Var res, er_app: Double; Var nend: Integer; Var hend: Double; Var error: Integer)`
+        *   **Inputs:**
+            *   `x0`: `double` (the value of the abscissa at which the derivative is to be found).
+            *   `eps`: `double` (the desired accuracy for the result).
+            *   `n`: `integer` (the maximum number of columns in the Romberg scheme; `n > 1`).
+            *   `h`: `double` (the initial step size).
+        *   **Outputs:**
+            *   `res`: `double` (the approximate derivative value).
+            *   `er_app`: `double` (the error estimate for `res`).
+            *   `nend`: `integer` (the number of columns actually used in the scheme).
+            *   `hend`: `double` (the final step size used).
+            *   `error`: `INTEGER` (an error code: `0` for no error, `1` for invalid input, `2` for accuracy not reached, `3` for step size too small).
+    *   **Real-world Applications:**
+        *   **Numerical Analysis:** Highly accurate derivative calculations for complex functions where analytical derivatives are difficult or impossible to obtain, or when precision requirements are stringent.
+        *   **Optimization Algorithms:** Providing precise gradient information for optimization methods that rely on derivatives, such as Newton-Raphson.
+        *   **Control System Identification:** Estimating system parameters by analyzing the dynamic response, which often involves numerical differentiation of signals.
+    *   **Notes:** This method is robust and provides an error estimate, making it suitable for applications requiring controlled precision. `tdifrom.pas` serves as a demonstration program.
+
+### Integration
+
+This section covers various numerical integration techniques for approximating definite integrals of functions.
+
+*   **General Integration Subroutine (Akima-based)**
+    *   **Files:** `integra.pas`
+    *   **Description:** A general integration subroutine (ITEG) that combines Akima spline interpolation with an enhanced trapezoidal rule and Richardson extrapolation to achieve cubic accuracy. It integrates a function defined by a table of discrete points over a specified range.
+    *   **Purpose & Usage:** The `Integrale` procedure computes the integral of a function defined by the `X` and `Y` tables from `x1` to `x2`. It relies on the `Interpol_Akima` procedure (also included in this file) for function evaluation.
+        *   **Procedure:** `Integrale` (within `integra.pas`)
+        *   **Inputs:**
+            *   `X`: `Array` of `double` (table of x-values representing the function).
+            *   `Y`: `Array` of `double` (table of y-values corresponding to `X`).
+            *   `x1`: `double` (the start point of the integration range).
+            *   `x2`: `double` (the end point of the integration range).
+            *   `iv`: `INTEGER` (the number of points in tables `X`, `Y`).
+        *   **Outputs:**
+            *   `zz`: `double` (the calculated integral value).
+            *   `z1`: `INTEGER` (an error flag; `0` implies an error, `1` implies success).
+    *   **Real-world Applications:**
+        *   **Data Analysis:** Calculating the cumulative effect or total quantity from discrete measurements (e.g., total energy consumed from power measurements over time, total rainfall from hourly data).
+        *   **Engineering:** Determining the area under a curve from experimental data, such as stress-strain curves to find toughness or force-displacement curves to find work.
+        *   **Resource Management:** Estimating total resource usage or production based on sampled rates over time.
+    *   **Notes:** Requires `x1 < x2` for standard operation, but it handles `x1 > x2` by swapping the limits and negating the result. Assumes `x1` is greater than or equal to `X[1]` and `x2` is less than or equal to `X[IV-3]` for valid interpolation.
+
+*   **Gauss Method Integration**
+    *   **Files:** `tgauss.pas`
+    *   **Description:** Implements numerical integration using Gauss quadrature, which is highly accurate for approximating integrals of polynomial functions. It supports one, two, or three variables and allows the user to specify the number of Gauss points (from 2 to 10), which determines the order of the polynomial that can be integrated exactly.
+    *   **Purpose & Usage:** The `Test_Gauss` program computes the integral of a user-defined function `F(x,y,z)` over specified rectangular regions (1D, 2D, or 3D). The function `F(x,y,z)` must be defined within the program.
+        *   **Program:** `Test_Gauss`
+        *   **Inputs:**
+            *   `n2`: `INTEGER` (Number of variables to integrate: `1`, `2`, or `3`).
+            *   `n`: `INTEGER` (Number of Gauss points to use: `2` to `10`).
+            *   `x1, x2`: `REAL` (Min/max values for the x-integration range).
+            *   `y1, y2`: `REAL` (Min/max values for the y-integration range, if `n2 > 1`).
+            *   `z1, z2`: `REAL` (Min/max values for the z-integration range, if `n2 > 2`).
+            *   `F(x,y,z): REAL` (User-defined function to integrate, hardcoded as `SIN(x)` in the example).
+        *   **Outputs:**
+            *   `xi9`: `REAL` (The calculated integral value).
+    *   **Real-world Applications:**
+        *   **Finite Element Analysis (FEA):** Computing integrals over complex geometries to assemble stiffness matrices and force vectors in structural mechanics, heat transfer, and fluid dynamics simulations.
+        *   **Computational Physics:** Evaluating multi-dimensional integrals in quantum mechanics, statistical physics, or electromagnetism.
+        *   **Probability and Statistics:** Calculating expected values or probabilities by integrating multi-variate probability density functions.
+    *   **Notes:** The program includes hardcoded Gauss points and weights for different orders. This method is highly efficient for smooth functions, often achieving high accuracy with fewer function evaluations compared to Newton-Cotes methods.
+
+*   **Simpson Integration**
+    *   **Files:** `tsimpson.pas`
+    *   **Description:** Implements the classical Simpson's rule for numerical integration of a continuous real function `FUNC(x)` over a given interval `[a,b]`. Simpson's rule approximates the definite integral by fitting quadratic polynomials to subintervals of the integration range, providing a higher order of accuracy than the trapezoidal rule.
+    *   **Purpose & Usage:** The `Integral_Simpson` procedure computes the integral of `FUNC(x)` from `x0` to `x1` using `nstep` integration steps. The function `FUNC(x)` to be integrated must be defined within the program.
+        *   **Procedure:** `Integral_Simpson(a, b: double; n: Integer; VAR res: double)`
+        *   **Inputs:**
+            *   `a`: `double` (The beginning x-value of the integration interval).
+            *   `b`: `double` (The end x-value of the integration interval).
+            *   `n`: `INTEGER` (The number of integration steps. For optimal use, `n` should be chosen such that `2*n` subintervals are used, making `2*n` even).
+        *   **Output:**
+            *   `res`: `double` (The calculated integral value).
+    *   **Real-world Applications:**
+        *   **Volume Calculation:** Estimating the volume of irregular shapes from cross-sectional area measurements in engineering or architecture.
+        *   **Fluid Dynamics:** Calculating total flow rates by integrating velocity profiles across a pipe or channel.
+        *   **Surveying:** Determining land area from irregular boundaries defined by discrete measurements.
+    *   **Notes:** This is a fundamental numerical integration method, widely taught and used for its balance of simplicity and accuracy.
+
+*   **Discrete Simpson Integration**
+    *   **Files:** `disinteg.pas`
+    *   **Description:** Calculates the integral of a *discrete* real function `F(x)` defined by `n` points `(Xi, Yi)` using Simpson's method. Unlike the previous Simpson's rule (for continuous functions), this version is adapted for data points that may not be equally spaced, providing flexibility for experimental data.
+    *   **Purpose & Usage:** The `discreteIntegral` function computes the integral of a discrete function from `X[0]` to `X[N-1]`. The data points `(Xi, Yi)` are provided as arrays.
+        *   **Function:** `discreteIntegral(n:Integer; X,Y:Tab): REAL`
+        *   **Inputs:**
+            *   `n`: `INTEGER` (The number of discrete points in the `X` and `Y` tables).
+            *   `X`: `Tab` (Array of `REAL`) (Table of x-values in ascending order).
+            *   `Y`: `Tab` (Array of `REAL`) (Table of y-values corresponding to `X`).
+        *   **Output:**
+            *   `discreteIntegral`: `REAL` (The calculated integral value).
+    *   **Real-world Applications:**
+        *   **Medical Imaging:** Quantifying tissue volumes from discrete slices in MRI or CT scans, where each slice represents a data point.
+        *   **Environmental Monitoring:** Calculating total pollutant discharge or accumulated solar radiation from discrete measurements over time.
+        *   **Economic Analysis:** Estimating total production or consumption from discrete time series data (e.g., quarterly GDP figures).
+    *   **Notes:** The implementation handles cases where `X` values are not strictly equally spaced, making it suitable for real-world experimental data.
+
+*   **Weighting Coefficients Method for Discrete Integration**
+    *   **Files:** `dinteg.pas`, `dinteg.txt`
+    *   **Description:** This method calculates weighting coefficients `A(i)` for `N` distinct points `X(i)` such that the integral of a discrete function `F(x)` from `X(0)` to `X(N)` can be approximated as a weighted sum of `F(X(i))`. It solves a linear system based on powers of `X(i)` (a Vandermonde matrix) to find these coefficients. When `X(i)` are equally spaced, this method is equivalent to Newton-Cotes formulas.
+    *   **Purpose & Usage:** The `weighting_Coeffs` program computes the integral of a discrete function `F(x)` over a given set of `N` points.
+        *   **Program:** `weighting_Coeffs`
+        *   **Inputs:**
+            *   `N`: `INTEGER` (Number of points).
+            *   `X[K]`: `Array` of `double` (x-coordinates of the points).
+            *   `Y[K]`: `Array` of `double` (y-coordinates of the points).
+        *   **Outputs:**
+            *   `A[I]`: `Array` of `double` (The calculated weighting coefficients).
+            *   `S`: `double` (The computed integral value).
+    *   **Real-world Applications:**
+        *   **Numerical Quadrature:** Developing custom quadrature rules for specific non-uniformly spaced datasets or for integrating polynomial functions exactly through specified points.
+        *   **Economic Modeling:** Aggregating discrete economic indicators to estimate continuous trends or cumulative economic output.
+        *   **Engineering Data Analysis:** When experimental data points are irregularly spaced, this method allows for a structured approach to numerical integration.
+    *   **Notes:** The determinant of the underlying Vandermonde matrix is non-zero for distinct `X(i)`, guaranteeing a unique solution for the weighting coefficients.
+
+*   **QANC8 Subroutine for User-Defined Functions**
+    *   **Files:** `tqanc8.pas`
+    *   **Description:** This program integrates a user-defined function `f(x)` over a specified interval `(x1, x2)` using the `QANC8` subroutine. `QANC8` is a robust adaptive quadrature routine that controls both absolute and relative precision, making it suitable for functions with varying behavior or singularities.
+    *   **Purpose & Usage:** The `QANC8` procedure computes the integral of `FCT(x)` from `A` to `B` with user-defined absolute and relative error tolerances. The function `FCT(x)` to be integrated must be defined within the program.
+        *   **Procedure:** `QANC8 (A,B,AERR,RERR:Double; VAR RES,ERR: Double; VAR NBF: Integer; VAR FLG:Double)`
+        *   **Inputs:**
+            *   `A`, `B`: `double` (Limits of the integration interval).
+            *   `AERR`: `double` (Absolute error required by the user).
+            *   `RERR`: `double` (Relative error required by the user).
+            *   `FCT(X): Double` (External user-defined function).
+        *   **Outputs:**
+            *   `RES`: `double` (Value of the integral).
+            *   `ERR`: `double` (Estimated error of the result).
+            *   `NBF`: `INTEGER` (Number of function evaluations performed).
+            *   `FLG`: `double` (Indicator: `0.0` for correct result, non-zero indicates issues like non-convergence or singularities).
+    *   **Real-world Applications:**
+        *   **Computational Finance:** Valuing complex financial derivatives or options that involve integrating complex probability distributions, where precision and robustness are critical.
+        *   **Chemical Kinetics:** Calculating reaction progress over time, especially for reactions with complex rate laws or phase transitions.
+        *   **Aerospace Engineering:** Computing aerodynamic forces or moments by integrating pressure distributions over surfaces, which may have complex geometries or flow patterns.
+    *   **Notes:** This adaptive method dynamically adjusts the integration steps to meet the desired precision, making it efficient for functions where the integrand's behavior changes significantly over the interval.
+
+*   **Romberg Integration**
+    *   **Files:** `tromberg.pas`
+    *   **Description:** This program integrates a real function `F(x)` using Romberg's method. Romberg integration is an iterative method that combines the trapezoidal rule with Richardson extrapolation to achieve high accuracy and provide an estimate of the integration error. It is particularly effective for smooth functions.
+    *   **Purpose & Usage:** The `RombergIntegral` function computes the integral of `FUNC(x)` from `x0` to `x1` with a desired precision `prec`. The function `FUNC(x)` to be integrated must be defined within the program.
+        *   **Function:** `RombergIntegral(a, b, prec: double; VAR obtprec: double; VAR n: integer; itermin, itermax: integer): double`
+        *   **Inputs:**
+            *   `a`: `double` (Beginning x-value of the integration interval).
+            *   `b`: `double` (End x-value of the integration interval).
+            *   `prec`: `double` (Desired precision for the integral).
+            *   `itermin`: `integer` (Minimum number of iterations).
+            *   `itermax`: `integer` (Maximum number of iterations).
+            *   `FUNC(x): double` (User-defined function to integrate).
+        *   **Outputs:**
+            *   `obtprec`: `double` (The precision obtained during the integration).
+            *   `n`: `integer` (The number of iterations performed).
+            *   `RombergIntegral`: `double` (The calculated integral value).
+    *   **Real-world Applications:**
+        *   **High-Precision Integration:** When very accurate integral values are needed, such as in scientific research, precision engineering, or verification of theoretical models.
+        *   **Numerical Verification:** Verifying analytical integral solutions or the accuracy of other numerical methods, providing a reliable benchmark.
+        *   **Quantum Mechanics:** Calculating expectation values in quantum systems, which often involve integrals over complex wave functions.
+    *   **Notes:** This method is known for its rapid convergence for sufficiently smooth functions, making it a powerful tool for numerical analysis.
+
+*   **Clenshaw-Curtis Formula Integration**
+    *   **Files:** `clencurt.pas`
+    *   **Description:** Computes the value of the integral of a user-defined function `func(x)` over an interval `(a,b)` by using the summed Clenshaw-Curtis formula. This method uses Chebyshev nodes and precomputed weights, offering good accuracy, especially for functions that can be well-approximated by Chebyshev polynomials. It's robust for continuous functions and can be more stable than Gauss-Legendre for certain functions, particularly those with singularities at endpoints.
+    *   **Purpose & Usage:**
+        *   `ClenCurtStGew`: Computes the nodes and weights for the Clenshaw-Curtis quadrature for a given `n`.
+        *   `ClenCurt`: Uses these computed nodes and weights to compute the integral over a partitioned interval `t`. The function `func(x)` to be integrated must be defined within the program.
+        *   **Function:** `ClenCurtStGew(n: integer; Var StStelle, Gewicht: VECT): Integer`
+            *   **Inputs:** `n`: `integer` (`n+1` is the number of nodes and weights; `n` must be `> 1` and odd).
+            *   **Outputs:** `StStelle`: `VECT` (computed nodes); `Gewicht`: `VECT` (computed weights).
+        *   **Function:** `ClenCurt(m: integer; t: VECT; n: integer; Tk, Ak: VECT; Var Resultat: double): Integer`
+            *   **Inputs:** `m`: `integer` (number of subintervals); `t`: `VECT` (partition array `a = t[0] < t[1] < ... < t[m] = b`); `n`: `integer` (`n+1` is number of nodes, `n` must be `> 1` and even); `Tk`, `Ak`: `VECT` (Chebyshev nodes and weights obtained from `ClenCurtStGew`).
+            *   **Outputs:** `Resultat`: `double` (the computed integral value).
+    *   **Real-world Applications:**
+        *   **Spectral Methods:** Used in numerical methods that rely on Chebyshev expansions for solving differential equations or integral equations, where high-order accuracy is needed.
+        *   **Numerical Stability:** Preferred over other methods for some ill-behaved functions due to its robustness and convergence properties.
+        *   **Approximation Theory:** Efficiently and accurately integrates functions that are known to have good Chebyshev series approximations.
+    *   **Notes:** The parameter `n` in `ClenCurtStGew` (which is odd) dictates the size of the `Tk` and `Ak` arrays, which then need to be passed to `ClenCurt` where `n` must be even.
+
+*   **Sine and Cosine Integral Functions**
+    *   **Files:** `sinint.pas`, `tsinint.pas`
+    *   **Description:** This unit provides functions to calculate the sine integral `Si(x)` and the cosine integral `Ci(x)`. These are special functions in mathematics and physics, defined by specific integrals, and are computed here using Simpson's method.
+    *   **Purpose & Usage:**
+        *   `sinintegral(x: double): double`: Computes `Si(x) = Integral of (sin(u)/u) from u=0 to u=x`.
+        *   `cosintegral(x: double): double`: Computes `Ci(x) = gamma + Ln(x) + Integral of ((cos(u)-1)/u) from u=0 to u=x` (for `x > 0`), where `gamma` is Euler's constant (approximately `0.57721566`).
+        *   **Inputs:** `x`: `double` (the argument for the integral function).
+        *   **Outputs:** Returns the calculated integral value.
+    *   **Real-world Applications:**
+        *   **Optics:** Describing diffraction patterns and wave propagation phenomena.
+        *   **Electromagnetism:** Analyzing wave propagation in certain media and in antenna theory.
+        *   **Signal Processing:** Involved in the analysis and design of ideal low-pass filters and other signal reconstruction problems.
+    *   **Notes:** `cosintegral(x)` requires `x > 0`. The accuracy is implicitly controlled by the number of integration steps, which is adaptively chosen based on `abs(x)` to ensure reasonable precision. `tsinint.pas` demonstrates their usage.
+
+*   **Discrete Primitive (Runge-Kutta Method)**
+    *   **Files:** `primitiv.pas` (console output), `gprimiti.pas` (graphical output)
+    *   **Description:** These programs calculate the discrete primitive (antiderivative or indefinite integral) of a user-defined function `F(x)` at `n` points. They employ a classical Runge-Kutta method of order 4, which offers good accuracy for solving initial value problems of this type. `gprimiti.pas` provides a graphical display of the result.
+    *   **Purpose & Usage:** The `Primitive` procedure computes `Y(i)` such that `Y'(i) = F(X(i))`, given an initial value `fa` for the primitive at `x=a`. The function `F(x)` to be integrated must be defined within the program.
+        *   **Procedure:** `Primitive(a, b, fa: real; n, fi: Integer)`
+        *   **Inputs:**
+            *   `a`: `real` (The beginning x-value of the interval).
+            *   `b`: `real` (The end x-value of the interval).
+            *   `fa`: `real` (The initial value of the primitive at `x=a`).
+            *   `n`: `integer` (The number of points to calculate for the primitive).
+            *   `fi`: `integer` (The number of intermediate points or "finesse" per step).
+        *   **Outputs:**
+            *   `primitiv.pas`: Displays the `(x, y)` points of the primitive to the console.
+            *   `gprimiti.pas`: Stores `Y` values in a `Yi` array and uses `Graph_2d` and `Type_def` units for plotting the primitive.
+    *   **Real-world Applications:**
+        *   **Trajectory Analysis:** Calculating displacement from velocity data, or velocity from acceleration data, which are fundamental in physics and engineering.
+        *   **Accumulation Processes:** Modeling the total accumulation of a quantity over time, given its rate of change (e.g., total volume from flow rate, total energy from power).
+        *   **Chemical Engineering:** Calculating concentration profiles over time from reaction rate laws.
+    *   **Notes:** The Runge-Kutta method provides higher accuracy and stability compared to simpler numerical integration methods for initial value problems.
+
+### Cubature (Multidimensional Integration)
+
+Cubature routines extend numerical integration to multiple dimensions, typically over rectangles or triangles.
+
+*   **Newton-Cotes Cubature for Rectangles**
+    *   **Files:** `kubnec.pas`, `tcubnec.pas`
+    *   **Description:** Computes cubature (multidimensional integral) over rectangles using summed Newton-Cotes formulas for sub-rectangles. It supports 7 different Newton-Cotes methods (e.g., trapezoidal rule, Simpson's rule) and provides an option for error estimation by repeating the cubature with a finer step size.
+    *   **Purpose & Usage:** The `Kub4NeCn` function integrates a user-defined function `f(x,y)` over a rectangle `(a,b) x (c,d)`. The function `func(x,y)` to be integrated must be defined in `kubnec.pas`.
+        *   **Function:** `Kub4NeCn(a, b: Double; Nx: Integer; c, d: Double; Ny: Integer; Verfahren: Integer; Var Wert: Double; Schaetzen: Integer; Var FehlerSch: Double): Integer`
+        *   **Inputs:**
+            *   `a, b`: `double` (Left and right x-end points of the integration rectangle).
+            *   `Nx`: `INTEGER` (Number of x-intervals).
+            *   `c, d`: `double` (Left and right y-end points of the integration rectangle).
+            *   `Ny`: `INTEGER` (Number of y-intervals).
+            *   `Verfahren`: `INTEGER` (Method number: `1`=trapezoidal, `2`=Simpson, `3`=3/8, `4`=4/90, `5`=5/288, `6`=6/840, `7`=7/17280 formula).
+            *   `Schaetzen`: `INTEGER` (`0` for no error estimation, `1` for error estimation).
+            *   `func(x,y): Double` (User-defined function to integrate, declared in `kubnec.pas`).
+        *   **Outputs:**
+            *   `Wert`: `double` (The calculated value of the integral).
+            *   `FehlerSch`: `double` (The error estimate, if `Schaetzen` is non-zero).
+            *   Returns an `INTEGER` error code (`0` for success).
+    *   **Real-world Applications:**
+        *   **Fluid Dynamics:** Calculating total flow or mass flux through a surface or cross-section.
+        *   **Stress Analysis:** Determining total stress or force acting over a loaded region in a material.
+        *   **Image Analysis:** Summing pixel values in a 2D region for feature extraction or intensity analysis.
+    *   **Notes:** The global variables `KubVer`, `KubX`, `KubY` are used internally by `kubnec.pas` for node weight calculation. `tcubnec.pas` demonstrates the usage of `Kub4NeCn`.
+
+*   **Gauss Cubature for Rectangles and Triangles**
+    *   **Files:** `kubgauss.pas`, `tk4gau.pas`, `tk3gan.pas`
+    *   **Description:** Provides routines for Gaussian cubature (multidimensional integration) over rectangular and triangular regions. Gaussian quadrature is highly accurate for polynomial integrands and is often preferred for smooth functions due to its efficiency. The unit includes pre-defined constants for n-point Gaussian cubature.
+    *   **Purpose & Usage:**
+        *   `Kub4GauE`: Integrates `f(x,y)` over rectangles using summed Gauss formulas.
+        *   `Kub4GauV`: Integrates `f(x,y)` over rectangles with non-identical sub-rectangle edge lengths (using provided vectors `X[]` and `Y[]` for partitions).
+        *   `Kub3GauN`: Integrates `f(x,y)` over a triangle using the summed n-point Gauss formula on sub-triangles.
+        *   The function `func(x,y)` to be integrated must be defined in `kubgauss.pas`.
+        *   **Function:** `Kub4GauE(...)`
+            *   **Inputs:** `a, b`, `c, d` (rectangle limits); `Nx, Ny` (number of intervals); `Verf` (order of method, 0 to 7); `Schaetzen` (error estimation flag).
+            *   **Outputs:** `Wert` (integral value); `FehlerSch` (error estimate).
+        *   **Function:** `Kub4GauV(...)`
+            *   **Inputs:** `x, y` (vectors of interval end points); `Nx, Ny`; `Verf`; `Schaetzen`.
+            *   **Outputs:** `Wert`; `FehlerSch`.
+        *   **Function:** `Kub3GauN(...)`
+            *   **Inputs:** `Px, Py`, `Qx, Qy`, `Rx, Ry` (triangle coordinates); `n` (order of method, 1,2,3,7 implemented); `m` (number of subtriangles along one edge).
+            *   **Outputs:** `Wert` (integral value).
+    *   **Real-world Applications:**
+        *   **Engineering Simulation:** High-accuracy integration over complex domains in finite element (FEA) or boundary element methods (BEM) for stress analysis, fluid dynamics, and heat transfer.
+        *   **Aerodynamics:** Calculating aerodynamic forces and moments by integrating pressure distributions over aircraft surfaces.
+        *   **Materials Science:** Determining material properties from integrals over complex microstructures or crystal lattice configurations.
+    *   **Notes:** `tk4gau.pas` tests `Kub4GauE` for rectangles. `tk3gan.pas` tests `Kub3GauN` for triangles. The specific Gauss point constants are hardcoded within `kubgauss.pas`.
+
+*   **Romberg-Richardson Extrapolation for Triangular Cubature**
+    *   **Files:** `kubnec.pas`, `tk3nec.pas`
+    *   **Description:** Integrates functions over triangular regions using the summed 3-point Newton-Cotes formula combined with Romberg-Richardson extrapolation. This technique improves the accuracy of the basic cubature rule by systematically combining results from multiple applications of the rule with different step sizes.
+    *   **Purpose & Usage:** The `Kub3RoRi` function approximates the double integral of a user-defined function `f(x,y)` over a triangle PQR. It uses multiple cubatures with progressively halved sub-triangle edge lengths to improve the estimate and provide an error bound. The function `func(x,y)` to be integrated must be defined in `kubnec.pas`.
+        *   **Function:** `Kub3RoRi(Px, Py, Qx, Qy, Rx, Ry: Double; n: integer; Var Wert, FehlerSch: Double): Integer`
+        *   **Inputs:**
+            *   `Px, Py`: `double` (Coordinates of triangle vertex P).
+            *   `Qx, Qy`: `double` (Coordinates of triangle vertex Q).
+            *   `Rx, Ry`: `double` (Coordinates of triangle vertex R).
+            *   `n`: `integer` (Number of cubatures to perform for extrapolation).
+            *   `func(x,y): Double` (User-defined function to integrate, defined in `kubnec.pas`).
+        *   **Outputs:**
+            *   `Wert`: `double` (The approximation of the double integral).
+            *   `FehlerSch`: `double` (The error estimate for `Wert`).
+            *   Returns an `INTEGER` error code (`0` for success).
+    *   **Real-world Applications:**
+        *   **Geographical Information Systems (GIS):** Calculating volumes of landforms or water bodies from triangular mesh data, where high accuracy is often required for environmental modeling.
+        *   **Computer Graphics:** Rendering complex scenes by integrating over triangular facets of 3D models for realistic lighting and shading.
+        *   **Structural Mechanics:** Analyzing complex structures modeled with triangular elements, where accurate integration of stress or strain over elements is crucial.
+    *   **Notes:** This routine internally uses `RoRiExtr` for Richardson extrapolation and `Kub3NeC3` (or `Kub3Nec3n` for multiple values) for the base Newton-Cotes cubature. `tk3nec.pas` demonstrates the use of `Kub3RoRi`.
+
+### Optimization
+
+Optimization routines are designed to find the maximum or minimum of a function, which can be in one or multiple dimensions.
+
+*   **Bracketing a Minimum**
+    *   **Files:** `mnbrak.pas`
+    *   **Description:** The `MNBRAK` subroutine is used to find three points (`AX`, `BX`, `CX`) that bracket a minimum of a real function `FUNC(X)`. Given two distinct initial points `AX` and `BX`, it searches in the downhill direction to ensure `BX` is between `AX` and `CX`, and `FUNC(BX)` is less than both `FUNC(AX)` and `FUNC(CX)`. This procedure is a prerequisite for more sophisticated minimization algorithms.
+    *   **Purpose & Usage:** The `MNBRAK` procedure provides an initial interval for more sophisticated minimization algorithms like Golden Section Search or Brent's method. The function `FUNC(X)` to be minimized must be defined within the program.
+        *   **Procedure:** `MNBRAK(AX, BX: DOUBLE; VAR CX, FA, FB, FC: DOUBLE)`
+        *   **Inputs:**
+            *   `AX`: `DOUBLE` (First initial point).
+            *   `BX`: `DOUBLE` (Second initial point, distinct from `AX`).
+            *   `FUNC(X): DOUBLE` (User-defined function to minimize).
+        *   **Outputs:**
+            *   `AX`, `BX`, `CX`: `DOUBLE` (Three points that bracket the minimum, with `BX` between `AX` and `CX`).
+            *   `FA`, `FB`, `FC`: `DOUBLE` (The function values at `AX`, `BX`, `CX` respectively, with `FB < FA` and `FB < FC`).
+    *   **Real-world Applications:**
+        *   **Algorithm Preprocessing:** Often a necessary first step for many one-dimensional optimization algorithms, ensuring that the search for a minimum starts within a guaranteed interval.
+        *   **Model Calibration:** Identifying a likely range for a parameter that minimizes an error function in scientific or engineering models.
+        *   **Engineering Design:** Narrowing down the search space for optimal design parameters in a robust manner.
+    *   **Notes:** Uses `GOLD` (golden ratio constant `1.618034`) for interval magnification and `GLIMIT` (`100.0`) for maximum allowed magnification, along with a `TINY` constant (`1E-20`) to prevent division by zero.
+
+*   **Golden Section Search**
+    *   **Files:** `golden.pas`, `golden.txt`
+    *   **Description:** Implements the Golden Section Search method to find the minimum of a real function `Y=F(X)` within a bracketed interval. It iteratively narrows down the interval while maintaining the golden ratio property, ensuring efficient and robust convergence.
+    *   **Purpose & Usage:** The `GOLDEN` function finds the minimum of `F(X)` given a bracketing triplet of abscissas `AX`, `BX`, `CX` and a fractional precision `TOL`. The function `F(X)` to be minimized must be defined within the program.
+        *   **Function:** `GOLDEN(AX, BX, CX, TOL: DOUBLE; VAR XMIN: DOUBLE): DOUBLE`
+        *   **Inputs:**
+            *   `AX`, `BX`, `CX`: `DOUBLE` (The bracketing triplet of abscissas, such that `BX` is between `AX` and `CX`, and `F(BX)` is less than `F(AX)` and `F(CX)`).
+            *   `TOL`: `DOUBLE` (The desired fractional precision for the minimum's location).
+            *   `F(X): DOUBLE` (User-defined function to minimize).
+        *   **Outputs:**
+            *   `XMIN`: `DOUBLE` (The abscissa of the minimum found).
+            *   `GOLDEN`: `DOUBLE` (The minimum function value at `XMIN`).
+    *   **Real-world Applications:**
+        *   **Single-Variable Optimization:** Optimizing parameters in experiments or models where the objective function depends on only one variable (e.g., finding the optimal dosage of a drug, tuning a single PID controller gain).
+        *   **Algorithm Development:** As a reliable, foundational minimization method for teaching or as a fallback for more complex, faster but potentially less robust algorithms.
+        *   **Engineering Design:** Finding the optimal dimension for a component that minimizes a specific performance metric (e.g., weight, cost) under certain constraints.
+    *   **Notes:** This method is highly robust and guaranteed to converge, but it is generally slower than methods like Brent's that combine it with parabolic interpolation.
+
+*   **Brent's Method for Minimum Seeking**
+    *   **Files:** `brent.pas`, `brent.txt`
+    *   **Description:** Implements Brent's method, a robust and efficient algorithm for finding the minimum of a one-dimensional function. It intelligently combines the reliability of golden section search with the speed of parabolic interpolation, switching between them based on the function's behavior.
+    *   **Purpose & Usage:** The `BRENT` function isolates the minimum of `F(X)` to a fractional precision `TOL`, given a bracketing triplet `AX`, `BX`, `CX`. The function `F(X)` to be minimized must be defined within the program.
+        *   **Function:** `BRENT(AX, BX, CX, TOL: DOUBLE; Var XMIN: DOUBLE): DOUBLE`
+        *   **Inputs:**
+            *   `AX`, `BX`, `CX`: `DOUBLE` (The bracketing triplet of abscissas, similar to Golden Section Search).
+            *   `TOL`: `DOUBLE` (The desired fractional precision for the minimum's location).
+            *   `F(X): DOUBLE` (User-defined function to minimize).
+        *   **Outputs:**
+            *   `XMIN`: `DOUBLE` (The abscissa of the minimum found).
+            *   `BRENT`: `DOUBLE` (The minimum function value at `XMIN`).
+    *   **Real-world Applications:**
+        *   **Curve Fitting:** Finding optimal parameters that minimize the error (e.g., sum of squared residuals) between a mathematical model and observed data.
+        *   **Machine Learning (Hyperparameter Tuning):** Optimizing a single hyperparameter (e.g., learning rate, regularization strength) by minimizing a validation error function.
+        *   **Robotics:** Minimizing energy consumption for specific movements or tasks by finding the optimal value of a control variable.
+    *   **Notes:** Generally considered one of the best one-dimensional minimization algorithms due to its excellent balance of speed and reliability. It also includes `ITMAX` (maximum iterations) and `ZEPS` (a small number to avoid precision issues for minimums near zero).
+
+*   **Downhill Simplex Method (Nelder-Mead)**
+    *   **Files:** `tamoeba.pas`, `tamoeba.txt`
+    *   **Description:** Implements the downhill simplex method of Nelder and Mead for multidimensional minimization of a function `FUNC(X)`, where `X` is an `NDIM`-dimensional vector. This direct search method does not require derivatives, making it suitable for objective functions that are non-differentiable or difficult to differentiate. It operates by iteratively transforming a simplex (a geometric figure like a triangle in 2D or tetrahedron in 3D) to descend towards a minimum.
+    *   **Purpose & Usage:** The `AMOEBA` procedure finds the minimum of a multidimensional function given an initial simplex (set of `NDIM+1` vertices) and a convergence tolerance `FTOL`. The function `FUNC(P)` to be minimized must be defined within the program.
+        *   **Procedure:** `AMOEBA(Var P: MAT; Var Y: VEC; MP, NP, NDIM: Integer; FTOL: Double; Var ITER: Integer)`
+        *   **Inputs:**
+            *   `P`: `MAT` (Matrix whose `NDIM+1` rows are `NDIM`-dimensional vectors representing the vertices of the starting simplex. `MP` and `NP` are physical dimensions of `P`).
+            *   `Y`: `VEC` (Vector of length `NDIM+1`, components pre-initialized to the values of `FUNC` evaluated at the vertices of `P`).
+            *   `NDIM`: `INTEGER` (Number of dimensions/variables of the function).
+            *   `FTOL`: `DOUBLE` (The fractional convergence tolerance to be achieved in the function value).
+            *   `FUNC(P:VEC): Double` (User-defined function to minimize).
+        *   **Outputs:**
+            *   `P`, `Y`: Updated with points and function values near the minimum found.
+            *   `ITER`: `INTEGER` (The number of iterations taken).
+    *   **Real-world Applications:**
+        *   **Chemical Process Optimization:** Finding optimal reaction conditions (e.g., temperature, pressure, reactant concentrations, catalyst loading) without needing analytical derivatives.
+        *   **Machine Learning:** Training simple models or optimizing hyperparameters in cases where gradient-based methods are not applicable or too complex (e.g., optimizing parameters of a complex simulation model).
+        *   **Robotics:** Path planning or robot control where objective functions might be non-smooth or difficult to differentiate.
+    *   **Notes:** This method is robust but can be slow to converge, especially for high-dimensional problems or functions with narrow valleys. It finds local minima and does not guarantee a global minimum.
+
+*   **Powell's Method**
+    *   **Files:** `tpowell.pas`, `tpowell.txt`
+    *   **Description:** Implements Powell's method for minimizing a function of `N` variables. This derivative-free method constructs a set of conjugate directions, along which the function is minimized sequentially. It's often more efficient than the Nelder-Mead simplex for functions that are approximately quadratic.
+    *   **Purpose & Usage:** The `POWELL` procedure finds the minimum of a user-defined function `FUNC` given an initial starting point `P` and an initial matrix `XI` containing the search directions (usually the N unit vectors). The function `FUNC(P)` to be minimized must be defined within the program.
+        *   **Procedure:** `POWELL(Var P: pVEC; XI: pMAT; N, NP: Integer; FTOL: Double; Var ITER: Integer; Var FRET: Double)`
+        *   **Inputs:**
+            *   `P`: `pVEC` (pointer to `VEC` type, initial starting point vector).
+            *   `XI`: `pMAT` (pointer to `MAT` type, initial matrix whose columns contain the search directions).
+            *   `N`: `INTEGER` (number of variables).
+            *   `NP`: `INTEGER` (physical dimension of `XI` for array declaration).
+            *   `FTOL`: `DOUBLE` (the fractional tolerance in the function value for convergence).
+            *   `FUNC(P:pVEC): Double` (User-defined function to minimize).
+        *   **Outputs:**
+            *   `P`: `pVEC` (updated to the best point found).
+            *   `XI`: `pMAT` (the then-current direction set).
+            *   `ITER`: `INTEGER` (the number of iterations taken).
+            *   `FRET`: `DOUBLE` (the function value at the returned point `P`).
+    *   **Dependencies:** Internally calls `LINMIN` (which uses `MNBRAK` and `BRENT`) for one-dimensional minimization along search directions.
+    *   **Real-world Applications:**
+        *   **Structural Engineering:** Optimizing designs of structures (e.g., trusses, beams) where performance is a complex, multi-variable function, and derivatives might be computationally expensive.
+        *   **Material Science:** Finding optimal material compositions or processing parameters to achieve desired properties (e.g., strength, conductivity).
+        *   **Robotics:** Path planning for robotic arms with complex joint constraints, where objective functions might be non-differentiable.
+    *   **Notes:** Generally more efficient than the downhill simplex method for higher dimensions, especially for quadratic-like functions, but can still get stuck in local minima.
+
+*   **Steepest Descent Optimization (Partial Derivatives Required)**
+    *   **Files:** `steepds.pas`, `steepds.txt`
+    *   **Description:** Implements the steepest descent optimization method to find local maxima (or minima by optimizing `1/F(X)` or `-F(X)`) of an `L`-dimensional function. This version requires the user to provide analytical partial derivatives of the objective function within the `Eval` subroutine.
+    *   **Purpose & Usage:** The `Steepds` procedure finds the local optimum of an `L`-dimensional function. It requires initial estimates for parameters `X(I)`, an initial step size `XK`, an error criterion `E`, the number of variables `L`, and a maximum number of steps `M`. The `Eval` function must compute the objective function and populate a global array `D` with its partial derivatives.
+        *   **Procedure:** `Steepds` (within `steepds.pas`)
+        *   **Inputs:**
+            *   `X`: `Array` of `DOUBLE` (Initial values of variables `X[1]` to `X[L]`).
+            *   `L`: `INTEGER` (The dimension of the function to study).
+            *   `E`: `DOUBLE` (The convergence criterion).
+            *   `M`: `INTEGER` (The maximum number of iterations).
+            *   `XK`: `DOUBLE` (A starting constant for step size).
+            *   `Eval`: Function (within `steepds.pas`) that computes `F(X)` and populates `D[i]` with partial derivatives `dF/dX[i]`.
+        *   **Outputs:**
+            *   `X`: `Array` of `DOUBLE` (The locally optimum set of parameters).
+            *   `Eval` (after call): `DOUBLE` (The value of the local maximum/minimum found).
+            *   `n`: `INTEGER` (The number of iterations performed).
+    *   **Real-world Applications:**
+        *   **Theoretical Physics/Mathematics:** When explicit analytical forms of functions and their derivatives are known, this method is ideal for high-precision optimization.
+        *   **Engineering Design Optimization:** Optimizing complex systems where mathematical models allow for analytical derivation of gradients, leading to more efficient searches for optimal designs (e.g., minimizing drag in aerodynamics, maximizing efficiency in power systems).
+        *   **Economic Modeling:** Finding equilibrium points or maximizing utility functions in economic models where functional forms are well-defined and differentiable.
+    *   **Notes:** Can achieve higher accuracy and faster convergence compared to using approximate derivatives, provided the derivatives are correct and smooth. However, it can be sensitive to the initial step size and may converge to a local optimum.
+
+*   **Steepest Descent Optimization (Approximate Derivatives)**
+    *   **Files:** `steepa.pas`, `steepda.txt`
+    *   **Description:** Implements the steepest descent optimization method for finding local maxima (or minima by optimizing `1/F(X)` or `-F(X)`) of an `L`-dimensional function without requiring analytically supplied partial derivatives. Instead, derivatives are estimated numerically using finite difference approximations.
+    *   **Purpose & Usage:** The `Steepda` procedure finds the local optimum of an `L`-dimensional function by estimating partial derivatives numerically. It requires the same input parameters as `steepds.pas`, but the `Eval` function only needs to compute the objective function.
+        *   **Procedure:** `Steepda` (within `steepa.pas`)
+        *   **Inputs:**
+            *   `X`: `Array` of `DOUBLE` (Initial values of variables `X[1]` to `X[L]`).
+            *   `L`: `INTEGER` (The dimension of the function to study).
+            *   `E`: `DOUBLE` (The convergence criterion).
+            *   `M`: `INTEGER` (The maximum number of iterations).
+            *   `XK`: `DOUBLE` (A starting constant for step size).
+            *   `Eval`: Function (within `steepa.pas`) that computes `F(X)`.
+        *   **Outputs:**
+            *   `X`: `Array` of `DOUBLE` (The locally optimum set of parameters).
+            *   `Eval` (after call): `DOUBLE` (The value of the local maximum/minimum found).
+            *   `n`: `INTEGER` (The number of iterations performed).
+    *   **Real-world Applications:**
+        *   **Black-box Optimization:** Optimizing functions whose internal structure is unknown or too complex for analytical differentiation (e.g., optimizing parameters of a simulation model without access to its internal equations).
+        *   **System Identification:** Estimating parameters of a system model by observing its input-output behavior, particularly when dealing with noisy or empirical data.
+        *   **Reinforcement Learning (Policy Optimization):** In continuous action spaces, where gradients might be approximated from observed rewards, this method provides a foundational approach.
+    *   **Notes:** More widely applicable than `steepds.pas` due to not needing analytical derivatives, but it can be less precise and potentially slower to converge, especially if the initial step size is too large or the function is noisy.
+
+### Limited Developments (Taylor Series)
+
+This section focuses on computing coefficients for Taylor series expansions (limited developments) of functions, including products, quotients, and compositions.
+
+*   **Limited Development of f(x) at x=x0**
+    *   **Files:** `ltddev.pas`, `ltddev1.txt` (This explanation file covers all limited development programs: `ltddev`, `ltddev1`, `ltddev2`, `ltddev3`)
+    *   **Description:** Calculates the coefficients of the limited development (Taylor series expansion up to order 5) of a real function `f(x)` at a specific point `x0` with a given step `h`. It uses numerical differentiation to estimate the derivatives required for the Taylor formula.
+    *   **Purpose & Usage:** The `Ltddev` program finds coefficients `ai` in the Taylor series expansion `f(x) = a0 + a1(x-x0) + a2(x-x0)^2 + ...`. The function `f(x)` to be developed must be defined within the program.
+        *   **Program:** `Ltddev`
+        *   **Inputs:**
+            *   `f(x): Double` (User-defined function to develop, hardcoded as `1.0/(1.0-x)` in the example).
+            *   `x0`: `Double` (The point of expansion).
+            *   `h`: `Double` (The step value used for numerical differentiation).
+        *   **Outputs:**
+            *   `a1` to `a5`: `double` (The calculated coefficients of the limited development).
+    *   **Real-world Applications:**
+        *   **Numerical Analysis Fundamentals:** Demonstrating the basic concept of Taylor series and the challenges and limitations of direct numerical differentiation.
+        *   **Error Analysis:** Approximating function behavior around a specific point for error estimation in other numerical methods or sensitivity analysis.
+        *   **Algorithm Prototyping:** Quick generation of low-order Taylor series for functions to test analytical properties or numerical algorithms.
+    *   **Notes:** As noted in `ltddev1.txt`, this direct method is generally not highly accurate for calculating limited developments due to numerical precision issues, especially for higher orders.
+
+*   **Limited Development of f(x)*g(x) at x=0**
+    *   **Files:** `ltddev1.pas`, `ltddev1.txt`
+    *   **Description:** Calculates the coefficients of the limited development of a product of two functions, `f(x)*g(x)`, at `x=0` up to a specified order `N`. It achieves higher accuracy by using the known limited developments (coefficients) of `f(x)` and `g(x)`, based on the convolution property of Taylor series coefficients.
+    *   **Purpose & Usage:** The `ar_dlmult` procedure computes `ci` coefficients for the product series `(f.g)(x) = c0 + c1x + c2x^2 + ...`.
+        *   **Procedure:** `ar_dlmult(n: Integer; var t1: Table; var t2: Table; var res: Table)`
+        *   **Inputs:**
+            *   `n`: `INTEGER` (The order of the development (maximum `SIZE`, which is 25)).
+            *   `t1`: `Table` (Array of `Double`) (The coefficients of the limited development of `f(x)`).
+            *   `t2`: `Table` (Array of `Double`) (The coefficients of the limited development of `g(x)`).
+        *   **Outputs:**
+            *   `res`: `Table` (The coefficients of the limited development of `f(x)*g(x)`).
+    *   **Real-world Applications:**
+        *   **Series Multiplication:** Efficiently computing the series expansion of a product of functions, which is more accurate and stable than symbolic multiplication followed by numerical evaluation.
+        *   **Control System Design:** Analyzing and designing systems with combined transfer functions where system behavior near equilibrium is crucial.
+        *   **Perturbation Methods in Physics:** When a system's behavior can be modeled as a product of series (e.g., in quantum field theory or fluid dynamics).
+    *   **Notes:** This method is significantly more accurate than direct numerical methods for products of series.
+
+*   **Limited Development of f(x)/g(x) at x=0**
+    *   **Files:** `ltddev2.pas`, `ltddev1.txt`
+    *   **Description:** Calculates the coefficients of the limited development of a quotient of two functions, `f(x)/g(x)`, at `x=0` up to a specified order `N`, given the limited developments (coefficients) of `f(x)` and `g(x)`. This method is based on a recursive formula derived from polynomial long division.
+    *   **Purpose & Usage:** The `ar_dldiv` procedure computes `ci` coefficients for the quotient series `(f/g)(x) = c0 + c1x + c2x^2 + ...`.
+        *   **Procedure:** `ar_dldiv(n: Integer; var t1: Table; var t2: Table; var res: Table)`
+        *   **Inputs:**
+            *   `n`: `INTEGER` (The order of the development (maximum `SIZE`, which is 25)).
+            *   `t1`: `Table` (Array of `Double`) (The coefficients of the limited development of `f(x)`).
+            *   `t2`: `Table` (Array of `Double`) (The coefficients of the limited development of `g(x)`).
+        *   **Outputs:**
+            *   `res`: `Table` (The coefficients of the limited development of `f(x)/g(x)`).
+    *   **Real-world Applications:**
+        *   **Rational Function Approximation:** Generating series expansions for functions that are ratios of known series, which is common in signal processing and control theory.
+        *   **Circuit Analysis:** Analyzing impedance or admittance functions in electrical circuits, which are often expressed as rational functions.
+        *   **Chemical Engineering:** Modeling reaction kinetics or mass transfer processes where concentration ratios are involved.
+    *   **Notes:** Requires that `b0 <> 0` (i.e., `g(0) <> 0`) for the quotient to be defined at `x=0`. This method is highly accurate.
+
+*   **Limited Development of f(g(x)) at x=0**
+    *   **Files:** `ltddev3.pas`, `ltddev1.txt`
+    *   **Description:** Calculates the coefficients of the limited development of the composition of two functions, `f(g(x))`, at `x=0` up to a specified order `N`, given their individual limited developments (coefficients). This method involves complex summation rules.
+    *   **Purpose & Usage:** The `ar_dlcomp` procedure computes `cm` coefficients for the composite series `(f o g)(x) = c0 + c1x + c2x^2 + ...`.
+        *   **Procedure:** `ar_dlcomp(n: Integer; var t1: Table; var t2: Table; var res: Table)`
+        *   **Inputs:**
+            *   `n`: `INTEGER` (The order of the development (maximum `SIZE`, which is 25)).
+            *   `t1`: `Table` (Array of `Double`) (The coefficients of the limited development of `f(x)`).
+            *   `t2`: `Table` (Array of `Double`) (The coefficients of the limited development of `g(x)`).
+        *   **Outputs:**
+            *   `res`: `Table` (The coefficients of the limited development of `f(g(x))`).
+    *   **Real-world Applications:**
+        *   **Formal Power Series:** Computing series expansions of composite functions, often encountered in combinatorics, probability theory, and generating functions.
+        *   **Mathematical Physics:** Analyzing coupled systems where one function's output feeds into another, requiring precise series expansions for their composition.
+        *   **Nonlinear Control Systems:** Linearizing nonlinear systems around an operating point using Taylor series expansion of composite functions to apply linear control techniques.
+    *   **Notes:** Requires that `b0 = 0` (i.e., `g(0) = 0`) for the composition `f(g(x))` to be well-defined at `x=0`. This is the most computationally intensive of the limited development routines but provides high accuracy.
+
+### Other Utilities
+
+This section covers additional mathematical utilities provided in the library, including special polynomial coefficient generation, and tools for user-defined function management and plotting.
+
+*   **Laguerre Polynomial Coefficients**
+    *   **Files:** `laguerre.pas`
+    *   **Description:** Computes the coefficients of Laguerre polynomials `L_n(x)` using their recursion relation. Laguerre polynomials are orthogonal polynomials defined over the interval `[0, inf)` with a weighting function of `exp(-x)`.
+    *   **Purpose & Usage:** The `Laguerre_Coeff` procedure generates the `A(i)` coefficients for Laguerre polynomials of a specified order `n`.
+        *   **Procedure:** `Laguerre_Coeff` (within `laguerre.pas`)
+        *   **Inputs:**
+            *   `n`: `INTEGER` (The order of the polynomial for which to compute coefficients).
+        *   **Outputs:**
+            *   `A`: `Array` of `real_ar` (The coefficients of the Laguerre polynomial `L_n(x)`, where `A[i]` is the coefficient of `x^i`).
+    *   **Real-world Applications:**
+        *   **Quantum Mechanics:** Solving the Schrödinger equation for systems like hydrogen-like atoms, where Laguerre polynomials appear as solutions to the radial wave equation.
+        *   **Signal Processing:** Used as basis functions for spectral analysis or in orthogonal function expansions for signals defined over a semi-infinite interval.
+        *   **Approximation Theory:** Used in generalized Fourier series expansions for functions over the interval `[0, inf)`.
+    *   **Notes:** Laguerre polynomial coefficients are always integers, alternate in sign, and have a leading coefficient of `(-1)^n`. The program pre-computes `L0(x)` and `L1(x)` and then uses a recurrence relation for higher orders.
+
+*   **Function Plotting and Evaluation**
+    *   **Files:** `grfunct.pas`, `multifon.pas`, `ufunct.pas`, `type_def.pas`, `graph_2d.pas`, `crtgr2d.pas`
+    *   **Description:** These programs provide capabilities for drawing 2D curves defined by their equations. `grfunct.pas` plots `y=f(x)` (Cartesian), while `multifon.pas` offers more versatile plotting, supporting Cartesian `y=f(x)`, polar `Rho=f(t)`, and parametric `x=FX(t), y=FY(t)` curves. They leverage the `UFunct` unit to compile and evaluate user-defined functions and `Graph_2d` (or `CrtGr2D`) for graphical rendering.
+    *   **Purpose & Usage:** To visualize mathematical functions graphically from their symbolic equations.
+        *   **`grfunct.pas` (Program `Test_Unit_Function`):**
+            *   **Inputs:** User-defined function equation as a string (e.g., `"sin(x)/x"`), x-minimum and x-maximum values, and the number of points for plotting.
+            *   **Outputs:** A graphical display of the `y=F(x)` function.
+        *   **`multifon.pas` (Program `MULTIFUNC`):**
+            *   **Inputs:** Prompts the user for the curve kind (1=Cartesian, 2=Polar, 3=Parametric), the function equation(s) (e.g., `Rho=f(t)` or `X=FX(t), Y=FY(t)`), and the interval/step size. Can automatically determine periods for periodic functions and maximum radii for proper scaling.
+            *   **Outputs:** A graphical display of the selected 2D function type.
+    *   **Dependencies:** Both plotting programs rely heavily on the `UFunct` unit for parsing and evaluating user-defined function strings. They also require `Type_def` for `REAL_AR` type and graphics units (`Graph_2d.pas` or `CrtGr2D.pas` for `multifon.pas`) for rendering.
+    *   **Real-world Applications:**
+        *   **Data Visualization:** Plotting mathematical models, experimental data, or simulation outputs to understand their behavior and trends.
+        *   **Engineering Design:** Visualizing geometries, performance curves, or stress distributions in a design process.
+        *   **Education:** Demonstrating concepts in calculus, physics, geometry, and engineering by interactively plotting functions.
+    *   **Notes:** `ufunct.pas` is essential for the functionality of these programs, allowing users to input arbitrary mathematical expressions.
+
+*   **Function Simplification**
+    *   **Files:** `simplif2.pas`, `ufunct.pas`
+    *   **Description:** This unit provides a procedure to simplify the internal tree representation of a function (`FONC` type), particularly useful after symbolic derivation or other algebraic manipulations. It applies algebraic rules to reduce the complexity and improve the readability/efficiency of expressions (e.g., `0+u = u`, `1*u = u`, `-(-K) = K`, `CTE*CTE = CTE`).
+    *   **Purpose & Usage:** The `SimplifyFunction` procedure simplifies a compiled function `f` by applying basic algebraic simplifications directly to its internal tree structure.
+        *   **Procedure:** `SimplifyFunction(VAR f:FONC)`
+        *   **Inputs:**
+            *   `f`: `FONC` (The function to be simplified, typically obtained from `ufunct.pas`).
+        *   **Outputs:**
+            *   `f`: The modified `FONC` structure representing the simplified function.
+    *   **Dependencies:** Requires the `UFunct` unit for the definition of the `FONC` type and other function manipulation utilities.
+    *   **Real-world Applications:**
+        *   **Symbolic Differentiation/Integration:** Reducing complex expressions resulting from symbolic calculus to their simplest forms, making them easier to interpret or use in further computations.
+        *   **Equation Solving:** Simplifying equations before solving them to improve computational efficiency and reduce numerical errors.
+        *   **Automated Theorem Proving:** As part of logic engines that manipulate mathematical expressions, ensuring expressions are canonical or in a reduced form.
+    *   **Notes:** This unit works on the internal tree structure of the function, not directly on its string representation. It is often used in conjunction with formal derivative calculation (as seen in `deriv.pas`).
