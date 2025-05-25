@@ -1,8 +1,7 @@
 
-# jpmMath Library - A Comprehensive Numerical and Scientific Computing Toolkit
+# jpmMath Library - A Comprehensive Math Toolkit by Jean-Pierre Moreau
 
 ## Introduction
-
 The `jpmMath` library is a robust and extensive collection of numerical and scientific computing routines implemented in Pascal. Designed for engineers, scientists, researchers, and students, this library provides a foundational toolkit for solving a wide array of mathematical, physics, and engineering problems. It emphasizes direct mathematical implementation, numerical accuracy, and modularity, making it an excellent resource for both practical applications and educational purposes in understanding classical algorithms.
 
 ## Core Principles and Philosophy
