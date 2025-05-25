@@ -1,4 +1,4 @@
-# jpmMath Library: Complex Numbers
+# jpmMath Library - complex - Complex Numbers and Linear Algebra
 
 This folder contains a collection of Free Pascal source code modules dedicated to performing various mathematical operations and algorithms in the complex number domain. It provides functionalities ranging from elementary complex arithmetic to advanced topics such as complex function evaluation, polynomial root finding, and linear algebra operations on complex matrices.
 
