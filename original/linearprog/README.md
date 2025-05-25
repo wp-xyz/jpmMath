@@ -1,5 +1,5 @@
 
-# jpmMath - Programming Library
+# jpmMath - Linear Programming
 
 This folder contains a collection of Pascal programs demonstrating various operational research and linear programming methods from the `jpmMath` library. These programs serve as educational examples and provide practical implementations for solving decision-making and optimization problems in diverse fields.
 
