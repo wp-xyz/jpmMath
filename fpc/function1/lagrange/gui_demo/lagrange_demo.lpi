@@ -5,9 +5,14 @@
     <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="jpmTestsGUI"/>
+      <Title Value="lagrange_demo"/>
+      <Scaled Value="True"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
+      <XPManifest>
+        <DpiAware Value="True"/>
+      </XPManifest>
+      <Icon Value="0"/>
     </General>
     <BuildModes>
       <Item Name="Default" Default="True"/>
@@ -21,24 +26,28 @@
     </RunParams>
     <RequiredPackages>
       <Item>
-        <PackageName Value="fpcunittestrunner"/>
+        <PackageName Value="TAChartLazarusPkg"/>
       </Item>
       <Item>
         <PackageName Value="LCL"/>
       </Item>
-      <Item>
-        <PackageName Value="FCL"/>
-      </Item>
     </RequiredPackages>
     <Units>
       <Unit>
-        <Filename Value="jpmTestsGUI.lpr"/>
+        <Filename Value="lagrange_demo.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="jpminterpolationtests.pas"/>
+        <Filename Value="main.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="jpmInterpolationTests"/>
+        <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\_shared\jpminterpolation.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jpmInterpolation"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -46,11 +55,11 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="jpmTestsGUI"/>
+      <Filename Value="lagrange_demo"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\_shared"/>
+      <OtherUnitFiles Value="..\..\..;..\..\..\_shared"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
@@ -74,9 +83,6 @@
       </Item>
       <Item>
         <Name Value="EFOpenError"/>
-      </Item>
-      <Item>
-        <Name Value="EAssertionFailedError"/>
       </Item>
     </Exceptions>
   </Debugging>

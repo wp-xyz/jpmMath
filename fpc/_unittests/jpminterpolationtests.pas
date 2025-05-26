@@ -18,6 +18,8 @@ type
     procedure TearDown; override;
   published
     procedure TestAkimaInterpolation;
+    procedure TestLagrangeInterpolationOrder3;
+    procedure TestLagrangeInterpolationOrder4;
   end;
 
 implementation
@@ -63,59 +65,184 @@ begin
   // Exactly at left edge of allowed table range
   x := 0.0;
   yExpected := sin(x);
-  yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
+  yActual := AkimaInterpolation(x, SinDataX, SinDataY, 0, -1, err);
   CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #1 result mismatch for x = ' + FloatToStr(x));
   CheckEquals('', err, 'Akima interpolation #1 error result mismatch for x = ' + FloatToStr(x));
 
   // Close to left edge of allowed table range, but still ok
   x := 0.001;
   yExpected := sin(x);
-  yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
+  yActual := AkimaInterpolation(x, SinDataX, SinDataY, 0, -1, err);
   CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #2 result mismatch for x = ' + FloatToStr(x));
   CheckEquals('', err, 'Akima interpolation #2 error result mismatch for x = ' + FloatToStr(x));
 
   // Some where in the center of the allowed table range
   x := 0.5;
   yExpected := sin(x);
-  yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
+  yActual := AkimaInterpolation(x, SinDataX, SinDataY, 0, -1, err);
   CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #3 result mismatch for x = ' + FloatToStr(x));
   CheckEquals('', err, 'Akima interpolation #3 error result mismatch for x = ' + FloatToStr(x));
 
   // Close to right edge of allowed table range, but still ok
   x := 0.848;
   yExpected := sin(x);
-  yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
+  yActual := AkimaInterpolation(x, SinDataX, SinDataY, 0, -1, err);
   CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #4 result mismatch for x = ' + FloatToStr(x));
   CheckEquals('', err, 'Akima interpolation #4 error result mismatch for x = ' + FloatToStr(x));
 
   // Exactly at right edge of allowed range
   x := SinDataX[11];
   yExpected := sin(x);
-  yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
+  yActual := AkimaInterpolation(x, SinDataX, SinDataY, 0, -1, err);
   CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #5 result mismatch for x = ' + FloatToStr(x));
   CheckEquals('', err, 'Akima interpolation #5 error result mismatch for x = ' + FloatToStr(x));
 
   // Out-of-range error: Smaller than first value in table
   x := -1.0;
   yExpected := sin(x);
-  yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
+  yActual := AkimaInterpolation(x, SinDataX, SinDataY, 0, -1, err);
   CheckNotEquals('', err, 'Akima interpolation #6 error result mismatch for x = ' + FloatToStr(x));
 
   // Out-of-range error: no 3 points at the right
   x := 0.850;
   yExpected := sin(x);
-  yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
+  yActual := AkimaInterpolation(x, SinDataX, SinDataY, 0, -1, err);
   CheckNotEquals('', err, 'Akima interpolation #7 error result mismatch for x = ' + FloatToStr(x));
 
   // Out-of-range error: no 3 points at the right
   yExpected := sin(x);
-  yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
+  yActual := AkimaInterpolation(x, SinDataX, SinDataY, 0, -1, err);
   CheckNotEquals('', err, 'Akima interpolation #8 error result mismatch for x = ' + FloatToStr(x));
 
   // Out-of-range error: larger than last value in table
   yExpected := sin(x);
-  yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
+  yActual := AkimaInterpolation(x, SinDataX, SinDataY, 0, -1, err);
   CheckNotEquals('', err, 'Akima nterpolation error #9 result mismatch for x = ' + FloatToStr(x));
+end;
+
+procedure TTestInterpolations.TestLagrangeInterpolationOrder3;
+const
+  EPS = 1E-5;
+var
+  x, yExpected, yActual: Double;
+  err: String;
+begin
+  // Exactly at left edge of allowed table range
+  x := 0.0;
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 3, 0, -1, err);
+  CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #1 result mismatch for x = ' + FloatToStr(x));
+  CheckEquals('', err, 'Akima interpolation #1 error result mismatch for x = ' + FloatToStr(x));
+
+  // Close to left edge of allowed table range, but still ok
+  x := 0.001;
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 3, 0, -1, err);
+  CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #2 result mismatch for x = ' + FloatToStr(x));
+  CheckEquals('', err, 'Akima interpolation #2 error result mismatch for x = ' + FloatToStr(x));
+
+  // Some where in the center of the allowed table range
+  x := 0.5;
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 3, 0, -1, err);
+  CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #3 result mismatch for x = ' + FloatToStr(x));
+  CheckEquals('', err, 'Akima interpolation #3 error result mismatch for x = ' + FloatToStr(x));
+
+  // Close to right edge of allowed table range, but still ok
+  x := 0.848;
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 3, 0, -1, err);
+  CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #4 result mismatch for x = ' + FloatToStr(x));
+  CheckEquals('', err, 'Akima interpolation #4 error result mismatch for x = ' + FloatToStr(x));
+
+  // Exactly at right edge of allowed range
+  x := SinDataX[11];
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 3, 0, -1, err);
+  CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #5 result mismatch for x = ' + FloatToStr(x));
+  CheckEquals('', err, 'Akima interpolation #5 error result mismatch for x = ' + FloatToStr(x));
+
+  // Out-of-range error: Smaller than first value in table
+  x := -1.0;
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 3, 0, -1, err);
+  CheckNotEquals('', err, 'Akima interpolation #6 error result mismatch for x = ' + FloatToStr(x));
+
+  // Out-of-range error: no 3 points at the right
+  x := 0.850;
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 3, 0, -1, err);
+  CheckNotEquals('', err, 'Akima interpolation #7 error result mismatch for x = ' + FloatToStr(x));
+
+  // Out-of-range error: no 3 points at the right
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 3, 0, -1, err);
+  CheckNotEquals('', err, 'Akima interpolation #8 error result mismatch for x = ' + FloatToStr(x));
+
+  // Out-of-range error: larger than last value in table
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 3, 0, -1, err);
+  CheckNotEquals('', err, 'Akima nterpolation error #9 result mismatch for x = ' + FloatToStr(x));
+end;
+
+procedure TTestInterpolations.TestLagrangeInterpolationOrder4;
+const
+  EPS = 1E-5;
+var
+  x, yExpected, yActual: Double;
+  err: String;
+begin
+  // Exactly at left edge of allowed table range
+  x := 0.0;
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 4, 0, -1, err);
+  CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #1 result mismatch for x = ' + FloatToStr(x));
+  CheckEquals('', err, '4th order Lagrange interpolation #1 error result mismatch for x = ' + FloatToStr(x));
+
+  // Close to left edge of allowed table range, but still ok
+  x := 0.001;
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 4, 0, -1, err);
+  CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #2 result mismatch for x = ' + FloatToStr(x));
+  CheckEquals('', err, '4th order Lagrange interpolation #2 error result mismatch for x = ' + FloatToStr(x));
+
+  // Some where in the center of the allowed table range
+  x := 0.5;
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 4, 0, -1, err);
+  CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #3 result mismatch for x = ' + FloatToStr(x));
+  CheckEquals('', err, '4th order Lagrange interpolation #3 error result mismatch for x = ' + FloatToStr(x));
+
+  // Close to right edge of allowed table range, but still ok
+  x := 0.78;
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 4, 0, -1, err);
+  CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #4 result mismatch for x = ' + FloatToStr(x));
+  CheckEquals('', err, '4th order Lagrange interpolation #4 error result mismatch for x = ' + FloatToStr(x));
+
+  // Exactly at right edge of allowed range
+  x := SinDataX[10];
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 4, 0, -1, err);
+  CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #5 result mismatch for x = ' + FloatToStr(x));
+  CheckEquals('', err, '4th order Lagrange interpolation #5 error result mismatch for x = ' + FloatToStr(x));
+
+  // Out-of-range error: Smaller than first value in table
+  x := -1.0;
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 4, 0, -1, err);
+  CheckNotEquals('', err, '4th order Lagrange interpolation #6 error result mismatch for x = ' + FloatToStr(x));
+
+  // Out-of-range error:  a bit larger than the last right point
+  x := 0.800;
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 4, 0, -1, err);
+  CheckNotEquals('', err, '4th order Lagrange interpolation #7 error result mismatch for x = ' + FloatToStr(x));
+
+  // Out-of-range error: larger than last value in table
+  yExpected := sin(x);
+  yActual := LagrangeInterpolation(x, SinDataX, SinDataY, 4, 0, -1, err);
+  CheckNotEquals('', err, '4th order Lagrange interpolation #8 error result mismatch for x = ' + FloatToStr(x));
 end;
 
 initialization

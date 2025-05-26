@@ -1,0 +1,82 @@
+
+                       EXPLANATION FILE OF PROGRAM LAGRANGE
+                       ====================================
+
+
+  Lagrange Interpolation
+  ----------------------
+
+    Lagrange interpolation is based on the simple premise that for every set of
+  sequential table values, there exists a unique polynomial curve that passes
+  through each and all of table values. The Lagrange polynomial for the cubic
+  case is
+
+                       f1(x-x2)(x-x3)(x-x4)
+       f(x) = L3(x) = ---------------------
+                      (x1-x2)(x1-x3)(x1-x4)
+
+                       f2(x-x1)(x-x3)(x-x4)
+                    + ---------------------  
+                      (x2-x1)(x2-x3)(x2-x4)
+                                                       (5.2.1)
+                       f3(x-x1)(x-x2)(x-x4)
+                    + ---------------------  
+                      (x3-x1)(x3-x2)(x3-x4)
+
+                       f4(x-x1)(x-x2)(x-x3)
+                    + ---------------------  
+                      (x4-x1)(x4-x2)(x4-x3)
+
+
+  The other orders of the Lagrange formula foIlow the same general pattern. ln
+  all cases, N + 1 table values are required for an Nth-degree polynomial fit. 
+
+    Although the above equation may look formidable, we can easily see that when 
+  x = x1 much canceling occurs and f(x) = f1 is obtained. The same procedure
+  applies for x2, x3, and x4. Therefore, this polynomial is the required cubic
+  because it passes through aIl the points. The uniqueness of this particular
+  curve fit foIlows from a theorem in polynomial theory. Note also that the in-
+  dependent variables (the xi's need not be equaIly spaced, a freedom that can
+  be used to advantage.
+   
+    The Lagrange interpolation formulae for aIl orders are easy to program be-
+  cause of their simple and repetitive structure (see program Lagrange).
+
+    The inputs to program LAGRANGE are the number of table values, V, the table
+  values themselves, X(I) and Y(I), the interpolation point, X, and the degree
+  of the interpolation, N. The subroutine returns the interpolated value Y, and
+  an error check, N. If N is returned as zero, then a condition that called for
+  more table values than were available to the subroutine was encountered.
+   
+    The interpolation is expected to become more accurate as the number of table 
+  points employed in a given interval is increased. ln the sin x cubic interpo-
+  lation performed by the demonstration program, the accuracy obtained is fair-
+  ly good (better than 0.000001) using only 14 table values. 
+
+    The table values used for the sin x interpolation example were not equally
+  spaced in x. For small values of x, sin x = x and there is not much curvature
+  to the function. Therefore, table values were concentrated in the high x
+  region where the function has considerably more curvature. The technique
+  employed for obtaining the table values will be discussed later. Hoowever, as
+  you can see from the observed errors, the choice was roughly optimal in terms
+  of minimizing the maximum error.
+   
+    Perhaps the most important precaution associated with using LAGRANGE is res-
+  triction on the allowable range of the input interpolation point, X. The
+  interlation point must obey the following rule:
+
+                              x(1) <= x <= x(V-N)
+
+  For example, if the number of table values is 14, and a cubic fit is chosen,
+  then x(l) <= x <= x(ll). It is also very important that the input table values
+  be in ascending x(I) order, and that no two table positions be equal [X(I) <>
+  X(I + 1)). 
+
+    In another section, we will consider another algorithm called Newton divi-
+  ded-differences interpolation. The mechanics of this algorithm will appear
+  very different from the Lagrange formulation, but the resulting curve fits
+  are, in principle, identical (See file Newton.txt).
+
+From [BIBLI 01].
+--------------------------------------------------
+End of file lagrange.txt 

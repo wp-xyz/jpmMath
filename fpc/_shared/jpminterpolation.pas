@@ -7,8 +7,11 @@ interface
 uses
   jpmTypes;
 
-function AkimaInterpolation(X, Y: Array of Float; StartIndex, EndIndex: Integer;
-  xx: Float; var ErrorMsg: String): Float;
+function AkimaInterpolation(xx: Float; X, Y: Array of Float;
+  StartIndex, EndIndex: Integer; var ErrorMsg: String): Float;
+
+function LagrangeInterpolation(xx:Float; X, Y: Array of Float;
+  Order, StartIndex, EndIndex: Integer; var ErrorMsg: String): Float;
 
 implementation
 
@@ -30,8 +33,8 @@ implementation
 *         Pascal Version by J.-P. Moreau, Paris.       *
 *                   (www.jpmoreau.fr)                  *
 *******************************************************}
-function AkimaInterpolation(X, Y: Array of Double; StartIndex, EndIndex: Integer;
-  xx: Double; var ErrorMsg: String): Double;
+function AkimaInterpolation(xx: Float; X, Y: Array of Float;
+  StartIndex, EndIndex: Integer; var ErrorMsg: String): Float;
 var
   i, j, n: integer;
   a, aa, aaa, b, bb: Double;
@@ -121,6 +124,90 @@ begin
             Z[i]*a +
            (3.0*XM[i+2] - 2.0*Z[i] - Z[i+1]) * aa/b +
            (Z[i] + Z[i+1] - 2.0*XM[i+2]) * aaa/bb;
+end;
+
+{*******************************************************
+*          Lagrange interpolation subroutine           *
+* Order is the level of the interpolation ( Ex. 2 is   *
+* quadratic ). v is the total number of table values.  *
+* X(i), Y(i) are the coordinate table values, Y(i)     *
+* being the dependant variable. The X(i) may be arbi-  *
+* trarily spaced.  x is the interpolation point which  *
+* is assumed to be in the interval  with at least one  *
+* table value to the left, and Order to the right. If  *
+* this is violated, the ErrorMsg will contain an error *
+* string. It is assumed that the table values are in   *
+* ascending X(i) order.                                *
+* The interpolated value is return as function result. *
+*******************************************************}
+function LagrangeInterpolation(xx: Float; X, Y: Array of Float;
+  Order, StartIndex, EndIndex: Integer; var ErrorMsg: String): Float;
+var
+  i, j, k, n: Integer;
+  XL: Array of Double = nil;
+Begin
+  Result := -999.0;
+  ErrorMsg := '';
+
+  // Both arrays should have the same length. If no, we use only the common parts.
+  n := Length(X);
+  if Length(Y) < n then
+    n := Length(Y);
+
+  // Akima interpolation requires one data point at the left of the interpolation range.
+  if StartIndex < 0 then
+    StartIndex := 0;
+
+  // ... and Order points at the right
+  if (EndIndex < 0) or (EndIndex > n - Order) then
+    EndIndex := n - Order;
+
+  // Not enough data points
+  n := EndIndex - StartIndex + 1;
+  if n < Order + 1 then
+  begin
+    ErrorMsg := 'Not enough data points';
+    exit;
+  end;
+
+  { Check to see if interpolation point is correct }
+  if (xx < X[StartIndex]) or (xx > X[EndIndex]) then
+  begin
+    ErrorMsg := 'Interpolation point outside valid table range.';
+    exit;
+  end;
+
+  {Find relevant table interval}
+  j := 0;
+  while (xx >= X[j]) do
+  begin
+    if xx = X[j] then
+    begin
+      Result := Y[j];
+      exit;
+    end;
+    inc(j);
+  end;
+  dec(j);
+  if j = -1 then j := 0;
+  i := j - StartIndex;
+
+  {Begin interpolation}
+  SetLength(XL, Order+1);
+  for j:=0 to High(XL) do
+    XL[j] := 1.0;
+
+  Result := 0.0;
+  for k := 0 to Order do
+  begin
+    for j := 0 to Order do
+    begin
+      if j = k then
+        Continue;
+      XL[k] := XL[k] * (xx-X[j+i]) / (X[i+k] - X[j+i]);
+    end;
+    Result := Result + XL[k] * Y[i+k]
+  end;
 end;
 
 end.

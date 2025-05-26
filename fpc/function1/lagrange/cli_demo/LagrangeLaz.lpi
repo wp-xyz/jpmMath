@@ -4,10 +4,15 @@
     <Version Value="12"/>
     <PathDelim Value="\"/>
     <General>
+      <Flags>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <MainUnitHasScaledStatement Value="False"/>
+      </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="jpmTestsGUI"/>
+      <Title Value="LagrangeLaz"/>
+      <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
-      <UseXPManifest Value="True"/>
     </General>
     <BuildModes>
       <Item Name="Default" Default="True"/>
@@ -19,26 +24,10 @@
     <RunParams>
       <FormatVersion Value="2"/>
     </RunParams>
-    <RequiredPackages>
-      <Item>
-        <PackageName Value="fpcunittestrunner"/>
-      </Item>
-      <Item>
-        <PackageName Value="LCL"/>
-      </Item>
-      <Item>
-        <PackageName Value="FCL"/>
-      </Item>
-    </RequiredPackages>
     <Units>
       <Unit>
-        <Filename Value="jpmTestsGUI.lpr"/>
+        <Filename Value="LagrangeLaz.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="jpminterpolationtests.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="jpmInterpolationTests"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -46,22 +35,15 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="jpmTestsGUI"/>
+      <Filename Value="LagrangeLaz"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\_shared"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
       <Debugging>
         <DebugInfoType Value="dsDwarf3"/>
       </Debugging>
-      <Options>
-        <Win32>
-          <GraphicApplication Value="True"/>
-        </Win32>
-      </Options>
     </Linking>
   </CompilerOptions>
   <Debugging>
@@ -74,9 +56,6 @@
       </Item>
       <Item>
         <Name Value="EFOpenError"/>
-      </Item>
-      <Item>
-        <Name Value="EAssertionFailedError"/>
       </Item>
     </Exceptions>
   </Debugging>
