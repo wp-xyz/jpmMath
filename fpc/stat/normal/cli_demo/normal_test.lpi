@@ -30,13 +30,12 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\..\jpmtypes.pas"/>
+        <Filename Value="..\..\..\_shared\jpmtypes.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\jpmstats.pas"/>
+        <Filename Value="..\..\..\_shared\jpmstats.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="jpmStats"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -47,7 +46,7 @@
       <Filename Value="normal_test"/>
     </Target>
     <SearchPaths>
-      <OtherUnitFiles Value="..\..\..;..\.."/>
+      <OtherUnitFiles Value="..\..\..\_shared"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

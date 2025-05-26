@@ -1,4 +1,4 @@
-unit jpmFunc;
+unit jpmInterpolation;
 
 {$mode ObjFPC}{$H+}
 
@@ -51,8 +51,8 @@ begin
     StartIndex := 0;
 
   // ... and three data points at the right
-  if (EndIndex < 0) or (EndIndex >= n -3) then
-    EndIndex := n - 4;
+  if (EndIndex < 0) or (EndIndex > n - 3) then
+    EndIndex := n - 3;
 
   // Not enough data points
   n := EndIndex - StartIndex + 1;
@@ -98,8 +98,15 @@ begin
 
   {Find relevant table interval}
   j := 0;
-  while (xx > X[j]) do
+  while (xx >= X[j]) do
+  begin
+    if xx = X[j] then
+    begin
+      Result := Y[j];
+      exit;
+    end;
     inc(j);
+  end;
   dec(j);
   if j = -1 then j := 0;
   i := j - StartIndex;

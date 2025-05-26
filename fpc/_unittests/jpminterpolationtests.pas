@@ -1,4 +1,4 @@
-unit InterpolationTests;
+unit jpmInterpolationTests;
 
 {$mode objfpc}{$H+}
 
@@ -23,7 +23,7 @@ type
 implementation
 
 uses
-  jpmFunc;
+  jpmInterpolation;
 
 procedure TTestInterpolations.SetUp;
 begin
@@ -60,47 +60,62 @@ var
   x, yExpected, yActual: Double;
   err: String;
 begin
+  // Exactly at left edge of allowed table range
+  x := 0.0;
+  yExpected := sin(x);
+  yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
+  CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #1 result mismatch for x = ' + FloatToStr(x));
+  CheckEquals('', err, 'Akima interpolation #1 error result mismatch for x = ' + FloatToStr(x));
+
   // Close to left edge of allowed table range, but still ok
   x := 0.001;
   yExpected := sin(x);
   yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
-  CheckEquals(yExpected, yActual, EPS, 'Interpolation result mismatch for x = ' + FloatToStr(x));
-  CheckEquals('', err, 'Interpolation error result mismatch for x = ' + FloatToStr(x));
+  CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #2 result mismatch for x = ' + FloatToStr(x));
+  CheckEquals('', err, 'Akima interpolation #2 error result mismatch for x = ' + FloatToStr(x));
 
   // Some where in the center of the allowed table range
   x := 0.5;
   yExpected := sin(x);
   yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
-  CheckEquals(yExpected, yActual, EPS, 'Interpolation result mismatch for x = ' + FloatToStr(x));
-  CheckEquals('', err, 'Interpolation error result mismatch for x = ' + FloatToStr(x));
+  CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #3 result mismatch for x = ' + FloatToStr(x));
+  CheckEquals('', err, 'Akima interpolation #3 error result mismatch for x = ' + FloatToStr(x));
 
   // Close to right edge of allowed table range, but still ok
   x := 0.848;
   yExpected := sin(x);
   yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
-  CheckNotEquals('', err, 'Interpolation error result mismatch for x = ' + FloatToStr(x));
+  CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #4 result mismatch for x = ' + FloatToStr(x));
+  CheckEquals('', err, 'Akima interpolation #4 error result mismatch for x = ' + FloatToStr(x));
+
+  // Exactly at right edge of allowed range
+  x := SinDataX[11];
+  yExpected := sin(x);
+  yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
+  CheckEquals(yExpected, yActual, EPS, 'Akima interpolation #5 result mismatch for x = ' + FloatToStr(x));
+  CheckEquals('', err, 'Akima interpolation #5 error result mismatch for x = ' + FloatToStr(x));
 
   // Out-of-range error: Smaller than first value in table
   x := -1.0;
   yExpected := sin(x);
   yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
-  CheckNotEquals('', err, 'Interpolation error result mismatch for x = ' + FloatToStr(x));
+  CheckNotEquals('', err, 'Akima interpolation #6 error result mismatch for x = ' + FloatToStr(x));
 
   // Out-of-range error: no 3 points at the right
   x := 0.850;
   yExpected := sin(x);
   yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
-  CheckNotEquals('', err, 'Interpolation error result mismatch for x = ' + FloatToStr(x));
+  CheckNotEquals('', err, 'Akima interpolation #7 error result mismatch for x = ' + FloatToStr(x));
 
   // Out-of-range error: no 3 points at the right
   yExpected := sin(x);
   yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
-  CheckNotEquals('', err, 'Interpolation error result mismatch for x = ' + FloatToStr(x));
+  CheckNotEquals('', err, 'Akima interpolation #8 error result mismatch for x = ' + FloatToStr(x));
 
   // Out-of-range error: larger than last value in table
   yExpected := sin(x);
   yActual := AkimaInterpolation(SinDataX, SinDataY, 0, -1, x, err);
-  CheckNotEquals('', err, 'Interpolation error result mismatch for x = ' + FloatToStr(x));
+  CheckNotEquals('', err, 'Akima nterpolation error #9 result mismatch for x = ' + FloatToStr(x));
 end;
 
 initialization

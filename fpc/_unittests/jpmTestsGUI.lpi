@@ -5,7 +5,7 @@
     <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="jpmTests"/>
+      <Title Value="jpmTestsGUI"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
       <Icon Value="0"/>
@@ -33,13 +33,13 @@
     </RequiredPackages>
     <Units>
       <Unit>
-        <Filename Value="jpmTests.lpr"/>
+        <Filename Value="jpmTestsGUI.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="interpolationtests.pas"/>
+        <Filename Value="jpminterpolationtests.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="InterpolationTests"/>
+        <UnitName Value="jpmInterpolationTests"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -47,11 +47,11 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="jpmTests"/>
+      <Filename Value="jpmTestsGUI"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..;..\.."/>
+      <OtherUnitFiles Value="..\_shared"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
@@ -75,6 +75,9 @@
       </Item>
       <Item>
         <Name Value="EFOpenError"/>
+      </Item>
+      <Item>
+        <Name Value="EAssertionFailedError"/>
       </Item>
     </Exceptions>
   </Debugging>

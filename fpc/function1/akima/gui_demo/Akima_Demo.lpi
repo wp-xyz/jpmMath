@@ -45,9 +45,9 @@
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\jpmfunc.pas"/>
+        <Filename Value="..\..\..\_shared\jpminterpolation.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="jpmFunc"/>
+        <UnitName Value="jInterpolation"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -59,7 +59,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\..;..\..\.."/>
+      <OtherUnitFiles Value="..\..\..;..\..\..\_shared"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, ExtCtrls, Spin, StdCtrls, SysUtils, Forms, Controls, Graphics,
-  Dialogs, TAGraph, TASeries; //, TATools;
+  Dialogs, TAGraph, TASeries,
+  jpmInterpolation;
 
 type
   TMainForm = class(TForm)
@@ -41,9 +42,6 @@ var
 implementation
 
 {$R *.lfm}
-
-uses
-  jpmFunc;
 
 const
   MIN = -10;
