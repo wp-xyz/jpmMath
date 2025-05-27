@@ -3,7 +3,8 @@ program jpmTestsGUI;
 {$mode objfpc}{$H+}
 
 uses
-  Interfaces, Forms, GuiTestRunner, jpmInterpolationTests;
+  Interfaces, Forms, GuiTestRunner,
+  jpmInterpolationTests, jpmIntegrationTests;
 
 {$R *.res}
 
