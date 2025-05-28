@@ -4,15 +4,10 @@
     <Version Value="12"/>
     <PathDelim Value="\"/>
     <General>
-      <Flags>
-        <MainUnitHasCreateFormStatements Value="False"/>
-        <MainUnitHasTitleStatement Value="False"/>
-        <MainUnitHasScaledStatement Value="False"/>
-      </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="normal_test"/>
-      <UseAppBundle Value="False"/>
+      <Title Value="jpmTestsGUI"/>
       <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
     </General>
     <BuildModes>
       <Item Name="Default" Default="True"/>
@@ -24,18 +19,31 @@
     <RunParams>
       <FormatVersion Value="2"/>
     </RunParams>
+    <RequiredPackages>
+      <Item>
+        <PackageName Value="fpcunittestrunner"/>
+      </Item>
+      <Item>
+        <PackageName Value="LCL"/>
+      </Item>
+      <Item>
+        <PackageName Value="FCL"/>
+      </Item>
+    </RequiredPackages>
     <Units>
       <Unit>
-        <Filename Value="normal_test.pas"/>
+        <Filename Value="jpmTestsGUI.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\..\_shared\jpmtypes.pas"/>
+        <Filename Value="jpminterpolationtests.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="jpmInterpolationTests"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\..\_shared\jpmstats.pas"/>
+        <Filename Value="jpmintegrationtests.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="jpmIntegrationTests"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -43,16 +51,22 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="normal_test"/>
+      <Filename Value="jpmTestsGUI"/>
     </Target>
     <SearchPaths>
-      <OtherUnitFiles Value="..\..\..\_shared"/>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="..\_shared"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
       <Debugging>
         <DebugInfoType Value="dsDwarf3"/>
       </Debugging>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
     </Linking>
   </CompilerOptions>
   <Debugging>
@@ -65,6 +79,9 @@
       </Item>
       <Item>
         <Name Value="EFOpenError"/>
+      </Item>
+      <Item>
+        <Name Value="EAssertionFailedError"/>
       </Item>
     </Exceptions>
   </Debugging>

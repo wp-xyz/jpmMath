@@ -10,7 +10,7 @@
         <MainUnitHasScaledStatement Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="normal_test"/>
+      <Title Value="LagrangeLaz"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
     </General>
@@ -26,15 +26,7 @@
     </RunParams>
     <Units>
       <Unit>
-        <Filename Value="normal_test.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\_shared\jpmtypes.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\_shared\jpmstats.pas"/>
+        <Filename Value="LagrangeLaz.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
@@ -43,10 +35,9 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="normal_test"/>
+      <Filename Value="LagrangeLaz"/>
     </Target>
     <SearchPaths>
-      <OtherUnitFiles Value="..\..\..\_shared"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>

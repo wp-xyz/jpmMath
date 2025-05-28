@@ -1,0 +1,90 @@
+object MainForm: TMainForm
+  Left = 316
+  Height = 424
+  Top = 121
+  Width = 744
+  Caption = 'Romberg Integration'
+  ClientHeight = 424
+  ClientWidth = 744
+  LCLVersion = '4.99.0.0'
+  OnCreate = FormCreate
+  object Chart: TChart
+    Left = 0
+    Height = 361
+    Top = 0
+    Width = 744
+    AxisList = <    
+      item
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelFont.Orientation = 900
+        Title.LabelBrush.Style = bsClear
+      end    
+      item
+        Intervals.MaxLength = 100
+        Alignment = calBottom
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelBrush.Style = bsClear
+      end>
+    Legend.Visible = True
+    Margins.Left = 20
+    Margins.Right = 20
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    Align = alClient
+    object DataSeries: TLineSeries
+      Title = 'Input function'
+      LinePen.Color = clBlue
+      Marks.Distance = 6
+    end
+    object RombergSeries: TLineSeries
+      Title = 'Romberg integral'
+      LinePen.Color = clRed
+    end
+  end
+  object Panel1: TPanel
+    Left = 0
+    Height = 63
+    Top = 361
+    Width = 744
+    Align = alBottom
+    AutoSize = True
+    BevelOuter = bvNone
+    ClientHeight = 63
+    ClientWidth = 744
+    TabOrder = 1
+    object RadioGroup1: TRadioGroup
+      Left = 8
+      Height = 47
+      Top = 8
+      Width = 269
+      AutoFill = True
+      AutoSize = True
+      BorderSpacing.Around = 8
+      Caption = 'Function to be integrated'
+      ChildSizing.LeftRightSpacing = 12
+      ChildSizing.TopBottomSpacing = 4
+      ChildSizing.HorizontalSpacing = 12
+      ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+      ChildSizing.EnlargeVertical = crsHomogenousChildResize
+      ChildSizing.ShrinkHorizontal = crsScaleChilds
+      ChildSizing.ShrinkVertical = crsScaleChilds
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ChildSizing.ControlsPerLine = 10
+      ClientHeight = 27
+      ClientWidth = 265
+      Columns = 10
+      ItemIndex = 0
+      Items.Strings = (
+        'sin(x)'
+        'cos(x)'
+        'exp(-x)'
+        'sin(x)/x'
+      )
+      TabOrder = 0
+      OnClick = RadioGroup1Click
+    end
+  end
+end

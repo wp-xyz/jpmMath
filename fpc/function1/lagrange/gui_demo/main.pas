@@ -13,16 +13,18 @@ type
   TMainForm = class(TForm)
     btnNewData: TButton;
     Chart: TChart;
-    AkimaSeries: TLineSeries;
+    LagrangeSeries: TLineSeries;
     DataSeries: TLineSeries;
     lblStartIndex: TLabel;
     lblEndIndex: TLabel;
     lblInfo: TLabel;
+    lblOrder: TLabel;
     Panel1: TPanel;
     rbRandom: TRadioButton;
     rbSin: TRadioButton;
     seStartIndex: TSpinEdit;
     seEndIndex: TSpinEdit;
+    seOrder: TSpinEdit;
     procedure btnNewDataClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure seStartIndexChange(Sender: TObject);
@@ -98,13 +100,13 @@ begin
     DataSeries.AddXY(X[i], Y[i], IntToStr(i));
 
   n := 100;  // Number of interpolated data points
-  AkimaSeries.Clear;
+  LagrangeSeries.Clear;
   for i := 0 to n-1 do
   begin
     xx := MIN + (MAX - MIN) * i / (n-1);
-    yy := AkimaInterpolation(xx, X, Y, seStartIndex.Value, seEndIndex.Value, err);
+    yy := LagrangeInterpolation(xx, X, Y, seOrder.Value, seStartIndex.Value, seEndIndex.Value, err);
     if err = '' then
-      AkimaSeries.AddXY(xx, yy);
+      LagrangeSeries.AddXY(xx, yy);
   end;
 end;
 

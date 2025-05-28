@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, ComCtrls, ExtCtrls, StdCtrls, SysUtils, Forms, Controls, Graphics,
-  Dialogs, TAGraph, TASeries, TAChartUtils, TAGeometry, TADrawUtils;
+  Dialogs, TAGraph, TASeries, TAChartUtils, TAGeometry, TADrawUtils,
+  jpmStats;
 
 type
   TMainForm = class(TForm)
@@ -33,9 +34,6 @@ var
 implementation
 
 {$R *.lfm}
-
-uses
-  jpmStats;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin

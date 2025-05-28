@@ -8,9 +8,10 @@
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
         <MainUnitHasScaledStatement Value="False"/>
+        <UseDefaultCompilerOptions Value="True"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="normal_test"/>
+      <Title Value="test_romberg"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
     </General>
@@ -26,16 +27,9 @@
     </RunParams>
     <Units>
       <Unit>
-        <Filename Value="normal_test.pas"/>
+        <Filename Value="test_romberg.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\_shared\jpmtypes.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\_shared\jpmstats.pas"/>
-        <IsPartOfProject Value="True"/>
+        <UnitName Value="Test_Romberg"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -43,10 +37,9 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="normal_test"/>
+      <Filename Value="test_romberg"/>
     </Target>
     <SearchPaths>
-      <OtherUnitFiles Value="..\..\..\_shared"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
