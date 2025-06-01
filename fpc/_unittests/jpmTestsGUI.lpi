@@ -45,6 +45,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="jpmIntegrationTests"/>
       </Unit>
+      <Unit>
+        <Filename Value="jpmappointmenttests.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jpmAppointmentTests"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

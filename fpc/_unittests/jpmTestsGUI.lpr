@@ -4,7 +4,7 @@ program jpmTestsGUI;
 
 uses
   Interfaces, Forms, GuiTestRunner,
-  jpmInterpolationTests, jpmIntegrationTests;
+  jpmInterpolationTests, jpmIntegrationTests, jpmAppointmentTests;
 
 {$R *.res}
 
