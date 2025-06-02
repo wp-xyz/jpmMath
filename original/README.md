@@ -91,7 +91,7 @@ This module provides a collection of routines for performing various algebraic o
 
 ### [roots - Root Finding Methods](roots/README.md)
 
-This module offers a comprehensive collection of numerical methods for finding roots of functions. It includes single-variable root-finding algorithms (Bisection, Newton, Secant, Brent, Mueller, Pegasus, Lagrange, Aitken Acceleration, Zeroin), polynomial root-finding methods (Bairstow, Bernouilli, Lin, direct solvers for degree 2,3,4), and solvers for systems of non-linear equations (Brown, Levenberg-Marquardt, NNES, 2D Mueller).
+This module offers a comprehensive collection of numerical methods for finding roots of functions. It includes single-variable root-finding algorithms (Bisection, Newton, Secant, Brent, Mueller, Pegasus, Lagrange, Aitken Acceleration, Zeroin), polynomial root-finding methods (Bairstow, Bernoulli, Lin, direct solvers for degree 2,3,4), and solvers for systems of non-linear equations (Brown, Levenberg-Marquardt, NNES, 2D Mueller).
 
 ### [series - Series Expansions and Special Functions](series/README.md)
 
