@@ -1,0 +1,89 @@
+
+                      EXPLANATION FILE OF PROGRAM AKIMA
+                      =================================
+
+
+  Semi-Spline Interpolation
+  ------------------------- 
+
+    The spline curve-fitting technique has been in use for quite some time and
+  has found considerable application in the design of ship hulls and airplane
+  structures. The method as originally practiced consisted of plotting the va-
+  lues, laying that plot on a board, and sticking pins in the calculated points
+  (the table values, or knots). A thin strip of wood was then bent so as to con-
+  forrn to the pins and to span the space between them. Because the natural cur-
+  ve shape for a sirnply supported, end-loaded light beam is a cubic, you would
+  expect a spline to fit a cubic function perfectly. Therefore, this forrn of
+  spline fitting can be considered a third-order interpolation algorithrn in so-
+  me ways sirnilar to the Lagrange and Newton rnethods. 
+
+    The spline-fitting algorithm also has the subtle property that it minimizes
+  the following integral:
+
+                        d²p   d²f  2            f(x) = true function
+              D = Sum [ --- - --- ]  dx  where                       (5.5.1)
+                        dx²   dx²               p(x) = fitted curve
+
+  If the true function, f(x), is a cubic, then the spline fit obviously minimi-
+  zes D because f(x) = pix), but then so do the other cubic interpolation formu-
+  lae that we have already discussed. For functions beyond the cubic, the spline
+  fit is a little different in its behavior. It tends to minimize net curvature
+  (elastic beams do not like kinks) while still passing through all the table
+  values. 
+
+    As might be expected intuitively, the bending of the spline is influenced by
+  distant points, although the coupling is weaker the further away those points
+  are. This distant coupling is necessary to minimize D. ln summary, the spline
+  technique is a cubic interpolation scheme which gives the same results (in
+  principle) as the corresponding Lagrange and Newton cubic formulas for func-
+  tions of the third degree and lower. However, for higher-order functions, the
+  spline fit does not simply reflect the Taylor series expansion, but minimizes
+  net curvature instead. A later example will clearly demonstrate and reinforce
+  this difference. 
+
+    Akima (see Applied Numerical Methods course notes, University of Michigan, 
+  1978) developed a cubic interpolation technique that approximates the spline
+  properties. It is calculated in a manner vaguely similar to the Newton
+  divided-differences method. It is less coupled to distant points than a true
+  spline fit, but the effect is not severe. Its chief advantage is that it is
+  much faster in execution than exact spline interpolation algorithms, which
+  involve time- and memory-consuming matrix operations. 
+
+    The development of the background mathematics for Akima's algorithm is be- 
+  yond the scope of this discussion. The resulting subroutine is given in pro- 
+  gram Akima. The input/output characteristics of the Akima subroutine are very
+  similar to those of the earlier two interpolation programs. Again, the inputs
+  are the number of table values, V, the values themselves, X(I) and Y(I), and
+  the interpolation point, X. The interpolated result is returned in Y. An error
+  flag, N, is also returned. If N is zero, the interpolation point was outside
+  the allowable table range.
+   
+    In program Akima, an example is given of the operation of the Akima interpo-
+  lation subroutine for the test function, sin x. The calculated results are
+  approximately one order of magnitude more accurate than those observed for the
+  corresponding Newton divided-differences example. The results are also appro-
+  ximately one order of magnitude less accurate than those seen with the Lagran-
+  ge interpolation example. It appears that the Akima subroutine suffers from
+  round-off error, but the effect is moderate. 
+
+    The key advantage to using AKIMA is its net curvature-minimization property. 
+  This property is particularly apparent when dealing with discontinuous func-
+  tions. For example, if the table represents a step function, then the results
+  obtained using Newton and Akima interpolation are quite different. The Akima
+  spline interpolation in this example is much better behaved than the corres-
+  ponding Newton calculation. It is this particular feature of spline interpola-
+  tion that has made the technique so popular. 
+
+    The precautions regarding the use of AKIMA are few. First, the interpolation 
+  requires three table values beyond the interpolation point; the range of the
+  table must be wider than that of the interpolation. If this condition is vio-
+  lated, N = 0 will be returned. The second precaution is to be aware of round-
+  off error. If round-off error is suspected to be a problem, then you should
+  consider using Lagrange interpolation. 
+
+    In another section, we will consider the calculation of derivatives from ta-
+  bles using the Lagrange interpolation formula (see file Lagrange.txt).
+
+  From [BIBLI 01].
+-----------------------------------------------
+End of file Akima.txt

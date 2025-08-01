@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="test_romberg_Laz.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="55"/>
+        <CursorPos X="27" Y="63"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\_shared\jpmintegration.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jpmIntegration"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="33"/>
+        <CursorPos X="92" Y="67"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\_shared\jpmtypes.pas"/>
+        <UnitName Value="jpmTypes"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="45" Y="11"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="9">
+      <Position>
+        <Filename Value="test_romberg_Laz.pas"/>
+        <Caret Line="46" Column="27" TopLine="18"/>
+      </Position>
+      <Position>
+        <Filename Value="test_romberg_Laz.pas"/>
+        <Caret Line="78" Column="31" TopLine="78"/>
+      </Position>
+      <Position>
+        <Filename Value="test_romberg_Laz.pas"/>
+        <Caret Line="32"/>
+      </Position>
+      <Position>
+        <Filename Value="test_romberg_Laz.pas"/>
+        <Caret Line="114" Column="32" TopLine="89"/>
+      </Position>
+      <Position>
+        <Filename Value="test_romberg_Laz.pas"/>
+        <Caret Line="75" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="test_romberg_Laz.pas"/>
+        <Caret Line="57" Column="42" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="test_romberg_Laz.pas"/>
+        <Caret Line="96" Column="43" TopLine="62"/>
+      </Position>
+      <Position>
+        <Filename Value="test_romberg_Laz.pas"/>
+        <Caret Line="74" Column="36" TopLine="62"/>
+      </Position>
+      <Position>
+        <Filename Value="test_romberg_Laz.pas"/>
+        <Caret Line="145" Column="36" TopLine="107"/>
+      </Position>
+      <Position>
+        <Filename Value="..\..\..\_shared\jpmintegration.pas"/>
+        <Caret Line="40" Column="39"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\..\..\..\..\..\svn\lazarus-ccr\components\fpspreadsheet\source\visual\fpspreadsheetchart.pas"/>
+        <Line Value="873"/>
+      </Item>
+    </BreakPoints>
+  </Debugging>
+</CONFIG>
