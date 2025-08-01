@@ -57,10 +57,10 @@ Using the jpmMath routines typically involves adding the appropriate unit to you
     
 -   **Running the GUI demo:** If you prefer a graphical demonstration, open the Lazarus project file `fpc/function1/akima/gui_demo/Akima_Demo.lpi` in the Lazarus IDE. This will load a small GUI application that showcases the Akima interpolation (for example, plotting the spline through a set of points). Compile and run it from Lazarus – a form will appear, demonstrating how the interpolation smooths the data. _(Note: you may need to have the Lazarus Component Library (LCL) installed, which comes with Lazarus by default, to run GUI demos.)_
     
--   **Using the Akima routine in your code:** The core interpolation code is in the unit `fpc/function1/akima/akima.pas`. To use it in your own project, add this unit to your program’s uses clause. The Akima unit provides a routine (or set of routines) to perform the interpolation. Typically, you would pass arrays of known data points (X and Y values) to an initialization function that computes the Akima coefficients, then call an evaluation function to get interpolated Y for any X. Consult the comments in `akima.pas` or the `akima.txt` explanation file for the exact function names and expected parameters. An example usage might look like:
-    
+-   **Using the Akima routine in your code:** The core interpolation code is in the unit `fpc/function1/akima/akima.pas`. To use it in your own project, add this unit to your program’s uses clause. The Akima unit provides a routine (or set of routines) to perform the interpolation. Typically, you would pass arrays of known data points (X and Y values) to an initialization function that computes the Akima coefficients, then call an evaluation function to get interpolated Y for any X. Consult the comments in `akima.pas` or the `akima.txt` explanation file for the exact function names and expected parameters. An example usage might look like:   
 
--   `uses Akima;  // make sure the compiler can find akima.pas in its search path
+    ```pascal
+    uses Akima;  // make sure the compiler can find akima.pas in its search path
     
     var
       X, Y: array of Double;
@@ -69,7 +69,8 @@ Using the jpmMath routines typically involves adding the appropriate unit to you
       // Suppose X and Y are filled with known data points...
       AkimaPrepare(X, Y);                   // (Pseudo-code) Compute interpolation coefficients for dataset
       interpValue := AkimaInterpolate(5.0); // Get interpolated Y value at X = 5.0
-    end.` 
+    end.
+    ``` 
     
     The actual function names may differ, but the idea is that after preparation you can interpolate any value. Refer to the module’s documentation for details.
     
