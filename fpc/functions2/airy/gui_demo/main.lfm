@@ -1,0 +1,184 @@
+object MainForm: TMainForm
+  Left = 256
+  Height = 364
+  Top = 123
+  Width = 714
+  Caption = 'Airy Functions'
+  ClientHeight = 364
+  ClientWidth = 714
+  LCLVersion = '4.99.0.0'
+  OnCreate = FormCreate
+  object ChartListbox: TChartListbox
+    Left = 600
+    Height = 276
+    Top = 8
+    Width = 106
+    Chart = Chart
+    Align = alRight
+    BorderSpacing.Bottom = 72
+    BorderSpacing.Around = 8
+    TabOrder = 0
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 364
+    Top = 0
+    Width = 592
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 364
+    ClientWidth = 592
+    TabOrder = 1
+    object Panel1: TPanel
+      Left = 8
+      Height = 23
+      Top = 333
+      Width = 576
+      Align = alBottom
+      AutoSize = True
+      BorderSpacing.Around = 8
+      BevelOuter = bvNone
+      ClientHeight = 23
+      ClientWidth = 576
+      TabOrder = 0
+      object lblXMin: TLabel
+        AnchorSideLeft.Control = Panel1
+        AnchorSideTop.Control = feXMin
+        AnchorSideTop.Side = asrCenter
+        Left = 30
+        Height = 15
+        Top = 4
+        Width = 26
+        BorderSpacing.Left = 30
+        Caption = 'xMin'
+      end
+      object feXMin: TFloatSpinEdit
+        AnchorSideLeft.Control = lblXMin
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = Panel1
+        Left = 64
+        Height = 23
+        Top = 0
+        Width = 88
+        Alignment = taRightJustify
+        BorderSpacing.Left = 8
+        TabOrder = 0
+        Value = -10
+        OnChange = feXMinChange
+      end
+      object lblXMax: TLabel
+        AnchorSideTop.Control = feXMax
+        AnchorSideTop.Side = asrCenter
+        AnchorSideRight.Control = feXMax
+        Left = 453
+        Height = 15
+        Top = 4
+        Width = 27
+        Anchors = [akTop, akRight]
+        BorderSpacing.Left = 8
+        BorderSpacing.Right = 8
+        Caption = 'xMax'
+      end
+      object feXMax: TFloatSpinEdit
+        AnchorSideLeft.Control = lblXMax
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = Panel1
+        AnchorSideRight.Control = Panel1
+        AnchorSideRight.Side = asrBottom
+        Left = 488
+        Height = 23
+        Top = 0
+        Width = 88
+        Alignment = taRightJustify
+        Anchors = [akTop, akRight]
+        BorderSpacing.Left = 8
+        TabOrder = 1
+        Value = 10
+        OnChange = feXMaxChange
+      end
+    end
+    object Chart: TChart
+      Left = 0
+      Height = 325
+      Top = 0
+      Width = 592
+      AxisList = <      
+        item
+          Grid.Visible = False
+          AxisPen.Visible = True
+          Marks.LabelBrush.Style = bsClear
+          Minors = <>
+          Title.LabelFont.Orientation = 900
+          Title.LabelFont.Style = [fsBold]
+          Title.Visible = True
+          Title.Caption = 'Ai(x), Bi(x)'
+          Title.LabelBrush.Style = bsClear
+        end      
+        item
+          Grid.Visible = False
+          Alignment = calBottom
+          AxisPen.Visible = True
+          Marks.LabelBrush.Style = bsClear
+          Minors = <>
+          Title.LabelFont.Style = [fsBold]
+          Title.Visible = True
+          Title.Caption = 'x'
+          Title.LabelBrush.Style = bsClear
+        end      
+        item
+          Grid.Visible = False
+          TickColor = clSilver
+          TickInnerLength = 3
+          Alignment = calBottom
+          AxisPen.Color = clSilver
+          AxisPen.Visible = True
+          Marks.LabelBrush.Style = bsClear
+          Marks.Style = smsNone
+          Minors = <>
+          PositionUnits = cuAxis
+          Title.LabelBrush.Style = bsClear
+        end      
+        item
+          Grid.Visible = False
+          TickColor = clSilver
+          TickInnerLength = 4
+          AxisPen.Color = clSilver
+          AxisPen.Visible = True
+          Marks.LabelBrush.Style = bsClear
+          Marks.Style = smsNone
+          Minors = <>
+          PositionUnits = cuAxis
+          Title.LabelBrush.Style = bsClear
+        end>
+      Legend.SymbolWidth = 36
+      Title.Text.Strings = (
+        'TAChart'
+      )
+      Align = alClient
+      object AiSeries: TFuncSeries
+        Title = 'Ai'
+        Pen.Color = clBlue
+        OnCalculate = AiSeriesCalculate
+      end
+      object BiSeries: TFuncSeries
+        Title = 'Bi'
+        Pen.Color = clRed
+        OnCalculate = BiSeriesCalculate
+      end
+      object DerivAiSeries: TFuncSeries
+        Title = 'Ai''(x)'
+        Pen.Color = clBlue
+        Pen.Style = psDash
+        Pen.EnhancedBrokenLines = True
+        OnCalculate = DerivAiSeriesCalculate
+      end
+      object DerivBiSeries: TFuncSeries
+        Title = 'Bi''(x)'
+        Pen.Color = clRed
+        Pen.Style = psDash
+        Pen.EnhancedBrokenLines = True
+        OnCalculate = DerivBiSeriesCalculate
+      end
+    end
+  end
+end
