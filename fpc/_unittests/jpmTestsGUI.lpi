@@ -36,11 +36,6 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="jpminterpolationtests.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="jpmInterpolationTests"/>
-      </Unit>
-      <Unit>
         <Filename Value="jpmintegrationtests.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="jpmIntegrationTests"/>
@@ -49,6 +44,16 @@
         <Filename Value="jpmappointmenttests.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="jpmAppointmentTests"/>
+      </Unit>
+      <Unit>
+        <Filename Value="jpmspecialfuncstests.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jpmSpecialFuncsTests"/>
+      </Unit>
+      <Unit>
+        <Filename Value="jpminterpolationtests.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jpmInterpolationTests"/>
       </Unit>
     </Units>
   </ProjectOptions>
