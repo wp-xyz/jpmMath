@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
   Spin, TAGraph, TASeries, TAFuncSeries, TAChartListbox,
-  jpmTypes, jpmAiry;
+  jpmTypes, jpmSpecialFunc;
 
 type
 

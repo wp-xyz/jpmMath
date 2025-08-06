@@ -8,9 +8,10 @@
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
         <MainUnitHasScaledStatement Value="False"/>
+        <UseDefaultCompilerOptions Value="True"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="AiryZerosLaz"/>
+      <Title Value="mbeta"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
     </General>
@@ -26,7 +27,7 @@
     </RunParams>
     <Units>
       <Unit>
-        <Filename Value="AiryZerosLaz.pas"/>
+        <Filename Value="mbeta.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
@@ -35,11 +36,9 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="AiryZerosLaz"/>
+      <Filename Value="mbeta"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\..\..\_shared"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
