@@ -22,6 +22,17 @@ function IncompleteGammaQ(a, x: Float): Float;
 function ErfFunc(x: Float): Float;
 function ErfcFunc(x: Float): Float;
 
+{ CAT 9 — Orthogonal polynomials and special functions }
+function LegendrePn(n: integer; x: Float): Float;   { P_n(x) }
+function LegendreQn(n: integer; x: Float): Float;   { Q_n(x), |x|<1 }
+function HermiteHn(n: integer; x: Float): Float;    { physicists H_n(x) }
+function LaguerreLn(n: integer; x: Float): Float;   { L_n(x) }
+function AiryAi(x: Float): Float;                   { Airy Ai(x) }
+function AiryBi(x: Float): Float;                   { Airy Bi(x) }
+function EllipticK(k: Float): Float;                { complete elliptic integral K(k) }
+function EllipticE(k: Float): Float;                { complete elliptic integral E(k) }
+function Hypergeometric2F1(a, b, c, x: Float): Float; { Gauss 2F1, |x|<1 }
+
 procedure self_test;
 
 implementation
@@ -335,7 +346,230 @@ begin
   check('ErfcFunc(1.0)',  ErfcFunc(1.0),  0.157299);
 
   WriteLn;
+
+  { CAT 9 — Orthogonal polynomials }
+  check('LegendrePn(2,0.5)',    LegendrePn(2, 0.5),   -0.125000);
+  check('LegendrePn(3,0.5)',    LegendrePn(3, 0.5),   -0.437500);
+  check('LegendreQn(1,0.5)',    LegendreQn(1, 0.5),   -0.725347);
+  check('HermiteHn(3,1.0)',     HermiteHn(3, 1.0),    -4.000000);
+  check('LaguerreLn(3,1.0)',    LaguerreLn(3, 1.0),   -0.666667);
+  check('AiryAi(0.0)',          AiryAi(0.0),            0.355028);
+  check('AiryBi(0.0)',          AiryBi(0.0),            0.614927);
+  check('EllipticK(0.0)',       EllipticK(0.0),         1.570796);
+  check('EllipticE(0.0)',       EllipticE(0.0),         1.570796);
+  check('EllipticK(0.5)',       EllipticK(0.5),         1.685750);
+  check('Hypergeometric2F1(0.5,0.5,1,0.25)', Hypergeometric2F1(0.5,0.5,1,0.25), 1.073182);
+
+  WriteLn;
   WriteLn('=== done ===');
+end;
+
+
+{ ------------------------------------------------------------------ }
+{ CAT 9 — Orthogonal polynomials and special functions               }
+{ ------------------------------------------------------------------ }
+
+function LegendrePn(n: integer; x: Float): Float;
+var
+  k: integer;
+  p0, p1, p2: Float;
+begin
+  if n = 0 then begin result := 1; exit end;
+  if n = 1 then begin result := x; exit end;
+  p0 := 1; p1 := x;
+  for k := 2 to n do
+  begin
+    p2 := ((2*k - 1)*x*p1 - (k - 1)*p0) / k;
+    p0 := p1; p1 := p2
+  end;
+  result := p1
+end;
+
+function LegendreQn(n: integer; x: Float): Float;
+var
+  k: integer;
+  q0, q1, q2: Float;
+begin
+  { Q0(x) = 0.5*ln((1+x)/(1-x)), Q1(x) = x*Q0(x)-1 }
+  if Abs(x) >= 1 then begin result := 0; exit end;
+  q0 := 0.5 * Ln((1 + x) / (1 - x));
+  if n = 0 then begin result := q0; exit end;
+  q1 := x * q0 - 1;
+  if n = 1 then begin result := q1; exit end;
+  for k := 2 to n do
+  begin
+    q2 := ((2*k - 1)*x*q1 - (k - 1)*q0) / k;
+    q0 := q1; q1 := q2
+  end;
+  result := q1
+end;
+
+function HermiteHn(n: integer; x: Float): Float;
+var
+  k: integer;
+  h0, h1, h2: Float;
+begin
+  { physicists: H_{n+1} = 2x H_n - 2n H_{n-1} }
+  if n = 0 then begin result := 1; exit end;
+  if n = 1 then begin result := 2*x; exit end;
+  h0 := 1; h1 := 2*x;
+  for k := 1 to n - 1 do
+  begin
+    h2 := 2*x*h1 - 2*k*h0;
+    h0 := h1; h1 := h2
+  end;
+  result := h1
+end;
+
+function LaguerreLn(n: integer; x: Float): Float;
+var
+  k: integer;
+  l0, l1, l2: Float;
+begin
+  if n = 0 then begin result := 1; exit end;
+  if n = 1 then begin result := 1 - x; exit end;
+  l0 := 1; l1 := 1 - x;
+  for k := 1 to n - 1 do
+  begin
+    l2 := ((2*k + 1 - x)*l1 - k*l0) / (k + 1);
+    l0 := l1; l1 := l2
+  end;
+  result := l1
+end;
+
+function AiryAi(x: Float): Float;
+{ Power series for small |x|; asymptotic for large x }
+var
+  z, s, t: Float;
+  k: integer;
+begin
+  if x > 4 then
+  begin
+    z := (2/3) * Power(x, 1.5);
+    result := Exp(-z) / (2 * Sqrt(Pi) * Power(x, 0.25))
+  end
+  else if x < -4 then
+  begin
+    z := (2/3) * Power(-x, 1.5);
+    result := (Sin(z + Pi/4)) / (Sqrt(Pi) * Power(-x, 0.25))
+  end
+  else
+  begin
+    { power series: Ai(x) = c1*f(x) - c2*g(x)
+      f = sum x^{3k}/(3k)!*prod(3j-2), g = sum x^{3k+1}/(3k+1)!*prod(3j-1) }
+    s := 0; t := 1;
+    for k := 0 to 30 do
+    begin
+      s := s + t;
+      t := t * x * x * x / ((3*k+2)*(3*k+3));
+      if Abs(t) < 1e-15 * Abs(s) then break
+    end;
+    { c1 = Ai(0) = 1/(3^(2/3)*Gamma(2/3)), approximate = 0.3550280539 }
+    result := 0.3550280539 * s;
+    s := 0; t := x;
+    for k := 0 to 30 do
+    begin
+      s := s + t;
+      t := t * x * x * x / ((3*k+3)*(3*k+4));
+      if Abs(t) < 1e-15 * Abs(s) then break
+    end;
+    { c2 = -Ai'(0) = 1/(3^(1/3)*Gamma(1/3)), approximate = 0.2588194037 }
+    result := result - 0.2588194037 * s
+  end
+end;
+
+function AiryBi(x: Float): Float;
+var
+  z, s, t: Float;
+  k: integer;
+begin
+  if x > 4 then
+  begin
+    z := (2/3) * Power(x, 1.5);
+    result := Exp(z) / (Sqrt(Pi) * Power(x, 0.25))
+  end
+  else if x < -4 then
+  begin
+    z := (2/3) * Power(-x, 1.5);
+    result := Cos(z + Pi/4) / (Sqrt(Pi) * Power(-x, 0.25))
+  end
+  else
+  begin
+    s := 0; t := 1;
+    for k := 0 to 30 do
+    begin
+      s := s + t;
+      t := t * x * x * x / ((3*k+2)*(3*k+3));
+      if Abs(t) < 1e-15 * Abs(s) then break
+    end;
+    result := 0.6149266274 * s;  { Bi(0) = 3^(1/6)/Gamma(2/3) }
+    s := 0; t := x;
+    for k := 0 to 30 do
+    begin
+      s := s + t;
+      t := t * x * x * x / ((3*k+3)*(3*k+4));
+      if Abs(t) < 1e-15 * Abs(s) then break
+    end;
+    result := result + 0.4482883574 * s  { Bi'(0) = 3^(5/6)/Gamma(1/3) }
+  end
+end;
+
+function EllipticK(k: Float): Float;
+{ AGM method: K(k) = Pi / (2 * AGM(1, sqrt(1-k^2))) }
+var
+  a, b, tmp: Float;
+  i: integer;
+begin
+  if Abs(k) >= 1 then begin result := 1e308; exit end;
+  a := 1;
+  b := Sqrt(1 - k*k);
+  for i := 1 to 30 do
+  begin
+    tmp := (a + b) / 2;
+    b   := Sqrt(a * b);
+    a   := tmp;
+    if Abs(a - b) < 1e-14 * a then break
+  end;
+  result := Pi / (2 * a)
+end;
+
+function EllipticE(k: Float): Float;
+{ AGM-based algorithm for E(k) }
+var
+  a, b, c, tmp, pwr: Float;
+  i: integer;
+begin
+  if Abs(k) >= 1 then begin result := 1; exit end;
+  a := 1; b := Sqrt(1 - k*k);
+  c := k*k / 2;
+  pwr := 1;
+  for i := 1 to 30 do
+  begin
+    tmp := (a + b) / 2;
+    b   := Sqrt(a * b);
+    pwr := pwr * 2;
+    c   := c - pwr * (tmp - b) * (tmp - b);
+    a   := tmp;
+    if Abs(a - b) < 1e-14 * a then break
+  end;
+  result := Pi * (1 - c) / (2 * a)
+end;
+
+function Hypergeometric2F1(a, b, c, x: Float): Float;
+{ Gauss hypergeometric series 2F1(a,b;c;x), |x| < 1 }
+var
+  s, t: Float;
+  n: integer;
+begin
+  if Abs(x) >= 1 then begin result := 0; exit end;
+  s := 1; t := 1;
+  for n := 0 to 99 do
+  begin
+    t := t * (a + n) * (b + n) * x / ((c + n) * (n + 1));
+    s := s + t;
+    if Abs(t) < 1e-14 * Abs(s) then break
+  end;
+  result := s
 end;
 
 end.
