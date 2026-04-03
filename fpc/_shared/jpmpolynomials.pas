@@ -31,6 +31,26 @@ procedure PolyInteg(var p: TPolyArray; dp: integer; c0: Float; var q: TPolyArray
 { 8.3 Polynomial GCD (result is monic) }
 procedure PolyGCD(var a, b: TPolyArray; da, db: integer; var g: TPolyArray; var dg: integer);
 
+{ 8.4 Polynomial fractions }
+type
+  TPolyFrac = record
+    numer, denom: TPolyArray;
+    dn, dd: integer;
+  end;
+
+procedure PolyFracMake(var num, den: TPolyArray; dn, dd: integer; var f: TPolyFrac);
+function  PolyFracEval(var f: TPolyFrac; x: Float): Float;
+procedure PolyFracAdd(var f1, f2: TPolyFrac; var res: TPolyFrac);
+procedure PolyFracSub(var f1, f2: TPolyFrac; var res: TPolyFrac);
+procedure PolyFracMul(var f1, f2: TPolyFrac; var res: TPolyFrac);
+procedure PolyFracDiv(var f1, f2: TPolyFrac; var res: TPolyFrac);
+procedure PolyFracReduce(var f: TPolyFrac);
+{ Partial fraction decomposition for simple real roots.
+  roots[0..f.dd-1] = roots of denominator.
+  coeffs[i] = residue A_i for each (x - roots[i]) factor }
+procedure PolyFracPartial(var f: TPolyFrac; var roots: TFloatArray;
+                          var coeffs: TFloatArray);
+
 procedure self_test;
 
 implementation
@@ -388,6 +408,110 @@ begin
   check(Abs(g[1] - 1.0) < 1.0e-10, 'PolyGCD g[1]=1');
 
   writeln('=== self_test PASSED ===');
+end;
+
+
+{ ====================================================================
+  8.4  Polynomial Fractions
+  ==================================================================== }
+
+procedure PolyFracMake(var num, den: TPolyArray; dn, dd: integer; var f: TPolyFrac);
+var k: integer;
+begin
+  SetLength(f.numer, dn+1);
+  SetLength(f.denom, dd+1);
+  for k := 0 to dn do f.numer[k] := num[k];
+  for k := 0 to dd do f.denom[k] := den[k];
+  f.dn := dn; f.dd := dd
+end;
+
+function PolyFracEval(var f: TPolyFrac; x: Float): Float;
+var n, d: Float;
+begin
+  n := PolyEval(f.numer, f.dn, x);
+  d := PolyEval(f.denom, f.dd, x);
+  if Abs(d) < POLY_SMALL then result := 0
+  else result := n / d
+end;
+
+procedure PolyFracAdd(var f1, f2: TPolyFrac; var res: TPolyFrac);
+var t1, t2, num, den: TPolyArray;
+    dt1, dt2, dnum, dden: integer;
+begin
+  { res = f1.n/f1.d + f2.n/f2.d = (f1.n*f2.d + f2.n*f1.d) / (f1.d*f2.d) }
+  PolyMul(f1.numer, f2.denom, f1.dn, f2.dd, t1, dt1);
+  PolyMul(f2.numer, f1.denom, f2.dn, f1.dd, t2, dt2);
+  PolyAdd(t1, t2, dt1, dt2, num, dnum);
+  PolyMul(f1.denom, f2.denom, f1.dd, f2.dd, den, dden);
+  PolyFracMake(num, den, dnum, dden, res)
+end;
+
+procedure PolyFracSub(var f1, f2: TPolyFrac; var res: TPolyFrac);
+var t1, t2, num, den: TPolyArray;
+    dt1, dt2, dnum, dden: integer;
+begin
+  PolyMul(f1.numer, f2.denom, f1.dn, f2.dd, t1, dt1);
+  PolyMul(f2.numer, f1.denom, f2.dn, f1.dd, t2, dt2);
+  PolySub(t1, t2, dt1, dt2, num, dnum);
+  PolyMul(f1.denom, f2.denom, f1.dd, f2.dd, den, dden);
+  PolyFracMake(num, den, dnum, dden, res)
+end;
+
+procedure PolyFracMul(var f1, f2: TPolyFrac; var res: TPolyFrac);
+var num, den: TPolyArray;
+    dnum, dden: integer;
+begin
+  PolyMul(f1.numer, f2.numer, f1.dn, f2.dn, num, dnum);
+  PolyMul(f1.denom, f2.denom, f1.dd, f2.dd, den, dden);
+  PolyFracMake(num, den, dnum, dden, res)
+end;
+
+procedure PolyFracDiv(var f1, f2: TPolyFrac; var res: TPolyFrac);
+var num, den: TPolyArray;
+    dnum, dden: integer;
+begin
+  PolyMul(f1.numer, f2.denom, f1.dn, f2.dd, num, dnum);
+  PolyMul(f1.denom, f2.numer, f1.dd, f2.dn, den, dden);
+  PolyFracMake(num, den, dnum, dden, res)
+end;
+
+procedure PolyFracReduce(var f: TPolyFrac);
+var g, n2, d2: TPolyArray;
+    dg, dn2, dd2: integer;
+begin
+  PolyGCD(f.numer, f.denom, f.dn, f.dd, g, dg);
+  if dg = 0 then exit; { gcd = constant, already reduced }
+  PolyDiv(f.numer, g, f.dn, dg, n2, n2, dn2, dn2); { quotient only }
+  PolyDiv(f.denom, g, f.dd, dg, d2, d2, dd2, dd2);
+  { PolyDiv returns quotient in first output, remainder in second — fix: use proper vars }
+  PolyDiv(f.numer, g, f.dn, dg, n2, d2, dn2, dd2);
+  PolyDiv(f.denom, g, f.dd, dg, d2, g,  dd2, dg);
+  SetLength(f.numer, dn2+1);
+  Move(n2[0], f.numer[0], (dn2+1)*SizeOf(Float));
+  f.dn := dn2;
+  SetLength(f.denom, dd2+1);
+  Move(d2[0], f.denom[0], (dd2+1)*SizeOf(Float));
+  f.dd := dd2
+end;
+
+procedure PolyFracPartial(var f: TPolyFrac; var roots: TFloatArray;
+                          var coeffs: TFloatArray);
+{ Simple poles: f(x) = N(x)/D(x) where D has simple real roots.
+  Residue at root r_i: A_i = N(r_i) / D'(r_i) }
+var deriv: TPolyArray;
+    dd: integer;
+    i: integer;
+    nr, dr: Float;
+begin
+  SetLength(coeffs, f.dd);
+  PolyDeriv(f.denom, f.dd, deriv, dd);
+  for i := 0 to f.dd - 1 do
+  begin
+    nr := PolyEval(f.numer, f.dn, roots[i]);
+    dr := PolyEval(deriv, dd, roots[i]);
+    if Abs(dr) < POLY_SMALL then coeffs[i] := 0
+    else coeffs[i] := nr / dr
+  end
 end;
 
 end.
