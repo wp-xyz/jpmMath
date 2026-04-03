@@ -7,6 +7,8 @@ interface
 type
   float = double;
 
+  TFloatArray = array of Float;
+
   TFunction1 = function(x: Float): float;
   TFunction2 = function(x, y: Float): float;
 
