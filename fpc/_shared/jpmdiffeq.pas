@@ -35,6 +35,14 @@ procedure AdamsMoulton4(f: TODEFunc; var y: TFloatArray; n: integer; var t: Floa
 procedure GearStiff(f: TODEFunc; var y: TFloatArray; n: integer;
   var t: Float; tend, hstart, tol: Float; maxFev: integer; var info: integer);
 
+{ 7.5 Bulirsch-Stoer extrapolation method (high-order, adaptive step).
+  Uses modified midpoint rule + polynomial extrapolation (Neville's algorithm).
+  f: ODE rhs; y[0..n-1]: initial values (updated). t: start (updated).
+  tend: end time. hstart: initial step. tol: error tolerance.
+  info: 0=ok, 1=failed to converge. }
+procedure BulirschStoer(f: TODEFunc; var y: TFloatArray; n: integer;
+  var t: Float; tend, hstart, tol: Float; var info: integer);
+
 procedure self_test;
 
 implementation
@@ -555,6 +563,91 @@ begin
 end;
 
 { ------------------------------------------------------------------ }
+procedure BulirschStoer(f: TODEFunc; var y: TFloatArray; n: integer;
+  var t: Float; tend, hstart, tol: Float; var info: integer);
+const
+  MAXK = 8;
+  nseq: array[0..7] of integer = (2, 4, 6, 8, 12, 16, 24, 32);
+var
+  H, maxErr, err, scale: Float;
+  i, j, k, m, nsub: integer;
+  z0, z1, z2, ftmp: TFloatArray;
+  ym: array[0..MAXK-1] of TFloatArray;   { midpoint results for each k }
+  Tex: array[0..MAXK-1] of TFloatArray;    { Neville extrapolation table }
+  converged: boolean;
+begin
+  info := 0;
+  H := hstart;
+  SetLength(z0, n); SetLength(z1, n); SetLength(z2, n); SetLength(ftmp, n);
+  for k := 0 to MAXK-1 do begin SetLength(ym[k], n); SetLength(Tex[k], n); end;
+
+  while t < tend - 1.0e-14 do
+  begin
+    if t + H > tend then H := tend - t;
+    converged := false;
+
+    for k := 0 to MAXK-1 do
+    begin
+      nsub := nseq[k];
+      scale := H / nsub;
+
+      { Modified midpoint method with nsub steps }
+      for i := 0 to n-1 do z0[i] := y[i];
+      f(t, z0, ftmp, n);
+      for i := 0 to n-1 do z1[i] := z0[i] + scale * ftmp[i];
+      for m := 1 to nsub-1 do
+      begin
+        f(t + m*scale, z1, ftmp, n);
+        for i := 0 to n-1 do begin z2[i] := z0[i] + 2.0*scale*ftmp[i]; z0[i] := z1[i]; z1[i] := z2[i]; end;
+      end;
+      f(t + H, z1, ftmp, n);
+      for i := 0 to n-1 do ym[k][i] := 0.5*(z0[i] + z1[i] + scale*ftmp[i]);
+
+      { Copy ym[k] into extrapolation table column 0 }
+      for i := 0 to n-1 do Tex[k][i] := ym[k][i];
+
+      { Neville extrapolation: T[k][j] using x_k = (H/nseq[k])^2 }
+      { Using formula: T[i,j] = T[i,j-1] + (T[i,j-1]-T[i-1,j-1]) / ((nseq[i]/nseq[i-j])^2 - 1) }
+      for j := 1 to k do
+      begin
+        { ratio = (nseq[k] / nseq[k-j])^2 }
+        err := Sqr(nseq[k] / nseq[k-j]) - 1.0;
+        for i := 0 to n-1 do
+          Tex[k][i] := Tex[k][i] + (Tex[k][i] - Tex[k-1][i]) / err;
+      end;
+
+      { Check convergence (k >= 1) }
+      if k >= 1 then
+      begin
+        maxErr := 0.0;
+        for i := 0 to n-1 do
+        begin
+          scale := tol * (Abs(y[i]) + Abs(Tex[k][i]) + 1.0e-30);
+          err := Abs(Tex[k][i] - Tex[k-1][i]) / scale;
+          if err > maxErr then maxErr := err;
+        end;
+        if maxErr < 1.0 then
+        begin
+          t := t + H;
+          for i := 0 to n-1 do y[i] := Tex[k][i];
+          { Increase step size modestly }
+          H := H * Min(2.0, Power(1.0/maxErr, 1.0/(2*k+1)));
+          converged := true;
+          break;
+        end;
+      end;
+    end; { for k }
+
+    if not converged then
+    begin
+      { Failed — halve step and try again }
+      H := H * 0.5;
+      if H < 1.0e-14 then begin info := 1; exit; end;
+    end;
+  end;
+end;
+
+{ ------------------------------------------------------------------ }
 procedure self_test;
 var
   y: TFloatArray;
@@ -562,6 +655,7 @@ var
   nOK, nBad: integer;
   exact, err: Float;
   info_gs: integer;
+  info_bs: integer;
 begin
   WriteLn('=== jpmdiffeq self_test ===');
   WriteLn;
@@ -642,6 +736,17 @@ begin
     [y[0]+y[1]+y[2], err, info_gs]));
   if (err < 1.0e-6) and (info_gs = 0) then WriteLn('  PASS')
   else begin WriteLn('  FAIL'); SelfTestFail('GearStiff Robertson: err=' + FloatToStr(err)); end;
+
+  { ---- Test 6: BulirschStoer on harmonic oscillator ---- }
+  SetLength(y, 2);
+  y[0] := 1.0; y[1] := 0.0;
+  t := 0.0; info_bs := 0;
+  BulirschStoer(@ODE_Harmonic, y, 2, t, 2.0*Pi, 0.5, 1.0e-10, info_bs);
+  err := Abs(y[0] - 1.0);
+  WriteLn(Format('Test 6  (BulirschStoer harmonic): y[0](2pi)=%.9f  err=%.2e  info=%d',
+    [y[0], err, info_bs]));
+  if (err < 1.0e-8) and (info_bs = 0) then WriteLn('  PASS')
+  else begin WriteLn('  FAIL'); SelfTestFail('BulirschStoer harmonic: err=' + FloatToStr(err)); end;
 
   WriteLn;
   WriteLn('=== self_test done ===');
