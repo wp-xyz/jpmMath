@@ -1,7 +1,11 @@
 program optimize_demo;
 {$mode objfpc}{$H+}
 uses
-  SysUtils, Math, jpmtypes, jpmoptimize;
+  jpmoptimize;
 begin
   jpmoptimize.self_test;
+ {$IFDEF MSWINDOWS}
+  Write('Press ENTER to close...');
+  ReadLn;
+ {$ENDIF}
 end.

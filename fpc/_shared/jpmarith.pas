@@ -3,7 +3,7 @@ unit jpmArith;
 
 interface
 
-uses SysUtils, Math, jpmtypes;
+uses SysUtils, jpmtypes;
 
 type
   TFraction = record

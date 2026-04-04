@@ -1,6 +1,10 @@
 program chebyshev_demo;
 {$mode objfpc}{$H+}
-uses SysUtils, Math, jpmtypes, jpmchebyshev;
+uses jpmchebyshev;
 begin
-  jpmchebyshev.self_test
+  jpmchebyshev.self_test;
+ {$IFDEF MSWINDOWS}
+  Write('Press ENTER to close...');
+  ReadLn;
+ {$ENDIF}
 end.

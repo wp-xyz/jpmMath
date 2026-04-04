@@ -1,6 +1,14 @@
 program stat_demo;
 {$mode objfpc}{$H+}
-uses SysUtils, Math, jpmtypes, jpmspecial, jpmstats;
+
+uses
+  jpmstats;
+
 begin
   jpmstats.self_test;
+
+ {$IFDEF MSWINDOWS}
+  Write('Press ENTER to close...');
+  ReadLn;
+ {$ENDIF}
 end.
