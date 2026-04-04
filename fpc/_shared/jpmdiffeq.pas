@@ -26,6 +26,15 @@ procedure AdamsBashforth4(f: TODEFunc; var y: TFloatArray; n: integer; var t: Fl
 procedure AdamsMoulton4(f: TODEFunc; var y: TFloatArray; n: integer; var t: Float;
   tend, h: Float);
 
+{ 7.4 Semi-implicit Rosenbrock method for stiff ODEs (L-stable, order 2).
+  Suitable for stiff problems. Uses numerical Jacobian + Gaussian elimination.
+  f: ODE rhs; y: initial values, updated on return; n: system size.
+  t: start (updated to tend). tend: end time. hstart: initial step.
+  tol: error tolerance. maxFev: max function evaluations.
+  info: 0=ok, 5=max evals reached, 6=singular matrix. }
+procedure GearStiff(f: TODEFunc; var y: TFloatArray; n: integer;
+  var t: Float; tend, hstart, tol: Float; maxFev: integer; var info: integer);
+
 procedure self_test;
 
 implementation
@@ -53,6 +62,45 @@ var
 begin
   for i := 0 to n - 1 do
     dst[i] := dst[i] + scale * a[i];
+end;
+
+{ Gaussian elimination with partial pivoting. Solves mat*x=rhs. }
+procedure GaussElim(var mat: TFloatMatrix; var rhs, x: TFloatArray; n: integer; var singular: boolean);
+var
+  i, j, k, pivot: integer;
+  maxVal, tmp, factor: Float;
+begin
+  singular := false;
+  { Forward elimination }
+  for k := 0 to n-1 do
+  begin
+    { Find pivot }
+    maxVal := Abs(mat[k][k]); pivot := k;
+    for i := k+1 to n-1 do
+      if Abs(mat[i][k]) > maxVal then begin maxVal := Abs(mat[i][k]); pivot := i; end;
+    if maxVal < 1.0e-14 then begin singular := true; exit; end;
+    { Swap rows k and pivot }
+    if pivot <> k then
+    begin
+      for j := 0 to n-1 do begin tmp := mat[k][j]; mat[k][j] := mat[pivot][j]; mat[pivot][j] := tmp; end;
+      tmp := rhs[k]; rhs[k] := rhs[pivot]; rhs[pivot] := tmp;
+    end;
+    { Eliminate column }
+    for i := k+1 to n-1 do
+    begin
+      factor := mat[i][k] / mat[k][k];
+      for j := k to n-1 do mat[i][j] := mat[i][j] - factor * mat[k][j];
+      rhs[i] := rhs[i] - factor * rhs[k];
+    end;
+  end;
+  { Back substitution }
+  SetLength(x, n);
+  for i := n-1 downto 0 do
+  begin
+    x[i] := rhs[i];
+    for j := i+1 to n-1 do x[i] := x[i] - mat[i][j] * x[j];
+    x[i] := x[i] / mat[i][i];
+  end;
 end;
 
 { ------------------------------------------------------------------ }
@@ -398,8 +446,114 @@ begin
   dydt[1] := -y[0];
 end;
 
+procedure ODE_Robertson(t: Float; var y, dydt: TFloatArray; n: integer);
+begin
+  dydt[0] := -0.04 * y[0] + 1.0e4 * y[1] * y[2];
+  dydt[1] :=  0.04 * y[0] - 1.0e4 * y[1] * y[2] - 3.0e7 * y[1] * y[1];
+  dydt[2] :=  3.0e7 * y[1] * y[1];
+end;
+
 { ------------------------------------------------------------------ }
-{  self_test                                                          }
+{  7.4  GearStiff — Rosenbrock order-2 L-stable method               }
+{ ------------------------------------------------------------------ }
+procedure GearStiff(f: TODEFunc; var y: TFloatArray; n: integer;
+  var t: Float; tend, hstart, tol: Float; maxFev: integer; var info: integer);
+{ Rosenbrock order-2 L-stable method. gamma = 1/(2+sqrt(2)) }
+const
+  gamma = 0.29289321881; { 1 - 1/sqrt(2) }
+  sqrtEps = 1.4901161e-8;
+var
+  h, err, maxErr, scale: Float;
+  i, j, fev: integer;
+  f0, f1, k1, k2, ytmp, ynew, rhs1, rhs2: TFloatArray;
+  Jac, M: TFloatMatrix;
+  singular: boolean;
+begin
+  info := 0;
+  h := hstart;
+  fev := 0;
+  SetLength(f0, n); SetLength(f1, n); SetLength(k1, n); SetLength(k2, n);
+  SetLength(ytmp, n); SetLength(ynew, n);
+  SetLength(rhs1, n); SetLength(rhs2, n);
+  SetLength(Jac, n); for i := 0 to n-1 do SetLength(Jac[i], n);
+  SetLength(M, n); for i := 0 to n-1 do SetLength(M[i], n);
+
+  while t < tend do
+  begin
+    if fev >= maxFev then begin info := 5; exit; end;
+    if t + h > tend then h := tend - t;
+
+    { Compute f0 = f(t, y) }
+    f(t, y, f0, n); inc(fev);
+
+    { Numerical Jacobian Jac[i,j] = df[i]/dy[j] }
+    for j := 0 to n-1 do
+    begin
+      scale := sqrtEps * (Abs(y[j]) + 1.0);
+      for i := 0 to n-1 do ytmp[i] := y[i];
+      ytmp[j] := ytmp[j] + scale;
+      f(t, ytmp, f1, n); inc(fev);
+      for i := 0 to n-1 do Jac[i][j] := (f1[i] - f0[i]) / scale;
+    end;
+
+    { Build M = I - h*gamma*Jac }
+    for i := 0 to n-1 do
+      for j := 0 to n-1 do
+      begin
+        if i = j then M[i][j] := 1.0 - h * gamma * Jac[i][j]
+        else M[i][j] := -h * gamma * Jac[i][j];
+      end;
+
+    { Solve M*k1 = f0 }
+    for i := 0 to n-1 do rhs1[i] := f0[i];
+    GaussElim(M, rhs1, k1, n, singular);
+    if singular then begin info := 6; h := h * 0.5; continue; end;
+
+    { Compute f(t + h, y + h*k1) }
+    for i := 0 to n-1 do ytmp[i] := y[i] + h * k1[i];
+    f(t + h, ytmp, f1, n); inc(fev);
+
+    { Rebuild M (was modified by GaussElim) }
+    for i := 0 to n-1 do
+      for j := 0 to n-1 do
+      begin
+        if i = j then M[i][j] := 1.0 - h * gamma * Jac[i][j]
+        else M[i][j] := -h * gamma * Jac[i][j];
+      end;
+
+    { Solve M*k2 = f(t+h, y+h*k1) - 2*k1 }
+    for i := 0 to n-1 do rhs2[i] := f1[i] - 2.0 * k1[i];
+    GaussElim(M, rhs2, k2, n, singular);
+    if singular then begin info := 6; h := h * 0.5; continue; end;
+
+    { New solution: y_new = y + 1.5*h*k1 + 0.5*h*k2 }
+    for i := 0 to n-1 do ynew[i] := y[i] + 1.5 * h * k1[i] + 0.5 * h * k2[i];
+
+    { Error estimate: ~ |0.5*h*(k2 - k1)| }
+    maxErr := 0.0;
+    for i := 0 to n-1 do
+    begin
+      err := Abs(0.5 * h * (k2[i] - k1[i])) / (tol * (Abs(y[i]) + 1.0));
+      if err > maxErr then maxErr := err;
+    end;
+
+    { Accept or reject step }
+    if maxErr <= 1.0 then
+    begin
+      t := t + h;
+      for i := 0 to n-1 do y[i] := ynew[i];
+    end;
+
+    { Step size control }
+    if maxErr > 1.0e-10 then
+      h := h * Min(5.0, Max(0.2, 0.9 * Power(1.0/maxErr, 0.5)))
+    else
+      h := h * 5.0;
+
+    if h > tend - t then h := tend - t;
+  end;
+end;
+
 { ------------------------------------------------------------------ }
 procedure self_test;
 var
@@ -407,6 +561,7 @@ var
   t: Float;
   nOK, nBad: integer;
   exact, err: Float;
+  info_gs: integer;
 begin
   WriteLn('=== jpmdiffeq self_test ===');
   WriteLn;
@@ -476,6 +631,17 @@ begin
     [y[0], exact, err]));
   if err < 1.0e-7 then WriteLn('  PASS')
   else begin WriteLn('  FAIL'); SelfTestFail('AM4 exp decay: err=' + FloatToStr(err)); end;
+
+  { ---- Test 5: GearStiff on Robertson stiff chemistry ---- }
+  SetLength(y, 3);
+  y[0] := 1.0; y[1] := 0.0; y[2] := 0.0;
+  t := 0.0; info_gs := 0;
+  GearStiff(@ODE_Robertson, y, 3, t, 0.3, 1.0e-4, 1.0e-6, 100000, info_gs);
+  err := Abs(y[0] + y[1] + y[2] - 1.0);
+  WriteLn(Format('Test 5  (GearStiff Robertson): sum=%.9f  err=%.2e  info=%d',
+    [y[0]+y[1]+y[2], err, info_gs]));
+  if (err < 1.0e-6) and (info_gs = 0) then WriteLn('  PASS')
+  else begin WriteLn('  FAIL'); SelfTestFail('GearStiff Robertson: err=' + FloatToStr(err)); end;
 
   WriteLn;
   WriteLn('=== self_test done ===');
