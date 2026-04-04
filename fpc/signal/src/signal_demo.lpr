@@ -1,6 +1,11 @@
 program signal_demo;
 {$mode objfpc}{$H+}
-uses SysUtils, Math, jpmtypes, jpmsignal;
+uses
+  jpmsignal;
 begin
   jpmsignal.self_test;
+ {$IFDEF MSWINDOWS}
+  Write('Press ENTER to close...');
+  ReadLn;
+ {$ENDIF}
 end.

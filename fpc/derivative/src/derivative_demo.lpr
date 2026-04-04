@@ -2,8 +2,13 @@ program derivative_demo;
 
 {$mode objfpc}{$H+}
 
-uses SysUtils, Math, jpmtypes, jpmderivative;
+uses jpmderivative;
 
 begin
   jpmderivative.self_test;
+
+ {$IFDEF MSWINDOWS}
+  Write('Press ENTER to close...');
+  ReadLn;
+ {$ENDIF}
 end.
