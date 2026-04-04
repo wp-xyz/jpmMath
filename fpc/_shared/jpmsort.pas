@@ -13,10 +13,6 @@ interface
 
 uses SysUtils, Math, jpmtypes;
 
-type
-  TFloatArray = array of Float;
-  TIntArray   = array of integer;
-
 procedure BubbleSort(var a: TFloatArray; n: integer);
 procedure InsertionSort(var a: TFloatArray; n: integer);
 procedure SelectionSort(var a: TFloatArray; n: integer);

@@ -6,11 +6,6 @@ interface
 uses
   SysUtils, Math, jpmTypes;
 
-type
-  TFloatArray  = array of Float;
-  TFloatMatrix = array of TFloatArray;
-  TFuncND      = function(var x: TFloatArray; n: integer): Float;
-
 { Golden Section Search: finds minimum of f in bracket (ax,bx,cx).
   f(bx) < f(ax) and f(bx) < f(cx). Returns f(xmin). }
 function GoldenSection(f: TFunction1; ax, bx, cx: Float; tol: Float;

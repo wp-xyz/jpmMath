@@ -16,35 +16,31 @@ interface
 
 uses SysUtils, Math, jpmtypes;
 
-type
-  TVector = array of Float;
-  TMatrix = array of TVector;
-
 { Solve overdetermined system Ax=b (m rows, n cols, m>=n) in least-squares sense
   using normal equations: (A^T A) x = A^T b }
-procedure LeastSquares(var A: TMatrix; var b: TVector; m, n: integer;
-  var x: TVector);
+procedure LeastSquares(var A: TMatrix; var b: TFloatArray; m, n: integer;
+  var x: TFloatArray);
 
 { Fit polynomial of given degree to (xdata,ydata).
   coeffs[0]=constant, coeffs[1]=linear, ..., coeffs[degree]=highest power. }
-procedure PolyRegression(var xdata, ydata: TVector; ndata, degree: integer;
-  var coeffs: TVector);
+procedure PolyRegression(var xdata, ydata: TFloatArray; ndata, degree: integer;
+  var coeffs: TFloatArray);
 
 { Simple linear regression y = a + b*x.
   Returns intercept a, slope b, Pearson correlation coefficient r. }
-procedure LinearRegression(var xdata, ydata: TVector; ndata: integer;
+procedure LinearRegression(var xdata, ydata: TFloatArray; ndata: integer;
   var a, b, r: Float);
 
 { Multiple linear regression.  X is m-by-n design matrix (no intercept column).
   Intercept is added automatically.  Returns coeffs[0]=intercept,
   coeffs[1..n]=slopes, and R² in r2. }
-procedure MultipleRegression(var X: TMatrix; var y: TVector; m, n: integer;
-  var coeffs: TVector; var r2: Float);
+procedure MultipleRegression(var X: TMatrix; var y: TFloatArray; m, n: integer;
+  var coeffs: TFloatArray; var r2: Float);
 
 { Weighted polynomial fit where sigma[i] is the measurement uncertainty.
   Weight = 1/sigma[i]².  chiSq = sum((y[i]-poly(x[i]))²/sigma[i]²). }
-procedure ChiSquareFit(var xdata, ydata, sigma: TVector; ndata, degree: integer;
-  var coeffs: TVector; var chiSq: Float);
+procedure ChiSquareFit(var xdata, ydata, sigma: TFloatArray; ndata, degree: integer;
+  var coeffs: TFloatArray; var chiSq: Float);
 
 procedure self_test;
 
@@ -54,12 +50,12 @@ implementation
   Internal helper — Gaussian elimination with partial pivoting.
   Solves n-by-n system mat*x = rhs.  Modifies mat and rhs in-place.
   --------------------------------------------------------------------------- }
-procedure SolveLinearSystem(var mat: TMatrix; var rhs: TVector; n: integer;
-  var x: TVector);
+procedure SolveLinearSystem(var mat: TMatrix; var rhs: TFloatArray; n: integer;
+  var x: TFloatArray);
 var
   i, j, k, pivrow: integer;
   factor, tmp: Float;
-  tmprow: TVector;
+  tmprow: TFloatArray;
 begin
   { forward elimination }
   for k := 0 to n - 2 do
@@ -104,12 +100,12 @@ end;
 { ---------------------------------------------------------------------------
   6.1  LeastSquares — normal equations approach
   --------------------------------------------------------------------------- }
-procedure LeastSquares(var A: TMatrix; var b: TVector; m, n: integer;
-  var x: TVector);
+procedure LeastSquares(var A: TMatrix; var b: TFloatArray; m, n: integer;
+  var x: TFloatArray);
 var
   i, j, k: integer;
   AtA: TMatrix;
-  Atb: TVector;
+  Atb: TFloatArray;
 begin
   { build A^T A (n-by-n) and A^T b (n) }
   SetLength(AtA, n);
@@ -135,12 +131,12 @@ end;
 { ---------------------------------------------------------------------------
   6.2  PolyRegression — Vandermonde matrix + LeastSquares
   --------------------------------------------------------------------------- }
-procedure PolyRegression(var xdata, ydata: TVector; ndata, degree: integer;
-  var coeffs: TVector);
+procedure PolyRegression(var xdata, ydata: TFloatArray; ndata, degree: integer;
+  var coeffs: TFloatArray);
 var
   i, j: integer;
   V: TMatrix;
-  ycopy: TVector;
+  ycopy: TFloatArray;
 begin
   { build Vandermonde matrix V[i][j] = xdata[i]^j, i=0..ndata-1, j=0..degree }
   SetLength(V, ndata);
@@ -160,7 +156,7 @@ end;
 { ---------------------------------------------------------------------------
   6.3  LinearRegression — closed-form Pearson formulas
   --------------------------------------------------------------------------- }
-procedure LinearRegression(var xdata, ydata: TVector; ndata: integer;
+procedure LinearRegression(var xdata, ydata: TFloatArray; ndata: integer;
   var a, b, r: Float);
 var
   i: integer;
@@ -202,12 +198,12 @@ end;
 { ---------------------------------------------------------------------------
   6.4  MultipleRegression — adds intercept column, calls LeastSquares, R²
   --------------------------------------------------------------------------- }
-procedure MultipleRegression(var X: TMatrix; var y: TVector; m, n: integer;
-  var coeffs: TVector; var r2: Float);
+procedure MultipleRegression(var X: TMatrix; var y: TFloatArray; m, n: integer;
+  var coeffs: TFloatArray; var r2: Float);
 var
   i, j: integer;
   Xaug: TMatrix;
-  ycopy: TVector;
+  ycopy: TFloatArray;
   ybar, sst, sse, yhat: Float;
 begin
   { build augmented [1 | X] design matrix }
@@ -247,12 +243,12 @@ end;
 { ---------------------------------------------------------------------------
   6.5  ChiSquareFit — weighted polynomial fit, weight = 1/sigma²
   --------------------------------------------------------------------------- }
-procedure ChiSquareFit(var xdata, ydata, sigma: TVector; ndata, degree: integer;
-  var coeffs: TVector; var chiSq: Float);
+procedure ChiSquareFit(var xdata, ydata, sigma: TFloatArray; ndata, degree: integer;
+  var coeffs: TFloatArray; var chiSq: Float);
 var
   i, j, k: integer;
   V: TMatrix;
-  yw: TVector;
+  yw: TFloatArray;
   wi, yfit: Float;
 begin
   { weighted Vandermonde: V[i][j] = x[i]^j / sigma[i],  yw[i] = y[i] / sigma[i] }
@@ -299,9 +295,9 @@ const
   end;
 
 var
-  xd, yd, sig, coeffs: TVector;
+  xd, yd, sig, coeffs: TFloatArray;
   Am: TMatrix;
-  ym: TVector;
+  ym: TFloatArray;
   la, lb, lr, r2, chiSq: Float;
   i: integer;
 begin

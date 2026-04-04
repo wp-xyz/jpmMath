@@ -6,7 +6,6 @@ interface
 uses SysUtils, Math, jpmtypes;
 
 type
-  TFloatArray = array of Float;
   TODEFunc    = procedure(t: Float; var y, dydt: TFloatArray; n: integer);
 
 { 7.1 Classical Runge-Kutta 4 (fixed step) }

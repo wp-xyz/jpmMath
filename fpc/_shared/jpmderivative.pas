@@ -6,11 +6,8 @@ interface
 uses SysUtils, Math, jpmtypes;
 
 type
-  TFloatArray  = array of Float;
-  TFuncND      = function(var x: TFloatArray; n: integer): Float;
   TVectorFunc  = function(var x: TFloatArray; n: integer;
                            var y: TFloatArray; m: integer): boolean;
-  TFloatMatrix = array of TFloatArray;
 
 { First derivative by central differences: (f(x+h) - f(x-h)) / (2h) }
 function Deriv1(f: TFunction1; x, h: Float): Float;

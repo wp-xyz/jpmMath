@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, fpcunit, testutils, testregistry,
-  jpmAppointment;
+  jpmTypes, jpmAppointment;
 
 type
 

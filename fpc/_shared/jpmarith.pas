@@ -12,7 +12,6 @@ type
   end;
 
   TInt64Array = array of int64;
-  TIntArray   = array of integer;
 
 { 12.1 GCD and LCM }
 function GCD(a, b: int64): int64;

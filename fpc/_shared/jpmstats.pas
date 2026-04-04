@@ -15,9 +15,6 @@ interface
 uses
   SysUtils, Math, jpmTypes, jpmSpecial;
 
-type
-  TFloatArray = array of Float;
-
 { --- existing --- }
 function NormalDist(u: Float): Float;
 function InvNormalDist(P: Float): Float;

@@ -10,9 +10,6 @@ interface
 
 uses SysUtils, Math, jpmtypes;
 
-type
-  TFloatArray = array of Float;
-
 procedure DFT(var xr, xi: TFloatArray; n: integer; inverse: boolean);
 procedure FFT(var xr, xi: TFloatArray; n: integer; inverse: boolean);
 procedure PowerSpectrum(var xr, xi: TFloatArray; n: integer; var power: TFloatArray);

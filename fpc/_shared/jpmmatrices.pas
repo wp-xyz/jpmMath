@@ -8,11 +8,6 @@ interface
 uses
   SysUtils, Math, jpmtypes;
 
-type
-  TFloatArray = array of Float;
-  TIntArray   = array of integer;
-  TMatrix     = array of TFloatArray;
-
 { --- 5.1 LU Decomposition --- }
 procedure LUDecompose(var A: TMatrix; n: integer; var indx: TIntArray; var d: Float);
 procedure LUSolve(var A: TMatrix; n: integer; var indx: TIntArray; var b: TFloatArray);
