@@ -13,12 +13,9 @@ unit jpmAppointment;
 interface
 
 uses
-  SysUtils;
+  SysUtils, jpmTypes;
 
 type
-  TRealArray = array of double;
-  TMatrix = array of TRealarray; // Dynamic array of dynamic arrays for 2D matrix (used for cost/satisfaction)
-
   // Enumerated type for clarity of job assignment status in fjobapplicantmatrix
   TJobAssignmentStatus = (
     jsUnassigned = 0,    // Cell is not marked or appointed

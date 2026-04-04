@@ -53,3 +53,6 @@ backup/
 
 # Castalia statistics file
 *.stat
+bin/*
+bin
+_build
