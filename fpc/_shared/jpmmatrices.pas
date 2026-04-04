@@ -528,6 +528,7 @@ var
   nRot  : integer;
   det   : Float;
   err   : Float;
+  evMin, evMid, evMax : Float;
 
   { allocate n x n TMatrix }
   procedure AllocMat(var M: TMatrix; sz: integer);
@@ -564,6 +565,9 @@ begin
   LUSolve(A, n, indx, b);
   WriteLn('  Expected : x = [2, 3, -1]');
   WriteLn('  Computed : x = [', b[0]:6:3, ', ', b[1]:6:3, ', ', b[2]:6:3, ']');
+  SelfTestCheck(Abs(b[0] - 2.0) < 1e-8, 'LUSolve x[0]=2');
+  SelfTestCheck(Abs(b[1] - 3.0) < 1e-8, 'LUSolve x[1]=3');
+  SelfTestCheck(Abs(b[2] - (-1.0)) < 1e-8, 'LUSolve x[2]=-1');
   WriteLn;
 
   { ------------------------------------------------------------------ }
@@ -585,6 +589,7 @@ begin
       if Abs(d) > err then err := Abs(d);
     end;
   WriteLn('  Max |A*A^-1 - I| = ', err:20:15, '  (expect < 1e-13)');
+  SelfTestCheck(err < 1e-10, 'LUInverse A*A^-1≈I');
   WriteLn;
 
   { ------------------------------------------------------------------ }
@@ -600,6 +605,7 @@ begin
   A[2][0] := -2; A[2][1] :=  1; A[2][2] :=  2;
   det := LUDeterminant(A, n);
   WriteLn('  det(A) = ', det:10:4, '  (expected -1.0000)');
+  SelfTestCheck(Abs(det - (-1.0)) < 1e-6, 'LUDeterminant=-1');
   WriteLn;
 
   { ------------------------------------------------------------------ }
@@ -626,6 +632,11 @@ begin
   WriteLn('  Computed : x = [', x[0]:6:3, ', ', x[1]:6:3, ', ',
     x[2]:6:3, ', ', x[3]:6:3, ']');
   WriteLn('  Converged: ', ok, '  iterations: ', iter);
+  SelfTestCheck(ok, 'GaussSeidel converged');
+  SelfTestCheck(Abs(x[0] - 1.0) < 1e-6, 'GaussSeidel x[0]=1');
+  SelfTestCheck(Abs(x[1] - 2.0) < 1e-6, 'GaussSeidel x[1]=2');
+  SelfTestCheck(Abs(x[2] - 3.0) < 1e-6, 'GaussSeidel x[2]=3');
+  SelfTestCheck(Abs(x[3] - 4.0) < 1e-6, 'GaussSeidel x[3]=4');
   WriteLn;
 
   { ------------------------------------------------------------------ }
@@ -646,6 +657,10 @@ begin
   CholeskySolve(L, n, b, x);
   WriteLn('  Expected : x = [1, 1, 1]');
   WriteLn('  Computed : x = [', x[0]:6:3, ', ', x[1]:6:3, ', ', x[2]:6:3, ']');
+  SelfTestCheck(ok, 'Cholesky factored');
+  SelfTestCheck(Abs(x[0] - 1.0) < 1e-8, 'CholeskySolve x[0]=1');
+  SelfTestCheck(Abs(x[1] - 1.0) < 1e-8, 'CholeskySolve x[1]=1');
+  SelfTestCheck(Abs(x[2] - 1.0) < 1e-8, 'CholeskySolve x[2]=1');
   WriteLn;
 
   { ------------------------------------------------------------------ }
@@ -675,6 +690,10 @@ begin
   WriteLn('  Expected : u = [1, 1, 1, 1]');
   WriteLn('  Computed : u = [', u[0]:6:3, ', ', u[1]:6:3, ', ',
     u[2]:6:3, ', ', u[3]:6:3, ']');
+  SelfTestCheck(Abs(u[0] - 1.0) < 1e-8, 'TriDiagSolve u[0]=1');
+  SelfTestCheck(Abs(u[1] - 1.0) < 1e-8, 'TriDiagSolve u[1]=1');
+  SelfTestCheck(Abs(u[2] - 1.0) < 1e-8, 'TriDiagSolve u[2]=1');
+  SelfTestCheck(Abs(u[3] - 1.0) < 1e-8, 'TriDiagSolve u[3]=1');
   WriteLn;
 
   { ------------------------------------------------------------------ }
@@ -694,6 +713,17 @@ begin
   for i := 0 to n - 1 do
     WriteLn('    lambda[', i, '] = ', evals[i]:10:6);
   WriteLn('  Expected ~1.267949, 3.000000, 4.732051');
+  { verify eigenvalues are present (order may vary) }
+  evMin := evals[0]; evMax := evals[0];
+  for j := 1 to n-1 do
+  begin
+    if evals[j] < evMin then evMin := evals[j];
+    if evals[j] > evMax then evMax := evals[j];
+  end;
+  evMid := (evals[0] + evals[1] + evals[2]) - evMin - evMax;
+  SelfTestCheck(Abs(evMin - 1.267949) < 1e-4, 'JacobiEigen lambda_min');
+  SelfTestCheck(Abs(evMid - 3.0) < 1e-4, 'JacobiEigen lambda_mid');
+  SelfTestCheck(Abs(evMax - 4.732051) < 1e-4, 'JacobiEigen lambda_max');
   WriteLn;
 
   WriteLn('=== End jpmMatrices Self Test ===');

@@ -151,7 +151,10 @@ begin
   if Abs(obj - 76.0) < 0.01 then
     writeln('  PASS')
   else
+  begin
     writeln('  FAIL');
+    SelfTestFail('Simplex: objective=' + FloatToStr(obj) + ' expected 76');
+  end;
 
   writeln;
   writeln('=== done ===')

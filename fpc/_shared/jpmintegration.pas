@@ -516,8 +516,10 @@ begin
   writeln('SimpsonIntegral(sin, 0, Pi, 100)    = ', res:20:15, '  error=', FormatFloat('0.000E+00', err));
   if err < 2e-8 then
     writeln('  PASS')
-  else
+  else begin
     writeln('  FAIL (expected error < 2e-8)');
+    SelfTestFail('SimpsonIntegral: err=' + FloatToStr(err));
+  end;
 
   { AdaptiveSimpson }
   res := AdaptiveSimpson(@TestSin, 0, Pi, 1e-8);
@@ -525,17 +527,19 @@ begin
   writeln('AdaptiveSimpson(sin, 0, Pi, 1e-8)   = ', res:20:15, '  error=', FormatFloat('0.000E+00', err));
   if err < 1e-8 then
     writeln('  PASS')
-  else
+  else begin
     writeln('  FAIL (expected error < 1e-8)');
-
-  { GaussLegendre n=5 }
+    SelfTestFail('AdaptiveSimpson: err=' + FloatToStr(err));
+  end;
   res := GaussLegendre(@TestSin, 0, Pi, 5);
   err := abs(res - 2.0);
   writeln('GaussLegendre(sin, 0, Pi, 5)        = ', res:20:15, '  error=', FormatFloat('0.000E+00', err));
   if err < 1e-6 then
     writeln('  PASS')
-  else
+  else begin
     writeln('  FAIL (expected error < 1e-6)');
+    SelfTestFail('GaussLegendre(sin): err=' + FloatToStr(err));
+  end;
 
   { TrapezoidIntegral }
   res := TrapezoidIntegral(@TestSin, 0, Pi, 1000);
@@ -543,8 +547,10 @@ begin
   writeln('TrapezoidIntegral(sin, 0, Pi, 1000) = ', res:20:15, '  error=', FormatFloat('0.000E+00', err));
   if err < 1e-5 then
     writeln('  PASS')
-  else
+  else begin
     writeln('  FAIL (expected error < 1e-5)');
+    SelfTestFail('TrapezoidIntegral: err=' + FloatToStr(err));
+  end;
 
   { RombergIntegral regression }
   res := RombergIntegral(@TestSin, 0, Pi, 1e-10, obtPrec, iters, 3, 15);
@@ -552,8 +558,10 @@ begin
   writeln('RombergIntegral(sin, 0, Pi)         = ', res:20:15, '  error=', FormatFloat('0.000E+00', err), '  iters=', iters);
   if err < 1e-8 then
     writeln('  PASS')
-  else
+  else begin
     writeln('  FAIL (expected error < 1e-8)');
+    SelfTestFail('RombergIntegral: err=' + FloatToStr(err));
+  end;
 
   { GaussLegendre exp(x) from 0..1 = e-1 }
   res := GaussLegendre(@TestExp, 0, 1, 4);
@@ -561,8 +569,10 @@ begin
   writeln('GaussLegendre(exp, 0, 1, 4)         = ', res:20:15, '  error=', FormatFloat('0.000E+00', err));
   if err < 1e-8 then
     writeln('  PASS')
-  else
+  else begin
     writeln('  FAIL (expected error < 1e-8)');
+    SelfTestFail('GaussLegendre(exp): err=' + FloatToStr(err));
+  end;
 
   writeln;
   writeln('=== self_test done ===')

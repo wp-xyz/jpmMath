@@ -323,7 +323,7 @@ var
     if not cond then
     begin
       writeln('FAIL: ', msg);
-      halt(1);
+      SelfTestFail(msg);
     end
     else
       writeln('PASS: ', msg);

@@ -416,42 +416,49 @@ begin
   pass := ArraysEqual(a, expected, N);
   write('  BubbleSort:    '); PrintFloatArray(a, N);
   writeln('  Result: ', BoolToStr(pass, 'PASS', 'FAIL'));
+  SelfTestCheck(pass, 'BubbleSort');
 
   ResetArray(a, INPUT);
   InsertionSort(a, N);
   pass := ArraysEqual(a, expected, N);
   write('  InsertionSort: '); PrintFloatArray(a, N);
   writeln('  Result: ', BoolToStr(pass, 'PASS', 'FAIL'));
+  SelfTestCheck(pass, 'InsertionSort');
 
   ResetArray(a, INPUT);
   SelectionSort(a, N);
   pass := ArraysEqual(a, expected, N);
   write('  SelectionSort: '); PrintFloatArray(a, N);
   writeln('  Result: ', BoolToStr(pass, 'PASS', 'FAIL'));
+  SelfTestCheck(pass, 'SelectionSort');
 
   ResetArray(a, INPUT);
   QuickSort(a, 0, N - 1);
   pass := ArraysEqual(a, expected, N);
   write('  QuickSort:     '); PrintFloatArray(a, N);
   writeln('  Result: ', BoolToStr(pass, 'PASS', 'FAIL'));
+  SelfTestCheck(pass, 'QuickSort');
 
   ResetArray(a, INPUT);
   MergeSort(a, N);
   pass := ArraysEqual(a, expected, N);
   write('  MergeSort:     '); PrintFloatArray(a, N);
   writeln('  Result: ', BoolToStr(pass, 'PASS', 'FAIL'));
+  SelfTestCheck(pass, 'MergeSort');
 
   ResetArray(a, INPUT);
   HeapSort(a, N);
   pass := ArraysEqual(a, expected, N);
   write('  HeapSort:      '); PrintFloatArray(a, N);
   writeln('  Result: ', BoolToStr(pass, 'PASS', 'FAIL'));
+  SelfTestCheck(pass, 'HeapSort');
 
   ResetArray(a, INPUT);
   ShellSort(a, N);
   pass := ArraysEqual(a, expected, N);
   write('  ShellSort:     '); PrintFloatArray(a, N);
   writeln('  Result: ', BoolToStr(pass, 'PASS', 'FAIL'));
+  SelfTestCheck(pass, 'ShellSort');
 
   writeln;
 
@@ -461,8 +468,10 @@ begin
     a[i] := i;
   i := BinarySearch(a, N, 7);
   writeln('  BinarySearch(7) = ', i, '  Result: ', BoolToStr(i = 7, 'PASS', 'FAIL'));
+  SelfTestCheck(i = 7, 'BinarySearch(7)');
   i := BinarySearch(a, N, 11);
   writeln('  BinarySearch(11) = ', i, '  Result: ', BoolToStr(i = -1, 'PASS', 'FAIL'));
+  SelfTestCheck(i = -1, 'BinarySearch(11) not found');
   writeln;
 
   { --- Test 3: IntSort ----------------------------------------------------- }
@@ -476,6 +485,7 @@ begin
   for i := 0 to N - 1 do
     if ia[i] <> i then pass := false;
   writeln('  Result: ', BoolToStr(pass, 'PASS', 'FAIL'));
+  SelfTestCheck(pass, 'IntSort');
   writeln;
 
   { --- Test 4: RankSort ---------------------------------------------------- }
@@ -493,6 +503,7 @@ begin
   for i := 0 to 3 do
     if a[rank[i]] > a[rank[i + 1]] then pass := false;
   writeln('  Result: ', BoolToStr(pass, 'PASS', 'FAIL'));
+  SelfTestCheck(pass, 'RankSort');
   writeln;
 
   writeln('=== self_test complete ===')

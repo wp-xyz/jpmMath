@@ -271,6 +271,9 @@ begin
   r := SolveTriangle(tri);
   WriteLn('SSS 3-4-5: solved=', r, ' area=', tri.area:6:4,
           ' tc=', RadToDeg(tri.tc):6:2, 'deg  expected area=6, tc=90');
+  SelfTestCheck(r, 'SSS triangle solved');
+  SelfTestCheck(Abs(tri.area - 6.0) < 1e-3, 'SSS area=6');
+  SelfTestCheck(Abs(RadToDeg(tri.tc) - 90.0) < 1e-3, 'SSS tc=90');
 
   { SAS }
   FillChar(tri, SizeOf(tri), 0);
@@ -278,6 +281,9 @@ begin
   r := SolveTriangle(tri);
   WriteLn('SAS a=5,b=7,tc=60: solved=', r, ' c=', tri.c:6:4,
           ' area=', tri.area:6:4, '  expected c≈6.245, area≈15.155');
+  SelfTestCheck(r, 'SAS triangle solved');
+  SelfTestCheck(Abs(tri.c - 6.245) < 0.01, 'SAS c≈6.245');
+  SelfTestCheck(Abs(tri.area - 15.155) < 0.01, 'SAS area≈15.155');
 
   { AAS }
   FillChar(tri, SizeOf(tri), 0);
@@ -285,6 +291,9 @@ begin
   r := SolveTriangle(tri);
   WriteLn('AAS ta=30,tb=45,a=4: solved=', r, ' b=', tri.b:6:4,
           ' c=', tri.c:6:4, '  expected b≈5.657, c≈7.727');
+  SelfTestCheck(r, 'AAS triangle solved');
+  SelfTestCheck(Abs(tri.b - 5.657) < 0.01, 'AAS b≈5.657');
+  SelfTestCheck(Abs(tri.c - 7.727) < 0.01, 'AAS c≈7.727');
 
   WriteLn;
 
@@ -294,6 +303,8 @@ begin
   r := SolveArcCircle(arc);
   WriteLn('Arc c=2,t=1: solved=', r, ' r=', arc.r:6:4,
           ' s=', arc.s:6:4, '  expected r≈2.0858, s≈2.0858');
+  SelfTestCheck(r, 'Arc chord+angle solved');
+  SelfTestCheck(Abs(arc.r - 2.0858) < 0.01, 'Arc r≈2.0858');
 
   { Arc: r+angle }
   FillChar(arc, SizeOf(arc), 0);
@@ -301,24 +312,32 @@ begin
   r := SolveArcCircle(arc);
   WriteLn('Arc r=5,t=Pi/3: solved=', r, ' s=', arc.s:6:4,
           ' c=', arc.c:6:4, '  expected s≈5.236, c≈5.000');
+  SelfTestCheck(r, 'Arc r+angle solved');
+  SelfTestCheck(Abs(arc.s - 5.236) < 0.01, 'Arc s≈5.236');
+  SelfTestCheck(Abs(arc.c - 5.000) < 0.01, 'Arc c≈5.000');
 
   WriteLn;
 
   WriteLn('PointDistance2D(0,0,3,4)    = ', PointDistance2D(0,0,3,4):6:4,
           '  expected 5.0');
+  SelfTestCheck(Abs(PointDistance2D(0,0,3,4) - 5.0) < 1e-6, 'PointDistance2D');
   WriteLn('TriangleArea(0,0,4,0,0,3)  = ', TriangleArea(0,0,4,0,0,3):6:4,
           '  expected 6.0');
+  SelfTestCheck(Abs(TriangleArea(0,0,4,0,0,3) - 6.0) < 1e-6, 'TriangleArea');
 
   SetLength(px, 4); SetLength(py, 4);
   px[0]:=0; px[1]:=1; px[2]:=1; px[3]:=0;
   py[0]:=0; py[1]:=0; py[2]:=1; py[3]:=1;
   WriteLn('PolygonArea unit square    = ', PolygonArea(px, py, 4):6:4,
           '  expected 1.0');
+  SelfTestCheck(Abs(PolygonArea(px, py, 4) - 1.0) < 1e-6, 'PolygonArea unit square');
 
   WriteLn('CircleArea(1)              = ', CircleArea(1):8:6,
           '  expected Pi≈3.141593');
+  SelfTestCheck(Abs(CircleArea(1) - Pi) < 1e-6, 'CircleArea(1)');
   WriteLn('EllipseArea(3,4)           = ', EllipseArea(3,4):8:4,
           '  expected 37.6991');
+  SelfTestCheck(Abs(EllipseArea(3,4) - 37.6991) < 0.001, 'EllipseArea(3,4)');
 
   WriteLn;
   WriteLn('=== done ===');

@@ -247,31 +247,39 @@ begin
   res := Deriv1(@TSin, Pi / 4.0, 1e-5);
   WriteLn('Deriv1(sin, Pi/4, 1e-5)         = ', res:12:8,
           '  expected  0.70710678');
+  SelfTestCheck(Abs(res - Cos(Pi/4)) < 1e-5, 'Deriv1(sin,Pi/4)');
 
   res := Deriv2(@TSin, Pi / 4.0, 1e-5);
   WriteLn('Deriv2(sin, Pi/4, 1e-5)         = ', res:12:8,
           '  expected -0.70710678');
+  SelfTestCheck(Abs(res - (-Sin(Pi/4))) < 1e-4, 'Deriv2(sin,Pi/4)');
 
   res := Deriv3(@TCubic, 2.0, 1e-4);
   WriteLn('Deriv3(x^3,  x=2, h=1e-4)       = ', res:12:8,
           '  expected  6.00000000');
+  SelfTestCheck(Abs(res - 6.0) < 0.1, 'Deriv3(x^3,2)');
 
   res := Deriv4(@TQuartic, 1.0, 1e-3);
   WriteLn('Deriv4(x^4,  x=1, h=1e-3)       = ', res:12:8,
           '  expected 24.00000000');
+  SelfTestCheck(Abs(res - 24.0) < 0.1, 'Deriv4(x^4,1)');
 
   res := DerivRichardson(@TSin, Pi / 4.0, 1e-3, 1);
   WriteLn('DerivRichardson(sin,Pi/4,1e-3,1)= ', res:12:8,
           '  expected  0.70710678');
+  SelfTestCheck(Abs(res - Cos(Pi/4)) < 1e-8, 'DerivRichardson order=1');
 
   res := DerivRichardson(@TSin, Pi / 4.0, 1e-3, 2);
   WriteLn('DerivRichardson(sin,Pi/4,1e-3,2)= ', res:12:8,
           '  expected -0.70710678');
+  SelfTestCheck(Abs(res - (-Sin(Pi/4))) < 1e-8, 'DerivRichardson order=2');
 
   err := 0.0;
   res := DerivRomberg(@TSin, Pi / 4.0, 0.1, err);
   WriteLn('DerivRomberg(sin, Pi/4, h=0.1)  = ', res:12:8,
           '  err = ', err, '  expected 0.70710678, err < 1e-10');
+  SelfTestCheck(Abs(res - Cos(Pi/4)) < 1e-8, 'DerivRomberg value');
+  SelfTestCheck(err < 1e-10, 'DerivRomberg error');
 
   WriteLn;
   SetLength(pt, 2);

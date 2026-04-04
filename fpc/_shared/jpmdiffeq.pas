@@ -419,7 +419,7 @@ begin
   err   := Abs(y[0] - exact);
   WriteLn(Format('Test 1a (RK4   exp decay):  y(1) = %.9f  exact = %.9f  err = %.2e',
     [y[0], exact, err]));
-  if err < 1.0e-8 then WriteLn('  PASS') else WriteLn('  FAIL');
+  if err < 1.0e-8 then WriteLn('  PASS') else begin WriteLn('  FAIL'); SelfTestFail('RK4 exp decay: err=' + FloatToStr(err)); end;
 
   { ---- Test 1b: Exp decay with RKF45 ---- }
   y[0] := 1.0;
@@ -429,7 +429,8 @@ begin
   err := Abs(y[0] - exact);
   WriteLn(Format('Test 1b (RKF45 exp decay):  y(1) = %.9f  exact = %.9f  err = %.2e  nOK=%d nBad=%d',
     [y[0], exact, err, nOK, nBad]));
-  if err < 1.0e-7 then WriteLn('  PASS') else WriteLn('  FAIL');
+  if err < 1.0e-7 then WriteLn('  PASS')
+  else begin WriteLn('  FAIL'); SelfTestFail('RKF45 exp decay: err=' + FloatToStr(err)); end;
 
   { ---- Test 2a: Harmonic oscillator with RK4 ---- }
   SetLength(y, 2);
@@ -439,7 +440,8 @@ begin
   err   := Abs(y[0] - exact);
   WriteLn(Format('Test 2a (RK4   harmonic):   y1(pi)= %.9f  exact = %.9f  err = %.2e',
     [y[0], exact, err]));
-  if err < 1.0e-8 then WriteLn('  PASS') else WriteLn('  FAIL');
+  if err < 1.0e-8 then WriteLn('  PASS')
+  else begin WriteLn('  FAIL'); SelfTestFail('RK4 harmonic: err=' + FloatToStr(err)); end;
 
   { ---- Test 2b: Harmonic oscillator with RKF45 ---- }
   y[0] := 1.0; y[1] := 0.0;
@@ -449,7 +451,8 @@ begin
   err := Abs(y[0] - exact);
   WriteLn(Format('Test 2b (RKF45 harmonic):   y1(pi)= %.9f  exact = %.9f  err = %.2e  nOK=%d nBad=%d',
     [y[0], exact, err, nOK, nBad]));
-  if err < 1.0e-7 then WriteLn('  PASS') else WriteLn('  FAIL');
+  if err < 1.0e-7 then WriteLn('  PASS')
+  else begin WriteLn('  FAIL'); SelfTestFail('RKF45 harmonic: err=' + FloatToStr(err)); end;
 
   { ---- Test 3: Exp decay with Adams-Bashforth 4 ---- }
   SetLength(y, 1);
@@ -460,7 +463,8 @@ begin
   err   := Abs(y[0] - exact);
   WriteLn(Format('Test 3  (AB4   exp decay):  y(1) = %.9f  exact = %.9f  err = %.2e',
     [y[0], exact, err]));
-  if err < 1.0e-6 then WriteLn('  PASS') else WriteLn('  FAIL');
+  if err < 1.0e-6 then WriteLn('  PASS')
+  else begin WriteLn('  FAIL'); SelfTestFail('AB4 exp decay: err=' + FloatToStr(err)); end;
 
   { ---- Test 4: Exp decay with Adams-Moulton ---- }
   y[0] := 1.0;
@@ -470,7 +474,8 @@ begin
   err   := Abs(y[0] - exact);
   WriteLn(Format('Test 4  (AM4   exp decay):  y(1) = %.9f  exact = %.9f  err = %.2e',
     [y[0], exact, err]));
-  if err < 1.0e-7 then WriteLn('  PASS') else WriteLn('  FAIL');
+  if err < 1.0e-7 then WriteLn('  PASS')
+  else begin WriteLn('  FAIL'); SelfTestFail('AM4 exp decay: err=' + FloatToStr(err)); end;
 
   WriteLn;
   WriteLn('=== self_test done ===');

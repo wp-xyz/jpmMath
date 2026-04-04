@@ -55,6 +55,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="jpmInterpolationTests"/>
       </Unit>
+      <Unit>
+        <Filename Value="jpmselftests.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="jpmSelfTests"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

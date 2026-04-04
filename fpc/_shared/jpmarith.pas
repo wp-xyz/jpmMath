@@ -442,19 +442,26 @@ begin
 
   { GCD / LCM }
   WriteLn('GCD(48, 18)        = ', GCD(48, 18), '         [expected 6]');
+  SelfTestCheck(GCD(48, 18) = 6, 'GCD(48,18)=6');
   WriteLn('LCM(4, 6)          = ', LCM(4, 6),  '        [expected 12]');
+  SelfTestCheck(LCM(4, 6) = 12, 'LCM(4,6)=12');
   WriteLn;
 
   { Extended GCD }
   g := ExtGCD(35, 15, x, y);
   WriteLn('ExtGCD(35,15):  GCD=', g, '  x=', x, '  y=', y,
           '  verify 35x+15y=', 35*x + 15*y, '  [expected GCD=5, sum=5]');
+  SelfTestCheck(g = 5, 'ExtGCD GCD=5');
+  SelfTestCheck(35*x + 15*y = 5, 'ExtGCD 35x+15y=5');
   WriteLn;
 
   { Combinatorics }
   WriteLn('Factorial(10)      = ', Factorial(10):0:0,    '  [expected 3628800]');
+  SelfTestCheck(Round(Factorial(10)) = 3628800, 'Factorial(10)');
   WriteLn('BinomCoeff(10,3)   = ', BinomCoeff(10,3):0:0, '   [expected 120]');
+  SelfTestCheck(Round(BinomCoeff(10,3)) = 120, 'BinomCoeff(10,3)');
   WriteLn('Permutation(10,3)  = ', Permutation(10,3):0:0,'   [expected 720]');
+  SelfTestCheck(Round(Permutation(10,3)) = 720, 'Permutation(10,3)');
   WriteLn;
 
   { Fractions }
@@ -462,21 +469,28 @@ begin
   f2 := FracCreate(1, 3);
   fr := FracAdd(f1, f2);
   WriteLn('FracAdd(1/2, 1/3)  = ', FracToStr(fr), '  [expected 5/6]');
+  SelfTestCheck(FracToStr(fr) = '5/6', 'FracAdd(1/2,1/3)=5/6');
   f1 := FracCreate(3, 4);
   f2 := FracCreate(2, 3);
   fr := FracMul(f1, f2);
   WriteLn('FracMul(3/4, 2/3)  = ', FracToStr(fr), '  [expected 1/2]');
+  SelfTestCheck(FracToStr(fr) = '1/2', 'FracMul(3/4,2/3)=1/2');
   WriteLn;
 
   { Base Conversion }
   WriteLn('IntToBase(255,16)  = ', IntToBase(255, 16),    '  [expected FF]');
+  SelfTestCheck(IntToBase(255, 16) = 'FF', 'IntToBase(255,16)=FF');
   WriteLn('BaseToInt("FF",16) = ', BaseToInt('FF', 16),   '  [expected 255]');
+  SelfTestCheck(BaseToInt('FF', 16) = 255, 'BaseToInt(FF,16)=255');
   WriteLn('IntToBase(10,2)    = ', IntToBase(10, 2),      '  [expected 1010]');
+  SelfTestCheck(IntToBase(10, 2) = '1010', 'IntToBase(10,2)=1010');
   WriteLn;
 
   { Primality }
   WriteLn('IsPrime(17)        = ', IsPrime(17),  '  [expected TRUE]');
+  SelfTestCheck(IsPrime(17), 'IsPrime(17)');
   WriteLn('IsPrime(18)        = ', IsPrime(18),  '  [expected FALSE]');
+  SelfTestCheck(not IsPrime(18), 'not IsPrime(18)');
   WriteLn;
 
   { Sieve }
@@ -486,6 +500,8 @@ begin
     Write(primes[i], ' ');
   WriteLn;
   WriteLn('                     [expected 2 3 5 7 11 13 17 19]');
+  SelfTestCheck(cnt = 8, 'PrimeSieve(20) count=8');
+  SelfTestCheck((primes[0] = 2) and (primes[7] = 19), 'PrimeSieve(20) first/last');
   WriteLn;
 
   { Factorize }
@@ -495,6 +511,7 @@ begin
     Write(factors[i], ' ');
   WriteLn;
   WriteLn('                     [expected 2 2 2 3 3 5]');
+  SelfTestCheck(cnt = 6, 'Factorize(360) count=6');
   WriteLn;
 
   { Diophantine }
@@ -503,6 +520,7 @@ begin
             '  verify 3x+5y=', 3*x + 5*y, '  [expected TRUE, sum=1]')
   else
     WriteLn('SolveDioph(3,5,1): no solution  [WRONG]');
+  SelfTestCheck(SolveDiophantine(3, 5, 1, x, y) and (3*x + 5*y = 1), 'SolveDiophantine(3,5,1)');
   WriteLn;
 
   WriteLn('=== Self-Test Complete ===');

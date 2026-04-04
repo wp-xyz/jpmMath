@@ -252,7 +252,9 @@ const
     else
       ok := '*** FAIL ***';
     WriteLn(Format('  %-38s computed=%10.6f  expected=%10.6f  %s',
-                   [name, computed, expected, ok]))
+                   [name, computed, expected, ok]));
+    if ok = '*** FAIL ***' then
+      SelfTestFail(name + ': computed=' + FloatToStr(computed) + ' expected=' + FloatToStr(expected));
   end;
 
   procedure checkZ(const name: string; z: TComplex; ere, eim: Float);
@@ -264,7 +266,10 @@ const
     else
       ok := '*** FAIL ***';
     WriteLn(Format('  %-38s (%9.5f, %9.5f)  expected (%9.5f, %9.5f)  %s',
-                   [name, z.re, z.im, ere, eim, ok]))
+                   [name, z.re, z.im, ere, eim, ok]));
+    if ok = '*** FAIL ***' then
+      SelfTestFail(name + ': computed=(' + FloatToStr(z.re) + ',' + FloatToStr(z.im) +
+                   ') expected=(' + FloatToStr(ere) + ',' + FloatToStr(eim) + ')');
   end;
 
 var

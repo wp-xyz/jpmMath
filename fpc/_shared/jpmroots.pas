@@ -488,34 +488,42 @@ begin
   iters := 0;
   root := BisectionRoot(@TestFunc, 1.0, 2.0, 1e-10, 100, iters);
   WriteLn('Bisection:      root=', root:18:12, '  iters=', iters);
+  SelfTestCheck(Abs(root - 1.521379706804) < 1e-8, 'BisectionRoot');
 
   iters := 0;
   root := NewtonRoot(@TestFunc, @TestFuncDeriv, 1.5, 1e-10, 100, iters);
   WriteLn('Newton-Raphson: root=', root:18:12, '  iters=', iters);
+  SelfTestCheck(Abs(root - 1.521379706804) < 1e-8, 'NewtonRoot');
 
   iters := 0;
   root := SecantRoot(@TestFunc, 1.0, 2.0, 1e-10, 100, iters);
   WriteLn('Secant:         root=', root:18:12, '  iters=', iters);
+  SelfTestCheck(Abs(root - 1.521379706804) < 1e-8, 'SecantRoot');
 
   iters := 0;
   root := RegulaFalsiRoot(@TestFunc, 1.0, 2.0, 1e-10, 100, iters);
   WriteLn('Regula Falsi:   root=', root:18:12, '  iters=', iters);
+  SelfTestCheck(Abs(root - 1.521379706804) < 1e-8, 'RegulaFalsiRoot');
 
   iters := 0;
   root := BrentRoot(@TestFunc, 1.0, 2.0, 1e-10, 100, iters);
   WriteLn('Brent:          root=', root:18:12, '  iters=', iters);
+  SelfTestCheck(Abs(root - 1.521379706804) < 1e-8, 'BrentRoot');
 
   iters := 0;
   root := MuellerRoot(@TestFunc, 1.0, 1.5, 2.0, 1e-10, 100, iters);
   WriteLn('Mueller:        root=', root:18:12, '  iters=', iters);
+  SelfTestCheck(Abs(root - 1.521379706804) < 1e-8, 'MuellerRoot');
 
   iters := 0;
   root := SteffensenRoot(@TestFunc, 1.5, 1e-10, 100, iters);
   WriteLn('Steffensen:     root=', root:18:12, '  iters=', iters);
+  SelfTestCheck(Abs(root - 1.521379706804) < 1e-8, 'SteffensenRoot');
 
   iters := 0;
   root := AitkenRoot(@TestFunc, 1.5, 1e-10, 100, iters);
   WriteLn('Aitken:         root=', root:18:12, '  iters=', iters);
+  SelfTestCheck(Abs(root - 1.521379706804) < 1e-8, 'AitkenRoot');
 
   WriteLn;
   WriteLn('Bairstow test: x^3 - 6x^2 + 11x - 6 (roots: 1, 2, 3)');

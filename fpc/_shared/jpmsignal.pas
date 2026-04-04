@@ -270,7 +270,9 @@ procedure self_test;
     else
       tag := '*** FAIL ***';
     WriteLn(Format('  %-44s computed=%12.8f  expected=%12.8f  %s',
-                   [name, computed, expected, tag]))
+                   [name, computed, expected, tag]));
+    if tag = '*** FAIL ***' then
+      SelfTestFail(name + ': computed=' + FloatToStr(computed) + ' expected=' + FloatToStr(expected));
   end;
 
 var

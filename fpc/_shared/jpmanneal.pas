@@ -130,7 +130,10 @@ begin
   if res.fval < 0.01 then
     writeln('  PASS (fval < 0.01)')
   else
+  begin
     writeln('  FAIL (expected fval < 0.01)');
+    SelfTestFail('Anneal Sphere: fval=' + FloatToStr(res.fval) + ' expected < 0.01');
+  end;
 
   writeln;
 
@@ -143,7 +146,10 @@ begin
   if res.fval < 0.1 then
     writeln('  PASS (fval < 0.1)')
   else
+  begin
     writeln('  FAIL (expected fval < 0.1, got ', res.fval:8:4, ')');
+    SelfTestFail('Anneal Rosenbrock: fval=' + FloatToStr(res.fval) + ' expected < 0.1');
+  end;
 
   writeln;
   writeln('=== done ===')

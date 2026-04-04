@@ -180,7 +180,8 @@ begin
   writeln(']  expected [3;7,15,1,292,1,1,1,2,1]');
   approx := CFToFloat(a, 10);
   writeln('CFToFloat back: ', approx:12:8, '  expected ', Pi:12:8);
-  if Abs(approx - Pi) < 1e-10 then writeln('PASS') else writeln('FAIL');
+  if Abs(approx - Pi) < 1e-10 then writeln('PASS')
+  else begin writeln('FAIL'); SelfTestFail('CFToFloat: Pi approx=' + FloatToStr(approx)); end;
   writeln;
 
   { Test 2: CFConvergents for Pi - check 22/7 and 355/113 }
@@ -189,7 +190,8 @@ begin
   writeln('Pi convergents:');
   writeln('  p1/q1 = ', p[1], '/', q[1], '  expected 22/7');
   writeln('  p3/q3 = ', p[3], '/', q[3], '  expected 333/106');
-  if (p[1] = 22) and (q[1] = 7) then writeln('  22/7 PASS') else writeln('  22/7 FAIL');
+  if (p[1] = 22) and (q[1] = 7) then writeln('  22/7 PASS')
+  else begin writeln('  22/7 FAIL'); SelfTestFail('CFConvergents: 22/7 not found'); end;
   writeln;
 
   { Test 3: sqrt(2) CF = [1;2,2,2,...] }
@@ -197,21 +199,24 @@ begin
   writeln('CF(sqrt(2)): a[0]=', a[0], ' period=', period,
           '  expected a[0]=1, period=1, a[1]=2');
   writeln('  a[1]=', a[1], '  expected 2');
-  if (a[0]=1) and (a[1]=2) and (period=1) then writeln('PASS') else writeln('FAIL');
+  if (a[0]=1) and (a[1]=2) and (period=1) then writeln('PASS')
+  else begin writeln('FAIL'); SelfTestFail('SqrtCF(2): unexpected result'); end;
   writeln;
 
   { Test 4: BestRational for Pi, max den 1000 → 355/113 }
   BestRational(Pi, 1000, num, den);
   writeln('BestRational(Pi, 1000): ', num, '/', den,
           '  expected 355/113');
-  if (num=355) and (den=113) then writeln('PASS') else writeln('FAIL');
+  if (num=355) and (den=113) then writeln('PASS')
+  else begin writeln('FAIL'); SelfTestFail('BestRational(Pi): expected 355/113'); end;
   writeln;
 
   { Test 5: BestRational for sqrt(2), max den 100 → 99/70 }
   BestRational(Sqrt(2), 100, num, den);
   writeln('BestRational(sqrt2, 100): ', num, '/', den,
           '  expected 99/70');
-  if (num=99) and (den=70) then writeln('PASS') else writeln('FAIL');
+  if (num=99) and (den=70) then writeln('PASS')
+  else begin writeln('FAIL'); SelfTestFail('BestRational(sqrt2): expected 99/70'); end;
   writeln;
 
   writeln('=== done ===')

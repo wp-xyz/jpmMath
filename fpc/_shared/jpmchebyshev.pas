@@ -160,7 +160,8 @@ begin
   begin
     WriteLn('c[15..20] decay check  : FAIL');
     for j := 15 to N do
-      WriteLn('  c[', j, '] = ', c[j])
+      WriteLn('  c[', j, '] = ', c[j]);
+    SelfTestFail('Chebyshev: coefficient decay check failed');
   end;
 
   WriteLn;

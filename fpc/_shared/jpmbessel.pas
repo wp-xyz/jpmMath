@@ -410,7 +410,9 @@ const
     else
       ok := '*** FAIL ***';
     WriteLn(Format('  %-32s computed=%12.6f  expected=%12.6f  %s',
-                   [name, computed, expected, ok]))
+                   [name, computed, expected, ok]));
+    if ok = '*** FAIL ***' then
+      SelfTestFail(name + ': computed=' + FloatToStr(computed) + ' expected=' + FloatToStr(expected));
   end;
 
 begin

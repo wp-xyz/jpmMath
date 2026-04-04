@@ -562,6 +562,8 @@ begin
   fmin := GoldenSection(@TestF, 0.0, 1.0, 4.0, 1e-9, xmin);
   WriteLn('   xmin = ', xmin:12:8, '  (expected 2.0)');
   WriteLn('   fmin = ', fmin:12:8, '  (expected 1.0)');
+  SelfTestCheck(Abs(xmin - 2.0) < 1e-6, 'GoldenSection xmin');
+  SelfTestCheck(Abs(fmin - 1.0) < 1e-6, 'GoldenSection fmin');
   WriteLn;
 
   { --- BrentMin on f(x)=(x-2)^2+1 --- }
@@ -570,6 +572,8 @@ begin
   fmin := BrentMin(@TestF, 0.0, 1.0, 4.0, 1e-10, xmin);
   WriteLn('   xmin = ', xmin:12:8, '  (expected 2.0)');
   WriteLn('   fmin = ', fmin:12:8, '  (expected 1.0)');
+  SelfTestCheck(Abs(xmin - 2.0) < 1e-7, 'BrentMin xmin');
+  SelfTestCheck(Abs(fmin - 1.0) < 1e-7, 'BrentMin fmin');
   WriteLn;
 
   { --- BracketMin + BrentMin on g(x)=x^4-4x^2+x, local min near x~1.3 --- }
@@ -581,6 +585,7 @@ begin
   fmin := BrentMin(@TestG, ax, bx, cx, 1e-10, xmin);
   WriteLn('   xmin = ', xmin:12:8, '  (expected ~1.3)');
   WriteLn('   fmin = ', fmin:12:8);
+  SelfTestCheck(Abs(xmin - 1.3) < 0.05, 'BrentMin g xmin≈1.3');
   WriteLn;
 
   { --- NelderMead on h(x,y)=(x-1)^2+(y-2)^2 --- }
@@ -597,6 +602,8 @@ begin
           '  (expected 1.0, 2.0)');
   WriteLn('   f=', TestH(p[0], 2):12:8, '  (expected 0.0)');
   WriteLn('   iterations=', nIter);
+  SelfTestCheck(Abs(p[0][0] - 1.0) < 1e-4, 'NelderMead x≈1');
+  SelfTestCheck(Abs(p[0][1] - 2.0) < 1e-4, 'NelderMead y≈2');
   WriteLn;
 
   { --- SteepestDescent on h(x,y) --- }
@@ -609,6 +616,8 @@ begin
           '  (expected 1.0, 2.0)');
   WriteLn('   f=', TestH(x2d, 2):12:8, '  (expected 0.0)');
   WriteLn('   iterations=', nIter);
+  SelfTestCheck(Abs(x2d[0] - 1.0) < 1e-4, 'SteepestDescent x≈1');
+  SelfTestCheck(Abs(x2d[1] - 2.0) < 1e-4, 'SteepestDescent y≈2');
   WriteLn;
 
   WriteLn('=== End Self Test ===')
