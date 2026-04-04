@@ -18,6 +18,9 @@ type
   TMatrix      = array of TFloatArray;
   TFuncND      = function(var x: TFloatArray; n: integer): Float;
 
+  { LM residual function: given params x (length n), fill fvec (length m) with residuals }
+  TLMFunc = procedure(var x: TFloatArray; n: integer; var fvec: TFloatArray; m: integer);
+
 { Raise an exception with the given message. Call from self_test on failure. }
 procedure SelfTestFail(const msg: string);
 { Assert cond; if false, raise with msg. }
