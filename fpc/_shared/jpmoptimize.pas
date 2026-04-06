@@ -32,6 +32,15 @@ procedure NelderMead(f: TFuncND; var p: TFloatMatrix; n: integer; tol: Float;
 procedure SteepestDescent(f: TFuncND; var x: TFloatArray; n: integer;
   tol, h: Float; maxIter: integer; var nIter: integer);
 
+{ Powell's conjugate direction method for N-dim minimization.
+  x[0..n-1]: starting point (updated to minimum on return).
+  tol: fractional tolerance on function value.
+  maxIter: max iterations.
+  nIter: number of iterations taken (output).
+  Returns function value at minimum. }
+function PowellMin(f: TFuncND; var x: TFloatArray; n: integer;
+  tol: Float; maxIter: integer; var nIter: integer): Float;
+
 procedure self_test;
 
 implementation
@@ -444,6 +453,14 @@ var
   GSD_n:    integer;
   GSD_tmp:  TFloatArray;
 
+{ module-level state for Powell's line-search closure }
+var
+  GPow_f:    TFuncND;
+  GPow_pcom: TFloatArray;
+  GPow_xcom: TFloatArray;
+  GPow_n:    integer;
+  GPow_tmp:  TFloatArray;
+
 function LineFunc(t: Float): Float;
 var
   j: integer;
@@ -451,6 +468,47 @@ begin
   for j := 0 to GSD_n - 1 do
     GSD_tmp[j] := GSD_x[j] + t * GSD_dir[j];
   Result := GSD_f(GSD_tmp, GSD_n)
+end;
+
+{ F1DimPowell: 1D projection of f along direction GPow_xcom from GPow_pcom }
+function F1DimPowell(t: Float): Float;
+var
+  j: integer;
+begin
+  for j := 0 to GPow_n - 1 do
+    GPow_tmp[j] := GPow_pcom[j] + t * GPow_xcom[j];
+  Result := GPow_f(GPow_tmp, GPow_n)
+end;
+
+{ LinMinPowell: minimize f from x along direction xit using BrentMin.
+  On return x is the new minimum point and xit is the displacement vector. }
+procedure LinMinPowell(f: TFuncND; var x: TFloatArray; n: integer;
+  var xit: TFloatArray; var fret: Float);
+var
+  j: integer;
+  xmin, ax, bx, cx, fa, fb, fc: Float;
+begin
+  GPow_f := f;
+  GPow_n := n;
+  SetLength(GPow_pcom, n);
+  SetLength(GPow_xcom, n);
+  SetLength(GPow_tmp,  n);
+  for j := 0 to n - 1 do
+  begin
+    GPow_pcom[j] := x[j];
+    GPow_xcom[j] := xit[j];
+  end;
+  ax := 0.0;
+  bx := 1.0;
+  BracketMin(@F1DimPowell, ax, bx, cx, fa, fb, fc);
+  xmin := 0.0;
+  BrentMin(@F1DimPowell, ax, bx, cx, 1.0e-8, xmin);
+  for j := 0 to n - 1 do
+  begin
+    x[j]   := x[j]   + xmin * xit[j];
+    xit[j] := xmin * xit[j];
+  end;
+  fret := F1DimPowell(xmin)
 end;
 
 procedure SteepestDescent(f: TFuncND; var x: TFloatArray; n: integer;
@@ -524,10 +582,83 @@ begin
 end;
 
 {***********************************************************************
+* PowellMin
+* Powell's conjugate direction method (Numerical Recipes §10.5).
+* Iteratively minimizes f along a set of conjugate directions.
+***********************************************************************}
+function PowellMin(f: TFuncND; var x: TFloatArray; n: integer;
+  tol: Float; maxIter: integer; var nIter: integer): Float;
+var
+  xi:   array of TFloatArray;
+  pt, ptt, xit: TFloatArray;
+  fret, fp, fptt, del, t: Float;
+  i, j, ibig, iter: integer;
+begin
+  { initialize direction matrix as identity }
+  SetLength(xi, n);
+  for i := 0 to n - 1 do
+  begin
+    SetLength(xi[i], n);
+    for j := 0 to n - 1 do
+      if i = j then xi[i][j] := 1.0 else xi[i][j] := 0.0;
+  end;
+  SetLength(pt,  n);
+  SetLength(ptt, n);
+  SetLength(xit, n);
+
+  fret := f(x, n);
+  for j := 0 to n - 1 do
+    pt[j] := x[j];
+
+  nIter := 0;
+  for iter := 1 to maxIter do
+  begin
+    Inc(nIter);
+    fp   := fret;
+    ibig := 0;
+    del  := 0.0;
+    { minimize along each direction in turn }
+    for i := 0 to n - 1 do
+    begin
+      for j := 0 to n - 1 do
+        xit[j] := xi[i][j];
+      fptt := fret;
+      LinMinPowell(f, x, n, xit, fret);
+      if Abs(fptt - fret) > del then
+      begin
+        del  := Abs(fptt - fret);
+        ibig := i;
+      end;
+    end;
+    { termination: fractional decrease in function value }
+    if 2.0 * Abs(fp - fret) <= tol * (Abs(fp) + Abs(fret)) + 1.0e-20 then
+      break;
+    { build extrapolated point and candidate new direction }
+    for j := 0 to n - 1 do
+    begin
+      ptt[j] := 2.0 * x[j] - pt[j];
+      xit[j] := x[j] - pt[j];
+      pt[j]  := x[j];
+    end;
+    fptt := f(ptt, n);
+    { skip direction update if extrapolated point is not better }
+    if fptt >= fp then
+      continue;
+    t := 2.0 * (fp - 2.0 * fret + fptt) * Sqr(fp - fret - del) -
+         del * Sqr(fp - fptt);
+    if t >= 0.0 then
+      continue;
+    { minimize along new direction and replace direction of largest decrease }
+    LinMinPowell(f, x, n, xit, fret);
+    for j := 0 to n - 1 do
+      xi[ibig][j] := xit[j];
+  end;
+  Result := fret
+end;
+
+{***********************************************************************
 * self_test
 ***********************************************************************}
-
-{ 1D test functions }
 function TestF(x: Float): Float;
 begin
   Result := (x - 2.0) * (x - 2.0) + 1.0
@@ -544,6 +675,12 @@ begin
   Result := (v[0] - 1.0) * (v[0] - 1.0) + (v[1] - 2.0) * (v[1] - 2.0)
 end;
 
+{ Rosenbrock: f(x,y) = (1-x)^2 + 100*(y-x^2)^2, min at (1,1) = 0 }
+function TestH2D(var v: TFloatArray; n: integer): Float;
+begin
+  Result := Sqr(1.0 - v[0]) + 100.0 * Sqr(v[1] - v[0] * v[0])
+end;
+
 procedure self_test;
 var
   xmin, fmin: Float;
@@ -552,6 +689,9 @@ var
   x2d: TFloatArray;
   nIter: integer;
   i: integer;
+  xpow: TFloatArray;
+  fpow: Float;
+  nIterPow: integer;
 begin
   WriteLn('=== jpmOptimize Self Test ===');
   WriteLn;
@@ -618,6 +758,22 @@ begin
   WriteLn('   iterations=', nIter);
   SelfTestCheck(Abs(x2d[0] - 1.0) < 1e-4, 'SteepestDescent x≈1');
   SelfTestCheck(Abs(x2d[1] - 2.0) < 1e-4, 'SteepestDescent y≈2');
+  WriteLn;
+
+  { --- PowellMin on Rosenbrock f(x,y)=(1-x)^2+100*(y-x^2)^2, min at (1,1) --- }
+  WriteLn('6) PowellMin: Rosenbrock f(x,y)=(1-x)^2+100*(y-x^2)^2, start (0,0)');
+  SetLength(xpow, 2);
+  xpow[0] := 0.0; xpow[1] := 0.0;
+  nIterPow := 0;
+  fpow := PowellMin(@TestH2D, xpow, 2, 1.0e-8, 2000, nIterPow);
+  WriteLn('   x=', xpow[0]:12:8, '  y=', xpow[1]:12:8,
+          '  (expected 1.0, 1.0)');
+  WriteLn('   f=', fpow:12:8, '  (expected 0.0)');
+  WriteLn('   iterations=', nIterPow);
+  SelfTestCheck(Abs(xpow[0] - 1.0) < 1.0e-4,
+    Format('PowellMin x[0]=1, got %g', [xpow[0]]));
+  SelfTestCheck(Abs(xpow[1] - 1.0) < 1.0e-4,
+    Format('PowellMin x[1]=1, got %g', [xpow[1]]));
   WriteLn;
 
   WriteLn('=== End Self Test ===')

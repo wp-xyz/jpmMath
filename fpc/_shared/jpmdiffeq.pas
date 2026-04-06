@@ -26,6 +26,23 @@ procedure AdamsBashforth4(f: TODEFunc; var y: TFloatArray; n: integer; var t: Fl
 procedure AdamsMoulton4(f: TODEFunc; var y: TFloatArray; n: integer; var t: Float;
   tend, h: Float);
 
+{ 7.4 Semi-implicit Rosenbrock method for stiff ODEs (L-stable, order 2).
+  Suitable for stiff problems. Uses numerical Jacobian + Gaussian elimination.
+  f: ODE rhs; y: initial values, updated on return; n: system size.
+  t: start (updated to tend). tend: end time. hstart: initial step.
+  tol: error tolerance. maxFev: max function evaluations.
+  info: 0=ok, 5=max evals reached, 6=singular matrix. }
+procedure GearStiff(f: TODEFunc; var y: TFloatArray; n: integer;
+  var t: Float; tend, hstart, tol: Float; maxFev: integer; var info: integer);
+
+{ 7.5 Bulirsch-Stoer extrapolation method (high-order, adaptive step).
+  Uses modified midpoint rule + polynomial extrapolation (Neville's algorithm).
+  f: ODE rhs; y[0..n-1]: initial values (updated). t: start (updated).
+  tend: end time. hstart: initial step. tol: error tolerance.
+  info: 0=ok, 1=failed to converge. }
+procedure BulirschStoer(f: TODEFunc; var y: TFloatArray; n: integer;
+  var t: Float; tend, hstart, tol: Float; var info: integer);
+
 procedure self_test;
 
 implementation
@@ -53,6 +70,45 @@ var
 begin
   for i := 0 to n - 1 do
     dst[i] := dst[i] + scale * a[i];
+end;
+
+{ Gaussian elimination with partial pivoting. Solves mat*x=rhs. }
+procedure GaussElim(var mat: TFloatMatrix; var rhs, x: TFloatArray; n: integer; var singular: boolean);
+var
+  i, j, k, pivot: integer;
+  maxVal, tmp, factor: Float;
+begin
+  singular := false;
+  { Forward elimination }
+  for k := 0 to n-1 do
+  begin
+    { Find pivot }
+    maxVal := Abs(mat[k][k]); pivot := k;
+    for i := k+1 to n-1 do
+      if Abs(mat[i][k]) > maxVal then begin maxVal := Abs(mat[i][k]); pivot := i; end;
+    if maxVal < 1.0e-14 then begin singular := true; exit; end;
+    { Swap rows k and pivot }
+    if pivot <> k then
+    begin
+      for j := 0 to n-1 do begin tmp := mat[k][j]; mat[k][j] := mat[pivot][j]; mat[pivot][j] := tmp; end;
+      tmp := rhs[k]; rhs[k] := rhs[pivot]; rhs[pivot] := tmp;
+    end;
+    { Eliminate column }
+    for i := k+1 to n-1 do
+    begin
+      factor := mat[i][k] / mat[k][k];
+      for j := k to n-1 do mat[i][j] := mat[i][j] - factor * mat[k][j];
+      rhs[i] := rhs[i] - factor * rhs[k];
+    end;
+  end;
+  { Back substitution }
+  SetLength(x, n);
+  for i := n-1 downto 0 do
+  begin
+    x[i] := rhs[i];
+    for j := i+1 to n-1 do x[i] := x[i] - mat[i][j] * x[j];
+    x[i] := x[i] / mat[i][i];
+  end;
 end;
 
 { ------------------------------------------------------------------ }
@@ -398,8 +454,199 @@ begin
   dydt[1] := -y[0];
 end;
 
+procedure ODE_Robertson(t: Float; var y, dydt: TFloatArray; n: integer);
+begin
+  dydt[0] := -0.04 * y[0] + 1.0e4 * y[1] * y[2];
+  dydt[1] :=  0.04 * y[0] - 1.0e4 * y[1] * y[2] - 3.0e7 * y[1] * y[1];
+  dydt[2] :=  3.0e7 * y[1] * y[1];
+end;
+
 { ------------------------------------------------------------------ }
-{  self_test                                                          }
+{  7.4  GearStiff — Rosenbrock order-2 L-stable method               }
+{ ------------------------------------------------------------------ }
+procedure GearStiff(f: TODEFunc; var y: TFloatArray; n: integer;
+  var t: Float; tend, hstart, tol: Float; maxFev: integer; var info: integer);
+{ Rosenbrock order-2 L-stable method. gamma = 1/(2+sqrt(2)) }
+const
+  gamma = 0.29289321881; { 1 - 1/sqrt(2) }
+  sqrtEps = 1.4901161e-8;
+var
+  h, err, maxErr, scale: Float;
+  i, j, fev: integer;
+  f0, f1, k1, k2, ytmp, ynew, rhs1, rhs2: TFloatArray;
+  Jac, M: TFloatMatrix;
+  singular: boolean;
+begin
+  info := 0;
+  h := hstart;
+  fev := 0;
+  SetLength(f0, n); SetLength(f1, n); SetLength(k1, n); SetLength(k2, n);
+  SetLength(ytmp, n); SetLength(ynew, n);
+  SetLength(rhs1, n); SetLength(rhs2, n);
+  SetLength(Jac, n); for i := 0 to n-1 do SetLength(Jac[i], n);
+  SetLength(M, n); for i := 0 to n-1 do SetLength(M[i], n);
+
+  while t < tend do
+  begin
+    if fev >= maxFev then begin info := 5; exit; end;
+    if t + h > tend then h := tend - t;
+
+    { Compute f0 = f(t, y) }
+    f(t, y, f0, n); inc(fev);
+
+    { Numerical Jacobian Jac[i,j] = df[i]/dy[j] }
+    for j := 0 to n-1 do
+    begin
+      scale := sqrtEps * (Abs(y[j]) + 1.0);
+      for i := 0 to n-1 do ytmp[i] := y[i];
+      ytmp[j] := ytmp[j] + scale;
+      f(t, ytmp, f1, n); inc(fev);
+      for i := 0 to n-1 do Jac[i][j] := (f1[i] - f0[i]) / scale;
+    end;
+
+    { Build M = I - h*gamma*Jac }
+    for i := 0 to n-1 do
+      for j := 0 to n-1 do
+      begin
+        if i = j then M[i][j] := 1.0 - h * gamma * Jac[i][j]
+        else M[i][j] := -h * gamma * Jac[i][j];
+      end;
+
+    { Solve M*k1 = f0 }
+    for i := 0 to n-1 do rhs1[i] := f0[i];
+    GaussElim(M, rhs1, k1, n, singular);
+    if singular then begin info := 6; h := h * 0.5; continue; end;
+
+    { Compute f(t + h, y + h*k1) }
+    for i := 0 to n-1 do ytmp[i] := y[i] + h * k1[i];
+    f(t + h, ytmp, f1, n); inc(fev);
+
+    { Rebuild M (was modified by GaussElim) }
+    for i := 0 to n-1 do
+      for j := 0 to n-1 do
+      begin
+        if i = j then M[i][j] := 1.0 - h * gamma * Jac[i][j]
+        else M[i][j] := -h * gamma * Jac[i][j];
+      end;
+
+    { Solve M*k2 = f(t+h, y+h*k1) - 2*k1 }
+    for i := 0 to n-1 do rhs2[i] := f1[i] - 2.0 * k1[i];
+    GaussElim(M, rhs2, k2, n, singular);
+    if singular then begin info := 6; h := h * 0.5; continue; end;
+
+    { New solution: y_new = y + 1.5*h*k1 + 0.5*h*k2 }
+    for i := 0 to n-1 do ynew[i] := y[i] + 1.5 * h * k1[i] + 0.5 * h * k2[i];
+
+    { Error estimate: ~ |0.5*h*(k2 - k1)| }
+    maxErr := 0.0;
+    for i := 0 to n-1 do
+    begin
+      err := Abs(0.5 * h * (k2[i] - k1[i])) / (tol * (Abs(y[i]) + 1.0));
+      if err > maxErr then maxErr := err;
+    end;
+
+    { Accept or reject step }
+    if maxErr <= 1.0 then
+    begin
+      t := t + h;
+      for i := 0 to n-1 do y[i] := ynew[i];
+    end;
+
+    { Step size control }
+    if maxErr > 1.0e-10 then
+      h := h * Min(5.0, Max(0.2, 0.9 * Power(1.0/maxErr, 0.5)))
+    else
+      h := h * 5.0;
+
+    if h > tend - t then h := tend - t;
+  end;
+end;
+
+{ ------------------------------------------------------------------ }
+procedure BulirschStoer(f: TODEFunc; var y: TFloatArray; n: integer;
+  var t: Float; tend, hstart, tol: Float; var info: integer);
+const
+  MAXK = 8;
+  nseq: array[0..7] of integer = (2, 4, 6, 8, 12, 16, 24, 32);
+var
+  H, maxErr, err, scale: Float;
+  i, j, k, m, nsub: integer;
+  z0, z1, z2, ftmp: TFloatArray;
+  ym: array[0..MAXK-1] of TFloatArray;   { midpoint results for each k }
+  Tex: array[0..MAXK-1] of TFloatArray;    { Neville extrapolation table }
+  converged: boolean;
+begin
+  info := 0;
+  H := hstart;
+  SetLength(z0, n); SetLength(z1, n); SetLength(z2, n); SetLength(ftmp, n);
+  for k := 0 to MAXK-1 do begin SetLength(ym[k], n); SetLength(Tex[k], n); end;
+
+  while t < tend - 1.0e-14 do
+  begin
+    if t + H > tend then H := tend - t;
+    converged := false;
+
+    for k := 0 to MAXK-1 do
+    begin
+      nsub := nseq[k];
+      scale := H / nsub;
+
+      { Modified midpoint method with nsub steps }
+      for i := 0 to n-1 do z0[i] := y[i];
+      f(t, z0, ftmp, n);
+      for i := 0 to n-1 do z1[i] := z0[i] + scale * ftmp[i];
+      for m := 1 to nsub-1 do
+      begin
+        f(t + m*scale, z1, ftmp, n);
+        for i := 0 to n-1 do begin z2[i] := z0[i] + 2.0*scale*ftmp[i]; z0[i] := z1[i]; z1[i] := z2[i]; end;
+      end;
+      f(t + H, z1, ftmp, n);
+      for i := 0 to n-1 do ym[k][i] := 0.5*(z0[i] + z1[i] + scale*ftmp[i]);
+
+      { Copy ym[k] into extrapolation table column 0 }
+      for i := 0 to n-1 do Tex[k][i] := ym[k][i];
+
+      { Neville extrapolation: T[k][j] using x_k = (H/nseq[k])^2 }
+      { Using formula: T[i,j] = T[i,j-1] + (T[i,j-1]-T[i-1,j-1]) / ((nseq[i]/nseq[i-j])^2 - 1) }
+      for j := 1 to k do
+      begin
+        { ratio = (nseq[k] / nseq[k-j])^2 }
+        err := Sqr(nseq[k] / nseq[k-j]) - 1.0;
+        for i := 0 to n-1 do
+          Tex[k][i] := Tex[k][i] + (Tex[k][i] - Tex[k-1][i]) / err;
+      end;
+
+      { Check convergence (k >= 1) }
+      if k >= 1 then
+      begin
+        maxErr := 0.0;
+        for i := 0 to n-1 do
+        begin
+          scale := tol * (Abs(y[i]) + Abs(Tex[k][i]) + 1.0e-30);
+          err := Abs(Tex[k][i] - Tex[k-1][i]) / scale;
+          if err > maxErr then maxErr := err;
+        end;
+        if maxErr < 1.0 then
+        begin
+          t := t + H;
+          for i := 0 to n-1 do y[i] := Tex[k][i];
+          { Increase step size modestly }
+          H := H * Min(2.0, Power(1.0/maxErr, 1.0/(2*k+1)));
+          converged := true;
+          break;
+        end;
+      end;
+    end; { for k }
+
+    if not converged then
+    begin
+      { Failed — halve step and try again }
+      H := H * 0.5;
+      if H < 1.0e-14 then begin info := 1; exit; end;
+    end;
+  end;
+end;
+
 { ------------------------------------------------------------------ }
 procedure self_test;
 var
@@ -407,6 +654,8 @@ var
   t: Float;
   nOK, nBad: integer;
   exact, err: Float;
+  info_gs: integer;
+  info_bs: integer;
 begin
   WriteLn('=== jpmdiffeq self_test ===');
   WriteLn;
@@ -476,6 +725,28 @@ begin
     [y[0], exact, err]));
   if err < 1.0e-7 then WriteLn('  PASS')
   else begin WriteLn('  FAIL'); SelfTestFail('AM4 exp decay: err=' + FloatToStr(err)); end;
+
+  { ---- Test 5: GearStiff on Robertson stiff chemistry ---- }
+  SetLength(y, 3);
+  y[0] := 1.0; y[1] := 0.0; y[2] := 0.0;
+  t := 0.0; info_gs := 0;
+  GearStiff(@ODE_Robertson, y, 3, t, 0.3, 1.0e-4, 1.0e-6, 100000, info_gs);
+  err := Abs(y[0] + y[1] + y[2] - 1.0);
+  WriteLn(Format('Test 5  (GearStiff Robertson): sum=%.9f  err=%.2e  info=%d',
+    [y[0]+y[1]+y[2], err, info_gs]));
+  if (err < 1.0e-6) and (info_gs = 0) then WriteLn('  PASS')
+  else begin WriteLn('  FAIL'); SelfTestFail('GearStiff Robertson: err=' + FloatToStr(err)); end;
+
+  { ---- Test 6: BulirschStoer on harmonic oscillator ---- }
+  SetLength(y, 2);
+  y[0] := 1.0; y[1] := 0.0;
+  t := 0.0; info_bs := 0;
+  BulirschStoer(@ODE_Harmonic, y, 2, t, 2.0*Pi, 0.5, 1.0e-10, info_bs);
+  err := Abs(y[0] - 1.0);
+  WriteLn(Format('Test 6  (BulirschStoer harmonic): y[0](2pi)=%.9f  err=%.2e  info=%d',
+    [y[0], err, info_bs]));
+  if (err < 1.0e-8) and (info_bs = 0) then WriteLn('  PASS')
+  else begin WriteLn('  FAIL'); SelfTestFail('BulirschStoer harmonic: err=' + FloatToStr(err)); end;
 
   WriteLn;
   WriteLn('=== self_test done ===');

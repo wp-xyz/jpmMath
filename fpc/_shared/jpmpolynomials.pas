@@ -317,6 +317,10 @@ var
   p, q, c, d, g, qpol, r: TPolyArray;
   dp, dq, dc, dd, dg, dqpol, dr: integer;
   v: Float;
+  f1, f2: TPolyFrac;
+  num2, den2: TPolyArray;
+  dn2, dd2: integer;
+  rts, cfs: TFloatArray;
 
   procedure check(cond: boolean; msg: string);
   begin
@@ -406,6 +410,25 @@ begin
   check(dg = 1, Format('PolyGCD degree=1, got %d', [dg]));
   check(Abs(g[0] - 1.0) < 1.0e-10, 'PolyGCD g[0]=1');
   check(Abs(g[1] - 1.0) < 1.0e-10, 'PolyGCD g[1]=1');
+
+  { 8.4 PolyFrac: (x+1)/(x^2-1) eval at x=3: 4/8 = 0.5 }
+  SetLength(num2, 2); num2[0] := 1; num2[1] := 1; dn2 := 1; { x+1 }
+  SetLength(den2, 3); den2[0] := -1; den2[1] := 0; den2[2] := 1; dd2 := 2; { x^2-1 }
+  PolyFracMake(num2, den2, dn2, dd2, f1);
+  check(Abs(PolyFracEval(f1, 3.0) - 0.5) < 1.0e-8,
+        Format('PolyFracEval(f1,3)=0.5, got %g', [PolyFracEval(f1,3.0)]));
+
+  { partial fractions of 1/(x^2-1) = 1/((x-1)(x+1)) }
+  { = A/(x-1) + B/(x+1): A=0.5, B=-0.5 }
+  SetLength(num2, 1); num2[0] := 1; dn2 := 0; { constant 1 }
+  SetLength(den2, 3); den2[0] := -1; den2[1] := 0; den2[2] := 1; dd2 := 2;
+  PolyFracMake(num2, den2, dn2, dd2, f2);
+  SetLength(rts, 2); rts[0] := 1.0; rts[1] := -1.0;
+  PolyFracPartial(f2, rts, cfs);
+  check(Abs(cfs[0] - 0.5) < 1.0e-8,
+        Format('PolyFracPartial A0=0.5, got %g', [cfs[0]]));
+  check(Abs(cfs[1] + 0.5) < 1.0e-8,
+        Format('PolyFracPartial A1=-0.5, got %g', [cfs[1]]));
 
   writeln('=== self_test PASSED ===');
 end;

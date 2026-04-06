@@ -42,6 +42,18 @@ procedure MultipleRegression(var X: TMatrix; var y: TFloatArray; m, n: integer;
 procedure ChiSquareFit(var xdata, ydata, sigma: TFloatArray; ndata, degree: integer;
   var coeffs: TFloatArray; var chiSq: Float);
 
+{ Levenberg-Marquardt nonlinear least-squares fitting.
+  fcn:   user procedure that computes residuals fvec[0..m-1] given params x[0..n-1]
+  x:     initial parameter estimate (length n); updated to solution on return
+  n:     number of parameters
+  m:     number of data points (m >= n)
+  tol:   tolerance (e.g. 1e-8)
+  info:  exit code: 1=converged on sum-of-squares, 2=converged on x, 3=both,
+         4=orthogonal, 5=max iterations, 6/7=tol too small
+  Returns sum of squared residuals at solution. }
+function LevenbergMarquardt(fcn: TLMFunc; var x: TFloatArray; n, m: integer;
+  tol: Float; var info: integer): Float;
+
 procedure self_test;
 
 implementation
@@ -276,6 +288,167 @@ begin
 end;
 
 { ---------------------------------------------------------------------------
+  6.6  LevenbergMarquardt — nonlinear least-squares via damped Gauss-Newton
+  --------------------------------------------------------------------------- }
+function LevenbergMarquardt(fcn: TLMFunc; var x: TFloatArray; n, m: integer;
+  tol: Float; var info: integer): Float;
+const
+  eps = 1.49012e-8;
+var
+  i, j, k, iter, maxIter: integer;
+  lambda, chi2, chi2try, chi2old, h, maxRelStep, relStep, scale: Float;
+  fvec, fvectry, xtry, delta, rhs: TFloatArray;
+  Jac, JtJ: TMatrix;
+  JtJdamp: TMatrix;
+begin
+  info    := 0;
+  lambda  := 0.001;
+  maxIter := 200 * (n + 1);
+
+  SetLength(fvec, m);
+  SetLength(fvectry, m);
+  SetLength(xtry, n);
+  SetLength(delta, n);
+  SetLength(rhs, n);
+
+  { initial residuals }
+  fcn(x, n, fvec, m);
+  chi2 := 0.0;
+  for i := 0 to m - 1 do
+    chi2 := chi2 + fvec[i] * fvec[i];
+
+  { allocate Jacobian and JtJ }
+  SetLength(Jac, m);
+  for i := 0 to m - 1 do
+    SetLength(Jac[i], n);
+  SetLength(JtJ, n);
+  for i := 0 to n - 1 do
+    SetLength(JtJ[i], n);
+  SetLength(JtJdamp, n);
+  for i := 0 to n - 1 do
+    SetLength(JtJdamp[i], n);
+
+  for iter := 0 to maxIter - 1 do
+  begin
+    { --- a. Jacobian via forward differences --- }
+    for j := 0 to n - 1 do
+    begin
+      if Abs(x[j]) > 0.0 then
+        h := eps * Abs(x[j])
+      else
+        h := eps;
+      for k := 0 to n - 1 do
+        xtry[k] := x[k];
+      xtry[j] := xtry[j] + h;
+      fcn(xtry, n, fvectry, m);
+      for i := 0 to m - 1 do
+        Jac[i][j] := (fvectry[i] - fvec[i]) / h
+    end;
+
+    { --- b. JtJ and Jtr (right-hand side = -J^T * fvec) --- }
+    for i := 0 to n - 1 do
+    begin
+      rhs[i] := 0.0;
+      for j := 0 to n - 1 do
+        JtJ[i][j] := 0.0
+    end;
+    for k := 0 to m - 1 do
+      for i := 0 to n - 1 do
+      begin
+        rhs[i] := rhs[i] - Jac[k][i] * fvec[k];
+        for j := 0 to n - 1 do
+          JtJ[i][j] := JtJ[i][j] + Jac[k][i] * Jac[k][j]
+      end;
+
+    { --- c. Solve (JtJ + lambda*diag(JtJ)) * delta = rhs --- }
+    for i := 0 to n - 1 do
+      for j := 0 to n - 1 do
+        JtJdamp[i][j] := JtJ[i][j];
+    for i := 0 to n - 1 do
+    begin
+      scale := JtJ[i][i];
+      if scale = 0.0 then scale := 1.0;
+      JtJdamp[i][i] := JtJdamp[i][i] + lambda * scale
+    end;
+    SolveLinearSystem(JtJdamp, rhs, n, delta);
+
+    { --- d. Try new point --- }
+    for k := 0 to n - 1 do
+      xtry[k] := x[k] + delta[k];
+    fcn(xtry, n, fvectry, m);
+    chi2try := 0.0;
+    for i := 0 to m - 1 do
+      chi2try := chi2try + fvectry[i] * fvectry[i];
+
+    { --- e. Accept or reject step --- }
+    if chi2try < chi2 then
+    begin
+      for k := 0 to n - 1 do
+      begin
+        x[k]    := xtry[k];
+        fvec[k] := fvectry[k]
+      end;
+      for k := n to m - 1 do
+        fvec[k] := fvectry[k];
+      chi2old := chi2;
+      chi2    := chi2try;
+      lambda  := lambda / 10.0;
+      { check sum-of-squares convergence }
+      if Abs(chi2old - chi2) < tol * (1.0 + chi2) then
+      begin
+        info := 1;
+        break
+      end;
+      { check parameter convergence }
+      maxRelStep := 0.0;
+      for k := 0 to n - 1 do
+      begin
+        relStep := Abs(delta[k]);
+        if Abs(x[k]) > 1.0 then
+          relStep := relStep / Abs(x[k]);
+        if relStep > maxRelStep then
+          maxRelStep := relStep
+      end;
+      if maxRelStep < tol then
+      begin
+        info := 2;
+        break
+      end
+    end
+    else
+    begin
+      lambda := lambda * 10.0;
+      if lambda > 1.0e16 then
+      begin
+        info := 6;
+        break
+      end
+    end
+  end;
+
+  if info = 0 then
+    info := 5;
+
+  result := 0.0;
+  for i := 0 to m - 1 do
+    result := result + fvec[i] * fvec[i]
+end;
+
+{ ---------------------------------------------------------------------------
+  LM self-test helper: residuals for y = A*exp(-B*x), 5 data points
+  --------------------------------------------------------------------------- }
+const
+  LMTestX: array[0..4] of Float = (0.0, 1.0, 2.0, 3.0, 4.0);
+  LMTestY: array[0..4] of Float = (3.0, 1.81970711, 1.10363832, 0.66834647, 0.40600585);
+
+procedure LMExpFcn(var x: TFloatArray; n: integer; var fvec: TFloatArray; m: integer);
+var i: integer;
+begin
+  for i := 0 to m - 1 do
+    fvec[i] := x[0] * Exp(-x[1] * LMTestX[i]) - LMTestY[i]
+end;
+
+{ ---------------------------------------------------------------------------
   self_test — hard-coded inputs, WriteLn results, no ReadLn
   --------------------------------------------------------------------------- }
 procedure self_test;
@@ -302,6 +475,9 @@ var
   ym: TFloatArray;
   la, lb, lr, r2, chiSq: Float;
   i: integer;
+  lmx: TFloatArray;
+  lmInfo: integer;
+  lmChi2: Float;
 begin
   WriteLn('=== jpmLstsqr self_test ===');
   WriteLn;
@@ -405,6 +581,23 @@ begin
   check('coeffs[1] (linear)',   coeffs[1], -2.0);
   check('coeffs[2] (quadratic)',coeffs[2],  1.0);
   check('chiSq (≈0)',           chiSq,      0.0);
+  WriteLn;
+
+  { -----------------------------------------------------------------------
+    Test 7 — LevenbergMarquardt: fit y = A*exp(-B*x)
+    True params: A=3.0, B=0.5  Starting guess: A=1.0, B=0.1
+    ----------------------------------------------------------------------- }
+  WriteLn('Test 7 — LevenbergMarquardt (exponential fit)');
+  SetLength(lmx, 2);
+  lmx[0] := 1.0;
+  lmx[1] := 0.1;
+  lmChi2 := LevenbergMarquardt(@LMExpFcn, lmx, 2, 5, 1e-8, lmInfo);
+  WriteLn(Format('  A      = %10.6f  (expected 3.0)', [lmx[0]]));
+  WriteLn(Format('  B      = %10.6f  (expected 0.5)', [lmx[1]]));
+  WriteLn(Format('  chi2   = %g', [lmChi2]));
+  WriteLn(Format('  info   = %d', [lmInfo]));
+  SelfTestCheck(Abs(lmx[0] - 3.0) < 1e-3, 'LM A param');
+  SelfTestCheck(Abs(lmx[1] - 0.5) < 1e-3, 'LM B param');
   WriteLn;
 
   WriteLn('=== done ===')
